@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="ml-indie-tools-domschl",
+    name="ml-indie-tools",
     version="0.0.1",
     author="Dominik Schlösser",
     author_email="dsc@dosc.net",
