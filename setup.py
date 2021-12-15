@@ -4,16 +4,16 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="ml-small-datasets-domschl",
+    name="ml-indie-tools-domschl",
     version="0.0.1",
     author="Dominik Schlösser",
     author_email="dsc@dosc.net",
-    description="A collection of small datasets for machine learning",
+    description="A collection of tools for low-resource indie machine learning development",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/domschl/ml-small-datasets",
+    url="https://github.com/domschl/ml-indie-tools",
     project_urls={
-        "Bug Tracker": "https://github.com/domschl/ml-small-datasets/issues"
+        "Bug Tracker": "https://github.com/domschl/ml-indie-tools/issues"
     },
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -23,4 +23,4 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.6",
-)
+    )
