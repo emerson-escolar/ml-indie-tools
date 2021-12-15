@@ -3,9 +3,11 @@ import os
 import random
 import numpy as np
 
-import tensorflow as tf
+# import tensorflow as tf
 
-import MLEnv
+# from ml_indie_tools import MLEnv
+
+from ml_indie_tools.env_tools import MLEnv
 
 # ## Training data
 class ALU_Dataset():
@@ -324,86 +326,91 @@ class ALU_Dataset():
             print()
         return dpx, dpy
 
-    def create_dataset(self, samples=10000, batch_size=2000, vector=False, positional_encoding=True, is_training=True, valid_ops=None, name=None, cache_path=None, use_cache=True, regenerate_cached_data=False):
-        is_loaded=False
-        if use_cache is True and cache_path is None:
-            print("can't use cache if no cache_path is given, disabling cache!")
-            use_cache = False
-        if use_cache is True:
-            if valid_ops is not None:
-                infix='_'
-                for vo in valid_ops:
-                    if vo=='*': # Prevent poison-filenames
-                        vo="MULT"
-                    if vo=='/':
-                        vo="DIV"
-                    if vo=='%':
-                        vo='MOD'
-                    if vo=='<':
-                        vo='LT'
-                    if vo=='>':
-                        vo='GT'
-                    if vo=='=':
-                        vo='EQ'
-                    if vo=='!=':
-                        vo='NE'
-                    infix+=vo
-            else:
-                infix=""
-            if vector is True:
-                infix+="_VECT"
-            if positional_encoding is True:
-                infix+="_PE"
-            cache_file_x=os.path.join(cache_path, f"{name}_{infix}_{self.bit_count}_{samples}_x.npy")
-            cache_file_Y=os.path.join(cache_path, f"{name}_{infix}_{self.bit_count}_{samples}_Y.npy")
-        if use_cache is True  and regenerate_cached_data is False and os.path.exists(cache_file_x) and os.path.exists(cache_file_Y):
-            try:
-                x = np.load(cache_file_x, allow_pickle=True)
-                Y = np.load(cache_file_Y, allow_pickle=True)
-                if len(x)==samples:
-                    is_loaded=True
-                    print(f"Data {name} loaded from cache")
-                else:
-                    print(f"Sample count has changed from {len(x)} to {samples}, regenerating {name} data...")
-            except Exception as e:
-                print(f"Something went wrong when loading {cache_file_x}, {cache_file_Y}: {e}")
-        if is_loaded is False:
-            if vector is True:
-                x, Y = self.create_vector_training_data(
-                    samples=samples, valid_ops=valid_ops, title=name, positional_encoding=positional_encoding)
-            else:
-                x, Y = self.create_training_data(samples=samples, valid_ops=valid_ops, title=name)
+    if 'tensorflow' in sys.modules:
+        def create_dataset(self, samples=10000, batch_size=2000, vector=False, positional_encoding=True, is_training=True, valid_ops=None, name=None, cache_path=None, use_cache=True, regenerate_cached_data=False):
+            is_loaded=False
+            if use_cache is True and cache_path is None:
+                print("can't use cache if no cache_path is given, disabling cache!")
+                use_cache = False
             if use_cache is True:
-                print(f"Writing data-cache {cache_file_x}, {cache_file_Y}...", end="")
-                np.save(cache_file_x, x, allow_pickle=True)
-                print(", x", end="")
-                np.save(cache_file_Y, Y, allow_pickle=True)
-                print(", Y, done.")
-        shuffle_buffer=10000
-        dataset=tf.data.Dataset.from_tensor_slices((x, Y)).cache()
-        if is_training is True:
-            dataset=dataset.shuffle(shuffle_buffer, reshuffle_each_iteration=True)
-            if self.ml_env.is_tpu is True:
-                dataset=dataset.repeat() # Mandatory for Keras TPU for now
-        dataset=dataset.batch(batch_size, drop_remainder=True) # drop_remainder is important on TPU, batch size must be fixed
-        dataset=dataset.prefetch(-1) # fetch next batches while training on the current one (-1: autotune prefetch buffer size)
-        return dataset
+                if valid_ops is not None:
+                    infix='_'
+                    for vo in valid_ops:
+                        if vo=='*': # Prevent poison-filenames
+                            vo="MULT"
+                        if vo=='/':
+                            vo="DIV"
+                        if vo=='%':
+                            vo='MOD'
+                        if vo=='<':
+                            vo='LT'
+                        if vo=='>':
+                            vo='GT'
+                        if vo=='=':
+                            vo='EQ'
+                        if vo=='!=':
+                            vo='NE'
+                        infix+=vo
+                else:
+                    infix=""
+                if vector is True:
+                    infix+="_VECT"
+                if positional_encoding is True:
+                    infix+="_PE"
+                cache_file_x=os.path.join(cache_path, f"{name}_{infix}_{self.bit_count}_{samples}_x.npy")
+                cache_file_Y=os.path.join(cache_path, f"{name}_{infix}_{self.bit_count}_{samples}_Y.npy")
+            if use_cache is True  and regenerate_cached_data is False and os.path.exists(cache_file_x) and os.path.exists(cache_file_Y):
+                try:
+                    x = np.load(cache_file_x, allow_pickle=True)
+                    Y = np.load(cache_file_Y, allow_pickle=True)
+                    if len(x)==samples:
+                        is_loaded=True
+                        print(f"Data {name} loaded from cache")
+                    else:
+                        print(f"Sample count has changed from {len(x)} to {samples}, regenerating {name} data...")
+                except Exception as e:
+                    print(f"Something went wrong when loading {cache_file_x}, {cache_file_Y}: {e}")
+            if is_loaded is False:
+                if vector is True:
+                    x, Y = self.create_vector_training_data(
+                        samples=samples, valid_ops=valid_ops, title=name, positional_encoding=positional_encoding)
+                else:
+                    x, Y = self.create_training_data(samples=samples, valid_ops=valid_ops, title=name)
+                if use_cache is True:
+                    print(f"Writing data-cache {cache_file_x}, {cache_file_Y}...", end="")
+                    np.save(cache_file_x, x, allow_pickle=True)
+                    print(", x", end="")
+                    np.save(cache_file_Y, Y, allow_pickle=True)
+                    print(", Y, done.")
+            shuffle_buffer=10000
+            dataset=tf.data.Dataset.from_tensor_slices((x, Y)).cache()
+            if is_training is True:
+                dataset=dataset.shuffle(shuffle_buffer, reshuffle_each_iteration=True)
+                if self.ml_env.is_tpu is True:
+                    dataset=dataset.repeat() # Mandatory for Keras TPU for now
+            dataset=dataset.batch(batch_size, drop_remainder=True) # drop_remainder is important on TPU, batch size must be fixed
+            dataset=dataset.prefetch(-1) # fetch next batches while training on the current one (-1: autotune prefetch buffer size)
+            return dataset
 
-    def create_dataset_from_generator(self, valid_ops=None):
-        dataset=tf.data.Dataset.from_generator(
-            self.generator,
-            output_signature=(
-                    tf.TensorSpec(shape=(None,self.input_size), dtype=np.float32),
-                    tf.TensorSpec(shape=(None,self.output_size), dtype=np.float32))
-            )
-        return dataset
+        def create_dataset_from_generator(self, valid_ops=None):
+            dataset=tf.data.Dataset.from_generator(
+                self.generator,
+                output_signature=(
+                        tf.TensorSpec(shape=(None,self.input_size), dtype=np.float32),
+                        tf.TensorSpec(shape=(None,self.output_size), dtype=np.float32))
+                )
+            return dataset
 
-    def get_datasets(self, pre_weight=True, samples=100000, validation_samples=10000, batch_size=2000, vector=False, positional_encoding=True, valid_ops=None, cache_path=None, use_cache=True, regenerate_cached_data=False):
-        train = self.create_dataset(samples=samples, batch_size=batch_size, is_training=True, vector=vector, positional_encoding=positional_encoding, valid_ops=valid_ops,
-                                        name="train",cache_path=cache_path, use_cache=use_cache, regenerate_cached_data=regenerate_cached_data)
-        val = self.create_dataset(samples=validation_samples, batch_size=batch_size, vector=vector, positional_encoding=positional_encoding, is_training=False, valid_ops=valid_ops,
-                                    name="validation",cache_path=cache_path, use_cache=use_cache, regenerate_cached_data=regenerate_cached_data)
-        return train, val
+        def get_datasets(self, pre_weight=True, samples=100000, validation_samples=10000, batch_size=2000, vector=False, positional_encoding=True, valid_ops=None, cache_path=None, use_cache=True, regenerate_cached_data=False):
+            train = self.create_dataset(samples=samples, batch_size=batch_size, is_training=True, vector=vector, positional_encoding=positional_encoding, valid_ops=valid_ops,
+                                            name="train",cache_path=cache_path, use_cache=use_cache, regenerate_cached_data=regenerate_cached_data)
+            val = self.create_dataset(samples=validation_samples, batch_size=batch_size, vector=vector, positional_encoding=positional_encoding, is_training=False, valid_ops=valid_ops,
+                                        name="validation",cache_path=cache_path, use_cache=use_cache, regenerate_cached_data=regenerate_cached_data)
+            return train, val
+    else:
+        def get_datasets(self, pre_weight=True, samples=100000, validation_samples=10000, batch_size=2000, vector=False, positional_encoding=True, valid_ops=None, cache_path=None, use_cache=True, regenerate_cached_data=False):
+            print("No tensorflow, no datasets!")
+            return None, None
 
     def decode_results(self, result_int_vects):
         """ take an array of 32-float results from neural net and convert to ints """
