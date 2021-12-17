@@ -1,12 +1,14 @@
 import os
+import sys
 import time
 import shutil
 
 try:
     import tensorflow as tf
-    ml_tf_available = True
+    # ml_tf_available = True
 except ImportError:
-    ml_tf_available = False 
+    # ml_tf_available = False 
+    pass
 
 try:
     from tensorflow.python.profiler import profiler_client
@@ -22,6 +24,10 @@ class MLEnv():
     def __init__(self):
         self.flush_timer = 0
         self.flush_timeout = 180
+        if 'tensorflow' in sys.modules:
+            self.is_tensorflow = True
+        else:
+            self.is_tensorflow = False
         self.is_colab = self.check_colab()
         self.check_hardware()
 
@@ -30,7 +36,7 @@ class MLEnv():
         try: # Colab instance?
             from google.colab import drive
             is_colab = True
-            if ml_tf_available is True:
+            if self.is_tensorflow is True:
                 get_ipython().run_line_magic('load_ext', 'tensorboard')
                 try:
                     get_ipython().run_line_magic('tensorflow_version', '2.x')
@@ -48,7 +54,7 @@ class MLEnv():
         self.is_gpu = False
         self.tpu_address = None
 
-        if ml_tf_available is False:
+        if self.is_tensorflow is False:
             print("Tensorflow not available, cannot check hardware.")
             return False
 
