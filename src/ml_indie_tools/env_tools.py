@@ -2,11 +2,15 @@ import os
 import time
 import shutil
 
-import tensorflow as tf
+try:
+    import tensorflow as tf
+    ml_tf_available = True
+except ImportError:
+    ml_tf_available = False 
 
 try:
     from tensorflow.python.profiler import profiler_client
-except:
+except ImportError:
     pass
 
 try:
@@ -26,11 +30,12 @@ class MLEnv():
         try: # Colab instance?
             from google.colab import drive
             is_colab = True
-            get_ipython().run_line_magic('load_ext', 'tensorboard')
-            try:
-                get_ipython().run_line_magic('tensorflow_version', '2.x')
-            except:
-                pass
+            if ml_tf_available is True:
+                get_ipython().run_line_magic('load_ext', 'tensorboard')
+                try:
+                    get_ipython().run_line_magic('tensorflow_version', '2.x')
+                except:
+                    pass
         except: # Not? ignore.
             is_colab = False
             pass
@@ -42,6 +47,10 @@ class MLEnv():
         self.tpu_is_init = False
         self.is_gpu = False
         self.tpu_address = None
+
+        if ml_tf_available is False:
+            print("Tensorflow not available, cannot check hardware.")
+            return False
 
         if self.is_colab:
             try:
