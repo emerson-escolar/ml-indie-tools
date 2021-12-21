@@ -110,10 +110,10 @@ class MLEnv():
                 pass
         self.flush_timer = 0
         self.flush_timeout = 180
-        self.check_colab(verbose=verbose)
+        self.check_notebook_type(verbose=verbose)
         # self.check_hardware(verbose=verbose)
 
-    def check_colab(self, verbose=False):
+    def check_notebook_type(self, verbose=False):
         try:
             if 'IPKernelApp' in get_ipython().config:
                 self.is_notebook = True
