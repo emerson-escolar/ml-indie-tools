@@ -5,8 +5,10 @@ import shutil
 
 class MLEnv():
     """ Initialize deep learning platform. Known platforms are: 'tf', 'pt',
-    'jax' """
+    'jax', known accelerators are: 'cpu', 'gpu', 'tpu' """
     def __init__(self, platform='tf', accelerator='gpu', verbose=True):
+        """ Initialize platform. Known platforms are: 'tf', 'pt', 'jax', known
+        accelerators are: 'cpu', 'gpu', 'tpu' """
         self.known_platforms = ['tf', 'pt', 'jax']
         self.known_accelerators = ['cpu', 'gpu', 'tpu']
         if platform not in self.known_platforms:
@@ -23,12 +25,32 @@ class MLEnv():
         self.is_cpu = False
         self.is_gpu = False
         self.is_tpu = False
+        self.is_colab = False
         if self.platform == 'tf':
             try:
                 import tensorflow as tf
                 self.is_tensorflow = True
-            except ImportError:
-                pass
+            except ImportError as e:
+                if verbose is True:
+                    print(f"Tensorflow not available: {e}")
+                return
+            # %tensorflow_version 2.x
+            # import tensorflow as tf
+            if verbose is True:
+                print("Tensorflow version: ", tf.__version__)
+            if self.accelerator == 'tpu':
+                try:
+                    tpu = tf.distribute.cluster_resolver.TPUClusterResolver()  # TPU detection
+                    print('Running on TPU ', tpu.cluster_spec().as_dict()['worker'])
+                    self.is_tpu = True
+                except ValueError:
+                    print('ERROR: Not connected to a TPU runtime!')
+                    return  
+                tf.config.experimental_connect_to_cluster(tpu)
+                tf.tpu.experimental.initialize_tpu_system(tpu)
+                self.tpu_strategy = tf.distribute.experimental.TPUStrategy(tpu)
+                if verbose is True:
+                    print("TPU strategy available")
         if self.platform == 'jax':
             if self.accelerator == 'tpu':
                 try:
@@ -38,7 +60,8 @@ class MLEnv():
                     if verbose is True:
                         print("JAX TPU detected.")
                 except:
-                    print("No JAX TPU available.")
+                    if verbose is True:
+                        print("JAX TPU not available.")
                     return
             elif self.accelerator == 'gpu':
                 try:
@@ -68,7 +91,7 @@ class MLEnv():
         self.flush_timer = 0
         self.flush_timeout = 180
         self.is_colab = self.check_colab(verbose=verbose)
-        self.check_hardware(verbose=verbose)
+        # self.check_hardware(verbose=verbose)
 
     @staticmethod
     def check_colab(verbose=False):
