@@ -3,36 +3,75 @@ import sys
 import time
 import shutil
 
-try:
-    import tensorflow as tf
-    # ml_tf_available = True
-except ImportError:
-    # ml_tf_available = False 
-    pass
-
-try:
-    from tensorflow.python.profiler import profiler_client
-except ImportError:
-    pass
-
-try:
-    from google.colab import drive
-except:
-    pass
-
 class MLEnv():
-    def __init__(self):
+    """ Initialize deep learning platform. Known platforms are: 'tf', 'pt',
+    'jax' """
+    def __init__(self, platform='tf', accelerator='gpu', verbose=True):
+        self.known_platforms = ['tf', 'pt', 'jax']
+        self.known_accelerators = ['cpu', 'gpu', 'tpu']
+        if platform not in self.known_platforms:
+            print(f"Platform {platform} is not known, please check spelling.")
+            return
+        if accelerator not in self.known_accelerators:
+            print(f"Accelerator {accelerator} is not known, please check spelling.")
+            return
+        self.platform = platform
+        self.accelerator = accelerator
+        self.is_tensorflow = False
+        self.is_pytorch = False
+        self.is_jax = False
+        self.is_cpu = False
+        self.is_gpu = False
+        self.is_tpu = False
+        if self.platform == 'tf':
+            try:
+                import tensorflow as tf
+                self.is_tensorflow = True
+            except ImportError:
+                pass
+        if self.platform == 'jax':
+            if self.accelerator == 'tpu':
+                try:
+                    import jax.tools.colab_tpu
+                    jax.tools.colab_tpu.setup_tpu()
+                    self.is_tpu = True
+                    if verbose is True:
+                        print("JAX TPU detected.")
+                except:
+                    print("No JAX TPU available.")
+                    return
+            elif self.accelerator == 'gpu':
+                try:
+                    import jax.config
+                    jax.config.update_config(jax.config.GPU_DEVICE_NAME, '/gpu:0')
+                    self.is_gpu = True
+                    if verbose is True:
+                        print("JAX GPU detected.")
+                except:
+                    print("No JAX GPU available.")
+                    return
+            elif self.accelerator == 'cpu':
+                self.is_cpu = True
+                if verbose is True:
+                    print("JAX CPU detected.")
+            try:
+                import jax as jnp
+                self.is_jax = True
+            except ImportError:
+                pass
+        if self.platform == 'pt':
+            try:
+                import torch
+                self.is_pytorch = True
+            except ImportError:
+                pass
         self.flush_timer = 0
         self.flush_timeout = 180
-        if 'tensorflow' in sys.modules:
-            self.is_tensorflow = True
-        else:
-            self.is_tensorflow = False
-        self.is_colab = self.check_colab()
-        self.check_hardware()
+        self.is_colab = self.check_colab(verbose=verbose)
+        self.check_hardware(verbose=verbose)
 
     @staticmethod
-    def check_colab():
+    def check_colab(verbose=False):
         try: # Colab instance?
             from google.colab import drive
             is_colab = True
@@ -42,8 +81,12 @@ class MLEnv():
                     get_ipython().run_line_magic('tensorflow_version', '2.x')
                 except:
                     pass
+            if verbose is True:
+                print("You are on a Colab instance.")
         except: # Not? ignore.
             is_colab = False
+            if verbose is True:
+                print("You are not on a Colab instance, so no Google Drive access is possible.")
             pass
         return is_colab
 
@@ -54,47 +97,46 @@ class MLEnv():
         self.is_gpu = False
         self.tpu_address = None
 
-        if self.is_tensorflow is False:
-            print("Tensorflow not available, cannot check hardware.")
-            return False
+        if self.is_tensorflow is True:
+            if self.is_colab:
+                try:
+                    tpu = tf.distribute.cluster_resolver.TPUClusterResolver()  # TPU detection
+                    if verbose is True:
+                        print('Running on TPU ', tpu.cluster_spec().as_dict()['worker'])
+                    self.is_tpu = True
+                    tpu_profile_service_address = os.environ['COLAB_TPU_ADDR'].replace('8470', '8466')
+                    state=profiler_client.monitor(tpu_profile_service_address, 100, 2)
+                    if 'TPU v2' in state:
+                        print("WARNING: you got old TPU v2 which is limited to 8GB Ram.")
 
-        if self.is_colab:
-            try:
-                tpu = tf.distribute.cluster_resolver.TPUClusterResolver()  # TPU detection
-                if verbose is True:
-                    print('Running on TPU ', tpu.cluster_spec().as_dict()['worker'])
-                self.is_tpu = True
-                tpu_profile_service_address = os.environ['COLAB_TPU_ADDR'].replace('8470', '8466')
-                state=profiler_client.monitor(tpu_profile_service_address, 100, 2)
-                if 'TPU v2' in state:
-                    print("WARNING: you got old TPU v2 which is limited to 8GB Ram.")
+                except ValueError:
+                    if verbose is True:
+                        print("No TPU available")
+                    self.is_tpu = False
 
-            except ValueError:
-                if verbose is True:
-                    print("No TPU available")
-                self.is_tpu = False
+            for hw in ["CPU", "GPU", "TPU"]:
+                hw_list=tf.config.experimental.list_physical_devices(hw)
+                if len(hw_list)>0:
+                    if hw=='TPU':
+                        self.is_tpu=True
+                    if hw=='GPU':
+                        self.is_gpu=True
+                    if verbose is True:
+                        print(f"{hw}: {hw_list} {tf.config.experimental.get_device_details(hw_list[0])}") 
 
-        for hw in ["CPU", "GPU", "TPU"]:
-            hw_list=tf.config.experimental.list_physical_devices(hw)
-            if len(hw_list)>0:
-                if hw=='TPU':
-                    self.is_tpu=True
-                if hw=='GPU':
-                    self.is_gpu=True
-                if verbose is True:
-                    print(f"{hw}: {hw_list} {tf.config.experimental.get_device_details(hw_list[0])}") 
-
-        if not self.is_tpu:
-            if not self.is_gpu:
-                if verbose is True:
-                    print("WARNING: You have neither TPU nor GPU, this is going to be very slow!")
+            if not self.is_tpu:
+                if not self.is_gpu:
+                    if verbose is True:
+                        print("WARNING: You have neither TPU nor GPU, this is going to be very slow!")
+                else:
+                    if verbose is True:
+                        print("GPU available")
             else:
+                tf.compat.v1.disable_eager_execution()
                 if verbose is True:
-                    print("GPU available")
+                    print("TPU: eager execution disabled!")
         else:
-            tf.compat.v1.disable_eager_execution()
-            if verbose is True:
-                print("TPU: eager execution disabled!")
+            print("Tensorflow not available, so no hardware check (yet).")
 
     def mount_gdrive(self, mount_point="/content/drive", root_path="/content/drive/My Drive", verbose=True):
         if self.is_colab is True:
