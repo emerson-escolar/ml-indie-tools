@@ -6,11 +6,11 @@ import shutil
 class MLEnv():
     """ Initialize deep learning platform. Known platforms are: 'tf', 'pt',
     'jax', known accelerators are: 'cpu', 'gpu', 'tpu' """
-    def __init__(self, platform='tf', accelerator='gpu', verbose=True):
+    def __init__(self, platform='tf', accelerator='fastest', verbose=True):
         """ Initialize platform. Known platforms are: 'tf', 'pt', 'jax', known
         accelerators are: 'cpu', 'gpu', 'tpu' """
         self.known_platforms = ['tf', 'pt', 'jax']
-        self.known_accelerators = ['cpu', 'gpu', 'tpu']
+        self.known_accelerators = ['cpu', 'gpu', 'tpu', 'fastest']
         if platform not in self.known_platforms:
             print(f"Platform {platform} is not known, please check spelling.")
             return
@@ -25,6 +25,7 @@ class MLEnv():
         self.is_cpu = False
         self.is_gpu = False
         self.is_tpu = False
+        self.is_notebook = False
         self.is_colab = False
         if self.platform == 'tf':
             try:
@@ -38,19 +39,38 @@ class MLEnv():
             # import tensorflow as tf
             if verbose is True:
                 print("Tensorflow version: ", tf.__version__)
-            if self.accelerator == 'tpu':
+            if self.accelerator == 'tpu' or self.accelerator == 'fastest':
                 try:
                     tpu = tf.distribute.cluster_resolver.TPUClusterResolver()  # TPU detection
                     print('Running on TPU ', tpu.cluster_spec().as_dict()['worker'])
                     self.is_tpu = True
                 except ValueError:
-                    print('ERROR: Not connected to a TPU runtime!')
-                    return  
-                tf.config.experimental_connect_to_cluster(tpu)
-                tf.tpu.experimental.initialize_tpu_system(tpu)
-                self.tpu_strategy = tf.distribute.experimental.TPUStrategy(tpu)
+                    tpu = None
+                    if self.accelerator!= 'fastest':
+                        if verbose is True:
+                            print("No TPU available")
+                if self.is_tpu is True:    
+                    tf.config.experimental_connect_to_cluster(tpu)
+                    tf.tpu.experimental.initialize_tpu_system(tpu)
+                    self.tpu_strategy = tf.distribute.experimental.TPUStrategy(tpu)
+                    if verbose is True:
+                        print("TPU strategy available")
+            if self.is_tpu is False:
+                if self.accelerator == 'gpu' or self.accelerator == 'fastest':
+                    try:
+                        tf.config.experimental.list_physical_devices('GPU')
+                        self.is_gpu = True
+                    except RuntimeError as e:
+                        if verbose is True:
+                            print(f"GPU not available: {e}")
+                        self.is_gpu = False
+                    if self.is_gpu is True:
+                        if verbose is True:
+                            print("GPU available")
+            if self.is_gpu is False and self.is_tpu is False:
                 if verbose is True:
-                    print("TPU strategy available")
+                    print("No GPU or TPU available, this is going to be very slow!")
+
         if self.platform == 'jax':
             if self.accelerator == 'tpu':
                 try:
@@ -90,28 +110,37 @@ class MLEnv():
                 pass
         self.flush_timer = 0
         self.flush_timeout = 180
-        self.is_colab = self.check_colab(verbose=verbose)
+        self.check_colab(verbose=verbose)
         # self.check_hardware(verbose=verbose)
 
-    @staticmethod
-    def check_colab(verbose=False):
-        try: # Colab instance?
-            from google.colab import drive
-            is_colab = True
-            if self.is_tensorflow is True:
-                get_ipython().run_line_magic('load_ext', 'tensorboard')
-                try:
-                    get_ipython().run_line_magic('tensorflow_version', '2.x')
-                except:
-                    pass
+    def check_colab(self, verbose=False):
+        try:
+            if 'IPKernelApp' in get_ipython().config:
+                self.is_notebook = True
+                if verbose is True:
+                    print("You are on a Jupyter instance.")
+        except NameError:
+            self.is_notebook = False
             if verbose is True:
-                print("You are on a Colab instance.")
-        except: # Not? ignore.
-            is_colab = False
-            if verbose is True:
-                print("You are not on a Colab instance, so no Google Drive access is possible.")
-            pass
-        return is_colab
+                print("You are not on a Jupyter instance.")
+        if self.is_notebook is True:
+            try: # Colab instance?
+                from google.colab import drive
+                self.is_colab = True
+                if self.is_tensorflow is True:
+                    get_ipython().run_line_magic('load_ext', 'tensorboard')
+                    try:
+                        get_ipython().run_line_magic('tensorflow_version', '2.x')
+                    except:
+                        pass
+                if verbose is True:
+                    print("You are on a Colab instance.")
+            except: # Not? ignore.
+                self.is_colab = False
+                if verbose is True:
+                    print("You are not on a Colab instance, so no Google Drive access is possible.")
+                pass
+        return self.is_notebook, self.is_colab
 
     # Hardware check:
     def check_hardware(self, verbose=True):
