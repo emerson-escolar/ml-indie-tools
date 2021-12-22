@@ -80,8 +80,6 @@ class MLEnv():
                 if verbose is True:
                     print("Jax not available")
             if self.is_jax is True:
-                if verbose is True:
-                    print("Jax available")
                 if self.accelerator == 'tpu' or self.accelerator == 'fastest':
                     try:
                         import jax.tools.colab_tpu
@@ -90,7 +88,7 @@ class MLEnv():
                         if verbose is True:
                             print("JAX TPU detected.")
                     except:
-                        if self.acccelerator != 'fastest':
+                        if self.accelerator != 'fastest':
                             if verbose is True:
                                 print("JAX TPU not detected.")
                                 return
