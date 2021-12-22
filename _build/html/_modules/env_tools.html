@@ -46,12 +46,13 @@
 <span class="kn">import</span> <span class="nn">shutil</span>
 
 <div class="viewcode-block" id="MLEnv"><a class="viewcode-back" href="../index.html#env_tools.MLEnv">[docs]</a><span class="k">class</span> <span class="nc">MLEnv</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot; Initialize deep learning platform. Known platforms are: &#39;tf&#39;, &#39;pt&#39;,</span>
-<span class="sd">    &#39;jax&#39;, known accelerators are: &#39;cpu&#39;, &#39;gpu&#39;, &#39;tpu&#39;, or &#39;fastest&#39; &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; Environment information for the deep learning platform (Tensorflow, Pytorch, JAX) &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="MLEnv.__init__"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">platform</span><span class="o">=</span><span class="s1">&#39;tf&#39;</span><span class="p">,</span> <span class="n">accelerator</span><span class="o">=</span><span class="s1">&#39;fastest&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Initialize platform. Known platforms are: &#39;tf&#39; (tensorflow), &#39;pt&#39;</span>
-<span class="sd">        (pytorch), and &#39;jax&#39;, known</span>
-<span class="sd">        accelerators are: &#39;fastest&#39; (pick best available hardware), &#39;cpu&#39;, &#39;gpu&#39;, &#39;tpu&#39; &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Initialize platform and accelerator. </span>
+
+<span class="sd">        :param platform: Known platforms are: &#39;tf&#39; (tensorflow), &#39;pt&#39; (pytorch), and &#39;jax&#39;</span>
+<span class="sd">        :param accelerator: known accelerators are: &#39;fastest&#39; (pick best available hardware), &#39;cpu&#39;, &#39;gpu&#39;, &#39;tpu&#39;</span>
+<span class="sd">        :param verbose: show information about configuration &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">known_platforms</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tf&#39;</span><span class="p">,</span> <span class="s1">&#39;pt&#39;</span><span class="p">,</span> <span class="s1">&#39;jax&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">known_accelerators</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="s1">&#39;gpu&#39;</span><span class="p">,</span> <span class="s1">&#39;tpu&#39;</span><span class="p">,</span> <span class="s1">&#39;fastest&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">platform</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">known_platforms</span><span class="p">:</span>

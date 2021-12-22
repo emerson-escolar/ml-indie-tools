@@ -47,14 +47,20 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="env_tools.MLEnv">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">env_tools.</span></span><span class="sig-name descname"><span class="pre">MLEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fastest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize deep learning platform. Known platforms are: ‘tf’, ‘pt’,
-‘jax’, known accelerators are: ‘cpu’, ‘gpu’, ‘tpu’, or ‘fastest’</p>
+<dd><p>Environment information for the deep learning platform (Tensorflow, Pytorch, JAX)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="env_tools.MLEnv.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fastest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize platform. Known platforms are: ‘tf’ (tensorflow), ‘pt’
-(pytorch), and ‘jax’, known
-accelerators are: ‘fastest’ (pick best available hardware), ‘cpu’, ‘gpu’, ‘tpu’</p>
+<dd><p>Initialize platform and accelerator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>platform</strong> – Known platforms are: ‘tf’ (tensorflow), ‘pt’ (pytorch), and ‘jax’</p></li>
+<li><p><strong>accelerator</strong> – known accelerators are: ‘fastest’ (pick best available hardware), ‘cpu’, ‘gpu’, ‘tpu’</p></li>
+<li><p><strong>verbose</strong> – show information about configuration</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="field-list simple">
