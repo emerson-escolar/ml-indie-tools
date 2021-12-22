@@ -1,5 +1,4 @@
 import os
-import sys
 import time
 import shutil
 
@@ -141,6 +140,11 @@ class MLEnv():
                         if verbose is True and self.accelerator != 'fastest':
                             print("Pytorch TPU instance not detected.")
                     try:
+                        import torch
+                        if torch.__version__ != '1.9.0' and verbose is True:
+                            print("Pytorch version probably not supported with TPUs.")
+                            print("!pip install cloud-tpu-client==0.10 torch==1.9.0 https://storage.googleapis.com/tpu-pytorch/wheels/torch_xla-1.9-cp37-cp37m-linux_x86_64.whl")
+                            return
                         import torch_xla.core.xla_model as xm
                         self.is_tpu = True
                         if verbose is True:
