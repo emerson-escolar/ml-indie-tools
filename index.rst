@@ -18,6 +18,9 @@ MLEnv object
 
 .. autoclass:: MLEnv
    :members:
+
+   .. automethod:: __init__
+   
    :undoc-members:
    :show-inheritance:
 

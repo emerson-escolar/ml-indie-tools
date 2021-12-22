@@ -40,14 +40,15 @@
           <div class="body" role="main">
             
   <h1>Source code for env_tools</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="sd">&#39;&#39;&#39;Setup tools to configure ML environment for Tensorflow, Pytorch or JAX and optional notebook/colab environment&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 
 <div class="viewcode-block" id="MLEnv"><a class="viewcode-back" href="../index.html#env_tools.MLEnv">[docs]</a><span class="k">class</span> <span class="nc">MLEnv</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot; Initialize deep learning platform. Known platforms are: &#39;tf&#39;, &#39;pt&#39;,</span>
-<span class="sd">    &#39;jax&#39;, known accelerators are: &#39;cpu&#39;, &#39;gpu&#39;, &#39;tpu&#39; &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">platform</span><span class="o">=</span><span class="s1">&#39;tf&#39;</span><span class="p">,</span> <span class="n">accelerator</span><span class="o">=</span><span class="s1">&#39;fastest&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="sd">    &#39;jax&#39;, known accelerators are: &#39;cpu&#39;, &#39;gpu&#39;, &#39;tpu&#39;, or &#39;fastest&#39; &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MLEnv.__init__"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">platform</span><span class="o">=</span><span class="s1">&#39;tf&#39;</span><span class="p">,</span> <span class="n">accelerator</span><span class="o">=</span><span class="s1">&#39;fastest&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Initialize platform. Known platforms are: &#39;tf&#39; (tensorflow), &#39;pt&#39;</span>
 <span class="sd">        (pytorch), and &#39;jax&#39;, known</span>
 <span class="sd">        accelerators are: &#39;fastest&#39; (pick best available hardware), &#39;cpu&#39;, &#39;gpu&#39;, &#39;tpu&#39; &quot;&quot;&quot;</span>
@@ -223,10 +224,10 @@
                     <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flush_timer</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flush_timeout</span> <span class="o">=</span> <span class="mi">180</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_notebook_type</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_notebook_type</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
         <span class="c1"># self.check_hardware(verbose=verbose)</span>
 
-<div class="viewcode-block" id="MLEnv.check_notebook_type"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.check_notebook_type">[docs]</a>    <span class="k">def</span> <span class="nf">check_notebook_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_notebook_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="s1">&#39;IPKernelApp&#39;</span> <span class="ow">in</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span> <span class="o">=</span> <span class="kc">True</span>
@@ -253,10 +254,10 @@
                 <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You are not on a Colab instance, so no Google Drive access is possible.&quot;</span><span class="p">)</span>
                 <span class="k">pass</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span>
 
     <span class="c1"># Hardware check:</span>
-<div class="viewcode-block" id="MLEnv.check_hardware"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.check_hardware">[docs]</a>    <span class="k">def</span> <span class="nf">check_hardware</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_hardware</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tpu_is_init</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="o">=</span> <span class="kc">False</span>
@@ -301,9 +302,9 @@
                 <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TPU: eager execution disabled!&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tensorflow not available, so no hardware check (yet).&quot;</span><span class="p">)</span></div>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tensorflow not available, so no hardware check (yet).&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MLEnv.mount_gdrive"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.mount_gdrive">[docs]</a>    <span class="k">def</span> <span class="nf">mount_gdrive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mount_point</span><span class="o">=</span><span class="s2">&quot;/content/drive&quot;</span><span class="p">,</span> <span class="n">root_path</span><span class="o">=</span><span class="s2">&quot;/content/drive/My Drive&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">mount_gdrive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mount_point</span><span class="o">=</span><span class="s2">&quot;/content/drive&quot;</span><span class="p">,</span> <span class="n">root_path</span><span class="o">=</span><span class="s2">&quot;/content/drive/My Drive&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You will now be asked to authenticate Google Drive access in order to store training data (cache) and model state.&quot;</span><span class="p">)</span>
@@ -320,9 +321,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You are not on a Colab instance, so no Google Drive access is possible.&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span></div>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="MLEnv.init_paths"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.init_paths">[docs]</a>    <span class="k">def</span> <span class="nf">init_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model_variant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_to_gdrive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">init_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model_variant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_to_gdrive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_model</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="o">=</span><span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="o">=</span><span class="kc">None</span>
@@ -359,9 +360,9 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Weights save-path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Data cache path </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span>
 
-<div class="viewcode-block" id="MLEnv.gdrive_log_mirror"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.gdrive_log_mirror">[docs]</a>    <span class="k">def</span> <span class="nf">gdrive_log_mirror</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">gdrive_log_mirror</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># copy directory self.log_path to self.log_mirror_path</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_to_gdrive</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -373,13 +374,13 @@
                     <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="p">)</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensorboard data mirrored to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Log-mirror path is not valid: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="si">}</span><span class="s2">, it needs to end with &#39;/logs&#39; as sanity-check&quot;</span><span class="p">)</span></div>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Log-mirror path is not valid: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="si">}</span><span class="s2">, it needs to end with &#39;/logs&#39; as sanity-check&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MLEnv.epoch_time_func"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.epoch_time_func">[docs]</a>    <span class="k">def</span> <span class="nf">epoch_time_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">epoch_time_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_to_gdrive</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">flush_timer</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">flush_timeout</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">flush_timer</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">gdrive_log_mirror</span><span class="p">()</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gdrive_log_mirror</span><span class="p">()</span></div>
 
 </pre></div>
 
