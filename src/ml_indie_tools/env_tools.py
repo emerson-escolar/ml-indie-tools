@@ -4,12 +4,13 @@ import time
 import shutil
 
 class MLEnv():
-    """ Initialize deep learning platform. Known platforms are: 'tf', 'pt',
-    'jax', known accelerators are: 'cpu', 'gpu', 'tpu', or 'fastest' """
+    """ Environment information for the deep learning platform (Tensorflow, Pytorch, JAX) """
     def __init__(self, platform='tf', accelerator='fastest', verbose=True):
-        """ Initialize platform. Known platforms are: 'tf' (tensorflow), 'pt'
-        (pytorch), and 'jax', known
-        accelerators are: 'fastest' (pick best available hardware), 'cpu', 'gpu', 'tpu' """
+        """ Initialize platform and accelerator. 
+
+        :param platform: Known platforms are: 'tf' (tensorflow), 'pt' (pytorch), and 'jax'
+        :param accelerator: known accelerators are: 'fastest' (pick best available hardware), 'cpu', 'gpu', 'tpu'
+        :param verbose: show information about configuration """
         self.known_platforms = ['tf', 'pt', 'jax']
         self.known_accelerators = ['cpu', 'gpu', 'tpu', 'fastest']
         if platform not in self.known_platforms:
