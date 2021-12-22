@@ -7,8 +7,9 @@ class MLEnv():
     """ Initialize deep learning platform. Known platforms are: 'tf', 'pt',
     'jax', known accelerators are: 'cpu', 'gpu', 'tpu' """
     def __init__(self, platform='tf', accelerator='fastest', verbose=True):
-        """ Initialize platform. Known platforms are: 'tf', 'pt', 'jax', known
-        accelerators are: 'cpu', 'gpu', 'tpu' """
+        """ Initialize platform. Known platforms are: 'tf' (tensorflow), 'pt'
+        (pytorch), and 'jax', known
+        accelerators are: 'fastest' (pick best available hardware), 'cpu', 'gpu', 'tpu' """
         self.known_platforms = ['tf', 'pt', 'jax']
         self.known_accelerators = ['cpu', 'gpu', 'tpu', 'fastest']
         if platform not in self.known_platforms:
@@ -107,7 +108,42 @@ class MLEnv():
                 import torch
                 self.is_pytorch = True
             except ImportError:
-                pass
+                print("Pytorch not available.")
+                return
+            if self.is_pytorch is True:
+                if self.accelerator == 'tpu':
+                    try:
+                        assert os.environ['COLAB_TPU_ADDR']
+                        import torch_xla.core.xla_model as xm
+                        self.is_tpu = True
+                        if verbose is True:
+                            print("Pytorch TPU detected.")
+                    except:
+                        if verbose is True:
+                            print("Pytorch TPU not available.")
+                        return
+                elif self.accelerator == 'gpu':
+                    try:
+                        import torch.cuda
+                        if torch.cuda.is_available():
+                            self.is_gpu = True
+                            if verbose is True:
+                                print("Pytorch GPU detected.")
+                        else:
+                            if verbose is True:
+                                print("Pytorch GPU not available.")
+                    except:
+                        if verbose is True:
+                            print("Pytorch GPU not available.")
+                        return
+                elif self.accelerator == 'cpu':
+                    self.is_cpu = True
+                    if verbose is True:
+                        print("Pytorch CPU detected.")
+                else:
+                    if verbose is True:
+                        print("No Pytorch accelerator available.")
+                    return
         self.flush_timer = 0
         self.flush_timeout = 180
         self.check_notebook_type(verbose=verbose)
