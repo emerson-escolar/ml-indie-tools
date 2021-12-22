@@ -1,10 +1,11 @@
+'''Setup tools to configure ML environment for Tensorflow, Pytorch or JAX and optional notebook/colab environment'''
 import os
 import time
 import shutil
 
 class MLEnv():
     """ Initialize deep learning platform. Known platforms are: 'tf', 'pt',
-    'jax', known accelerators are: 'cpu', 'gpu', 'tpu' """
+    'jax', known accelerators are: 'cpu', 'gpu', 'tpu', or 'fastest' """
     def __init__(self, platform='tf', accelerator='fastest', verbose=True):
         """ Initialize platform. Known platforms are: 'tf' (tensorflow), 'pt'
         (pytorch), and 'jax', known
