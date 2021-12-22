@@ -137,6 +137,10 @@ class MLEnv():
                 if self.accelerator == 'tpu' or self.accelerator == 'fastest':
                     try:
                         assert os.environ['COLAB_TPU_ADDR']
+                    except:
+                        if verbose is True:
+                            print("Pytorch TPU instance not detected.")
+                    try:
                         import torch_xla.core.xla_model as xm
                         self.is_tpu = True
                         if verbose is True:
@@ -144,7 +148,8 @@ class MLEnv():
                     except:
                         if self.accelerator != 'fastest':
                             if verbose is True:
-                                print("Pytorch TPU not detected.")
+                                print("Pytorch TPU available, but failed to\
+                                        import XLA.")
                                 return
                 if self.accelerator == 'gpu' or self.accelerator == 'fastest':
                     try:
