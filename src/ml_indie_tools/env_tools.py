@@ -73,36 +73,55 @@ class MLEnv():
                     print("No GPU or TPU available, this is going to be very slow!")
 
         if self.platform == 'jax':
-            if self.accelerator == 'tpu':
-                try:
-                    import jax.tools.colab_tpu
-                    jax.tools.colab_tpu.setup_tpu()
-                    self.is_tpu = True
-                    if verbose is True:
-                        print("JAX TPU detected.")
-                except:
-                    if verbose is True:
-                        print("JAX TPU not available.")
-                    return
-            elif self.accelerator == 'gpu':
-                try:
-                    import jax.config
-                    jax.config.update_config(jax.config.GPU_DEVICE_NAME, '/gpu:0')
-                    self.is_gpu = True
-                    if verbose is True:
-                        print("JAX GPU detected.")
-                except:
-                    print("No JAX GPU available.")
-                    return
-            elif self.accelerator == 'cpu':
-                self.is_cpu = True
-                if verbose is True:
-                    print("JAX CPU detected.")
             try:
-                import jax as jnp
+                import jax
                 self.is_jax = True
             except ImportError:
-                pass
+                if verbose is True:
+                    print("Jax not available")
+            if self.is_jax is True:
+                if verbose is True:
+                    print("Jax available")
+                if self.accelerator == 'tpu':
+                    try:
+                        import jax.tools.colab_tpu
+                        jax.tools.colab_tpu.setup_tpu()
+                        self.is_tpu = True
+                        if verbose is True:
+                            print("JAX TPU detected.")
+                    except:
+                        if verbose is True:
+                            print("JAX TPU not available.")
+                        return
+                elif self.accelerator == 'gpu':
+                    try:
+                        jd=jax.devices()[0]
+                        gpu_device_names = ['Tesla', 'GTX', 'Nvidia']  # who knows?
+                        for gpu_device_name in gpu_device_names:
+                            if gpu_device_name in jd.device_kind:
+                                self.is_gpu = True
+                                if verbose is True:
+                                    print(f"JAX GPU: {jd.device_kind} detected.")
+                                break
+                        if self.is_gpu is False:
+                            if verbose is True:
+                                print("JAX GPU not available.")
+                    except:
+                        print("No JAX GPU available.")
+                        return
+                elif self.accelerator == 'cpu':
+                    try:
+                        jd=jax.devices()[0]
+                        cpu_device_names = ['CPU', 'cpu']  
+                        for cpu_device_name in cpu_device_names:
+                            if cpu_device_name in jd.device_kind:
+                                self.is_cpu = True
+                                if verbose is True:
+                                    print(f"JAX CPU: {jd.device_kind} detected.")
+                                break
+                        if self.is_cpu is False:
+                            if verbose is True:
+                                print("JAX CPU not available.")
         if self.platform == 'pt':
             try:
                 import torch
