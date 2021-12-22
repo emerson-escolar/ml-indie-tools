@@ -134,25 +134,28 @@ class MLEnv():
                 return
             if self.is_pytorch is True:
                 if self.accelerator == 'tpu' or self.accelerator == 'fastest':
+                    tpu_env=False
                     try:
                         assert os.environ['COLAB_TPU_ADDR']
+                        tpu_env = True
                     except:
                         if verbose is True and self.accelerator != 'fastest':
                             print("Pytorch TPU instance not detected.")
-                    try:
-                        import torch
-                        if '1.9.' not in torch.__version__ and verbose is True:
-                            print("Pytorch version probably not supported with TPUs. Try (as of 12/2021): ")
-                            print("!pip install cloud-tpu-client==0.10 torch==1.9.0 https://storage.googleapis.com/tpu-pytorch/wheels/torch_xla-1.9-cp37-cp37m-linux_x86_64.whl")
-                        import torch_xla.core.xla_model as xm
-                        self.is_tpu = True
-                        if verbose is True:
-                            print("Pytorch TPU detected.")
-                    except:
-                        print("Pytorch TPU would be available, but failed to\
-                                import torch_xla.core.xla_model.")
-                        if self.accelerator != 'fastest':
-                            return
+                    if tpu_env is True:
+                        try:
+                            import torch
+                            if '1.9.' not in torch.__version__ and verbose is True:
+                                print("Pytorch version probably not supported with TPUs. Try (as of 12/2021): ")
+                                print("!pip install cloud-tpu-client==0.10 torch==1.9.0 https://storage.googleapis.com/tpu-pytorch/wheels/torch_xla-1.9-cp37-cp37m-linux_x86_64.whl")
+                            import torch_xla.core.xla_model as xm
+                            self.is_tpu = True
+                            if verbose is True:
+                                print("Pytorch TPU detected.")
+                        except:
+                            print("Pytorch TPU would be available, but failed to\
+                                    import torch_xla.core.xla_model.")
+                            if self.accelerator != 'fastest':
+                                return
                 if self.accelerator == 'gpu' or self.accelerator == 'fastest':
                     try:
                         import torch.cuda
