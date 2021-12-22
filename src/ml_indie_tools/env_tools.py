@@ -82,7 +82,7 @@ class MLEnv():
             if self.is_jax is True:
                 if verbose is True:
                     print("Jax available")
-                if self.accelerator == 'tpu':
+                if self.accelerator == 'tpu' or self.accelerator == 'fastest':
                     try:
                         import jax.tools.colab_tpu
                         jax.tools.colab_tpu.setup_tpu()
@@ -90,10 +90,11 @@ class MLEnv():
                         if verbose is True:
                             print("JAX TPU detected.")
                     except:
-                        if verbose is True:
-                            print("JAX TPU not available.")
-                        return
-                elif self.accelerator == 'gpu':
+                        if self.acccelerator != 'fastest':
+                            if verbose is True:
+                                print("JAX TPU not detected.")
+                                return
+                if self.accelerator == 'gpu' or self.accelerator == 'fastest':
                     try:
                         jd=jax.devices()[0]
                         gpu_device_names = ['Tesla', 'GTX', 'Nvidia']  # who knows?
@@ -107,9 +108,11 @@ class MLEnv():
                             if verbose is True:
                                 print("JAX GPU not available.")
                     except:
-                        print("No JAX GPU available.")
-                        return
-                elif self.accelerator == 'cpu':
+                        if self.accelerator != 'fastest':
+                            if verbose is True:
+                                print("JAX GPU not available.")
+                                return
+                if self.accelerator == 'cpu' or self.accelerator == 'fastest':
                     try:
                         jd=jax.devices()[0]
                         cpu_device_names = ['CPU', 'cpu']  
@@ -133,7 +136,7 @@ class MLEnv():
                 print("Pytorch not available.")
                 return
             if self.is_pytorch is True:
-                if self.accelerator == 'tpu':
+                if self.accelerator == 'tpu' or self.accelerator == 'fastest':
                     try:
                         assert os.environ['COLAB_TPU_ADDR']
                         import torch_xla.core.xla_model as xm
@@ -141,10 +144,11 @@ class MLEnv():
                         if verbose is True:
                             print("Pytorch TPU detected.")
                     except:
-                        if verbose is True:
-                            print("Pytorch TPU not available.")
-                        return
-                elif self.accelerator == 'gpu':
+                        if self.accelerator != 'fastest':
+                            if verbose is True:
+                                print("Pytorch TPU not detected.")
+                                return
+                if self.accelerator == 'gpu' or self.accelerator == 'fastest':
                     try:
                         import torch.cuda
                         if torch.cuda.is_available():
@@ -155,16 +159,17 @@ class MLEnv():
                             if verbose is True:
                                 print("Pytorch GPU not available.")
                     except:
-                        if verbose is True:
-                            print("Pytorch GPU not available.")
-                        return
-                elif self.accelerator == 'cpu':
+                        if self.accelerator != 'fastest':
+                            if verbose is True:
+                                print("Pytorch GPU not available.")
+                                return
+                if self.accelerator == 'cpu' or self.accelerator == 'fastest':
                     self.is_cpu = True
                     if verbose is True:
                         print("Pytorch CPU detected.")
                 else:
                     if verbose is True:
-                        print("No Pytorch accelerator available.")
+                        print("No Pytorch CPU accelerator available.")
                     return
         self.flush_timer = 0
         self.flush_timeout = 180
