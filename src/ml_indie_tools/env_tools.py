@@ -122,6 +122,9 @@ class MLEnv():
                         if self.is_cpu is False:
                             if verbose is True:
                                 print("JAX CPU not available.")
+                    except:
+                        print("No JAX CPU available.")
+                        return
         if self.platform == 'pt':
             try:
                 import torch
