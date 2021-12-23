@@ -20,7 +20,7 @@ class Gutenberg_Dataset():
         self.index=None
         self.NEAR=2048
         self.start_tokens=["*** START OF THIS PROJECT", "E-text prepared by", 
-                "This book was generously provided by the ", "*** START OF THIS PROJECT GUTENBERG",
+                           "This book was generously provided by the ", "*** START OF THIS PROJECT GUTENBERG",
                            "START OF THE PROJECT GUTENBERG"]    
         self.near_start_tokens=["produced by ", "Produced by ", ", prepared by", "Transcriber's Note", 
                                 "Transcriber's note:", "Anmerkungen zur Tanskription", "Distributed Proofreading Team"] 
@@ -290,6 +290,7 @@ class Gutenberg_Dataset():
         path_stub+="/"+ebook_id+"/"
         filenames=[(ebook_id+"-0.txt",'utf-8'), (ebook_id+".txt",'utf-8'), (ebook_id+"-8.txt","latin1"), (ebook_id+".txt","latin1")]
         cache_name=ebook_id+".txt"
+        cache_file=None
         if self.cache_dir is not None:
             cache_file=os.path.join(self.cache_dir,cache_name)
             if os.path.isfile(cache_file):
@@ -301,6 +302,7 @@ class Gutenberg_Dataset():
                 except Exception as e:
                     self.log.error(f"Failed to read cached file {cache_file}")
         data=None
+        file_url=None
         for filename, encoding in filenames:
             file_url=self.root_url+path_stub+filename
             try:
@@ -310,10 +312,12 @@ class Gutenberg_Dataset():
             except Exception as e:
                 self.log.debug(f"URL-Download failed: {file_url}, {e}")
                 pass
+            if data is not None:
+                data=data.encode(encoding='utf-8')
         if data is None:
             self.log.warning(f"Failed to download {filenames}, last URL {file_url}, skipping book.")
             return None
-        if self.cache_dir is not None:
+        if cache_file is not None:
             try:
                 with open(cache_file,'w') as f:
                     f.write(data)
