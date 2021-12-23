@@ -317,7 +317,7 @@
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write cached index to </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">lines</span><span class="o">=</span><span class="n">raw_index</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_index</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="Gutenberg_Dataset.load_book"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.load_book">[docs]</a>    <span class="k">def</span> <span class="nf">load_book</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebook_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; get text of an ebook from Gutenberg by ebook_id </span>
 <span class="sd">        </span>
@@ -327,11 +327,28 @@
 <span class="sd">        :param ebook_id: Gutenberg id (Note: string, since this sometimes contains a character!)</span>
 <span class="sd">        :returns: book text as string, unfiltered. Can be filtered with :func:`~Gutenberg_Dataset.Gutenberg_Dataset.filter_text`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">load_book_ex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebook_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Gutenberg_Dataset.load_book_ex"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.load_book_ex">[docs]</a>    <span class="k">def</span> <span class="nf">load_book_ex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebook_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; get text of an ebook from Gutenberg by ebook_id </span>
+<span class="sd">        </span>
+<span class="sd">        This function returns the unfiltered raw text including all Gutenberg headers and footers and a boolean flag</span>
+<span class="sd">        indicating with &#39;True&#39;, if the book was downloaded from a remote source, &#39;False&#39; indicates cached book retrieval</span>
+<span class="sd">        without remote access.</span>
+
+<span class="sd">        The flag can be used to control or limit the number of books downloaded from the remote source.</span>
+
+<span class="sd">        Use :func:`~Gutenberg_Dataset.Gutenberg_Dataset.get_book` to retrieve a dictionary with metadata and filtered text.</span>
+
+<span class="sd">        :param ebook_id: Gutenberg id (Note: string, since this sometimes contains a character!)</span>
+<span class="sd">        :returns: tuple: book text as string, unfiltered, and a flag indicating with &#39;True&#39; if book was downloaded from remote. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">ebook_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ebook_id</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">ebook_id</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;C&#39;</span><span class="p">:</span>
             <span class="n">ebook_id</span><span class="o">=</span><span class="n">ebook_id</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">path_stub</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="n">downloaded</span> <span class="o">=</span> <span class="kc">False</span>
         
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ebook_id</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="n">path_stub</span><span class="o">+=</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">ebook_id</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
@@ -346,7 +363,8 @@
                     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cache_file</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                         <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Book read from cache at </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                        <span class="k">return</span> <span class="n">data</span>
+                        <span class="n">downloaded</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">downloaded</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to read cached file </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">data</span><span class="o">=</span><span class="kc">None</span>
@@ -356,6 +374,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">file_url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Book downloaded from </span><span class="si">{</span><span class="n">file_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">downloaded</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">break</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;URL-Download failed: </span><span class="si">{</span><span class="n">file_url</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -365,14 +384,14 @@
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to download </span><span class="si">{</span><span class="n">filenames</span><span class="si">}</span><span class="s2">, last URL </span><span class="si">{</span><span class="n">file_url</span><span class="si">}</span><span class="s2">, skipping book.&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">downloaded</span>
         <span class="k">if</span> <span class="n">cache_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cache_file</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to cache file </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">data</span></div>
+        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">downloaded</span></div>
     
 <div class="viewcode-block" id="Gutenberg_Dataset.filter_text"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.filter_text">[docs]</a>    <span class="k">def</span> <span class="nf">filter_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_text</span><span class="p">,</span> <span class="n">add_start_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_near_start_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_end_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Heuristically remove header and trailer texts not part of the actual books</span>
@@ -531,7 +550,9 @@
         <span class="sd">&quot;&quot;&quot; Inserts book texts into the records returned by :func:`~Gutenberg_Dataset.Gutenberg_Dataset.search`.</span>
 
 <span class="sd">        In order to prevent the download of too many books, the download count limit is set to `download_count_limit`.</span>
-
+<span class="sd">        Downloaded books are cached and cached books are not counted towards the download count limit. Calling this</span>
+<span class="sd">        function again will download books that have not been downloaded yet.</span>
+<span class="sd">        </span>
 <span class="sd">        :param search_dict: search array of dictionaries that at least contain the key `ebook_id`.</span>
 <span class="sd">        :param download_count_limit: maximum number of books to download_count_limit</span>
 <span class="sd">        :returns: list of records including filtered book text-based</span>
@@ -541,9 +562,15 @@
             <span class="n">dlc</span><span class="o">=</span><span class="n">download_count_limit</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dlc</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">search_dict</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dlc</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Downloading book </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">dlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">search_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_book</span><span class="p">(</span><span class="n">search_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;ebook_id&#39;</span><span class="p">]))</span>
+        <span class="n">dls</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">search_dict</span><span class="p">)):</span>
+            <span class="n">bt</span><span class="p">,</span> <span class="n">dl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_book_ex</span><span class="p">(</span><span class="n">search_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;ebook_id&quot;</span><span class="p">])</span>
+            <span class="n">search_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_text</span><span class="p">(</span><span class="n">bt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dl</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">dls</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">dls</span><span class="o">&gt;</span><span class="n">dlc</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Download limit reached (</span><span class="si">{</span><span class="n">dlc</span><span class="si">}</span><span class="s2">), stopping download...&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
         <span class="k">return</span> <span class="n">search_dict</span>  </div>
 
 <div class="viewcode-block" id="Gutenberg_Dataset.get_book"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.get_book">[docs]</a>    <span class="k">def</span> <span class="nf">get_book</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebook_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
