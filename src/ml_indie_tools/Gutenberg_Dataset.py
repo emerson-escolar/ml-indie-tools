@@ -19,6 +19,14 @@ class Gutenberg_Dataset():
         self.root_url = root_url
         self.index=None
         self.NEAR=2048
+        self.start_tokens=["*** START OF THIS PROJECT", "E-text prepared by", 
+                           "This book was generously provided by the ",
+                           "START OF THE PROJECT GUTENBERG"]
+        self.near_start_tokens=["produced by ", "Produced by ", "Transcriber's Note", 
+                                "Transcriber's note:", "Anmerkungen zur Tanskription"]
+        self.end_tokens=["End of the Project Gutenberg", "*** END OF THIS PROJECT", 
+                         "***END OF THE PROJECT GUTENBER", "Ende dieses Projekt Gutenberg", 
+                         "End of Project Gutenberg", "Transcriber's Note"]
         try:
             if not os.path.exists(cache_dir):
                 os.makedirs(cache_dir)
@@ -312,20 +320,30 @@ class Gutenberg_Dataset():
                 self.log.error(f"Failed to cache file {cache_file}")
         return data
     
-    def filter_text(self, book_text):
+    def filter_text(self, book_text, add_start_tokens=None, add_near_start_tokens=None, add_end_tokens=None):
         """ Heuristically remove header and trailer texts not part of the actual books
 
+        Unfortunatelly, formatting of Gutenberg books is an unbelievable mess. Using lists of tokens `self.start_tokens` (indicating
+        the start of the actual book text), `self.near_start_tokens` (indicating the surrounding of start of text), and `self.end_tokens`
+        (indicating the end of the book text), this function tries to find the start and end of the book text. The user can either extend
+        the lists of class member tokens, of provide temporary additional tokens as parameter to this function.
+        
         :param book_text: text of the book (string)
+        :param add_start_tokens: additional start tokens (list of strings)
+        :param add_near_start_tokens: additional near start tokens (list of strings)
+        :param add_end_tokens: additional end tokens (list of strings)
         :returns: filtered text (string)
         """
-        start_tokens=["*** START OF THIS PROJECT", "E-text prepared by", 
-                      "This book was generously provided by the ",
-                      "START OF THE PROJECT GUTENBERG"]
-        near_start_tokens=["produced by ", "Produced by ", "Transcriber's Note", 
-                           "Transcriber's note:", "Anmerkungen zur Tanskription"]
-        end_tokens=["End of the Project Gutenberg", "*** END OF THIS PROJECT", 
-                    "***END OF THE PROJECT GUTENBER", "Ende dieses Projekt Gutenberg", 
-                    "End of Project Gutenberg", "Transcriber's Note"]
+        start_tokens = self.start_tokens
+        if add_start_tokens is not None:
+            start_tokens.extend(add_start_tokens)
+        near_start_tokens = self.near_start_tokens
+        if add_near_start_tokens is not None:
+            near_start_tokens.extend(add_near_start_tokens)
+        end_tokens = self.end_tokens
+        if add_end_tokens is not None:
+            end_tokens.extend(add_end_tokens)
+
         blen=len(book_text)
         
         pstart=0
@@ -383,8 +401,11 @@ class Gutenberg_Dataset():
         
     def find_keywords(self,*search_keys):
         """ Search of an arbitrary number of keywords in a book record
-        
-        :returns: list of records that contain all keywords in any field. """
+       
+        *Note:* :func:`my text <mymodule.MyClass.foo>` needs to be called once before this function can be used.
+
+        :returns: list of records that contain all keywords in any field.
+        """
         frecs=[]
         for rec in self.records:
             found=True
@@ -405,6 +426,8 @@ class Gutenberg_Dataset():
         """ Search for book record with key specific key values
         For a list of valid keys, use `get_record_keys()`
         Standard keys are: `ebook_id`, `author`, `language`, `title`
+
+        *Note:* :func:`my text <mymodule.MyClass.foo>` needs to be called once before this function can be used.
 
         Example: `search({"title": ["philosoph","phenomen","physic","hermeneu","logic"], "language":"english"})`
         Find all books whose titles contain at least one of the keywords, language english. Search keys can either be
@@ -438,6 +461,8 @@ class Gutenberg_Dataset():
         """ Get a list of all keys that are used within records. 
         Standard keys are: `ebook_id`, `author`, `language`, `title`.
         
+        *Note:* :func:`my text <mymodule.MyClass.foo>` needs to be called once before this function can be used.
+
         :returns: list of all different keys that are somehow used."""
         rks=[]
         for r in self.records:
@@ -447,6 +472,8 @@ class Gutenberg_Dataset():
     def get_unique_record_values(self, key):
         """ Get a list of all unique values a given keys has for all records.
         
+        *Note:* :func:`my text <mymodule.MyClass.foo>` needs to be called once before this function can be used.
+
         Example: `get_unique_records_values('language')` returns all languages in Gutenberg.
 
         :param key: key to search for.
