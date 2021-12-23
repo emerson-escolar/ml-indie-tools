@@ -64,6 +64,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">root_url</span> <span class="o">=</span> <span class="n">root_url</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">=</span><span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">NEAR</span><span class="o">=</span><span class="mi">2048</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_tokens</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;*** START OF THIS PROJECT&quot;</span><span class="p">,</span> <span class="s2">&quot;E-text prepared by&quot;</span><span class="p">,</span> 
+                           <span class="s2">&quot;This book was generously provided by the &quot;</span><span class="p">,</span>
+                           <span class="s2">&quot;START OF THE PROJECT GUTENBERG&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">near_start_tokens</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;produced by &quot;</span><span class="p">,</span> <span class="s2">&quot;Produced by &quot;</span><span class="p">,</span> <span class="s2">&quot;Transcriber&#39;s Note&quot;</span><span class="p">,</span> 
+                                <span class="s2">&quot;Transcriber&#39;s note:&quot;</span><span class="p">,</span> <span class="s2">&quot;Anmerkungen zur Tanskription&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_tokens</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;End of the Project Gutenberg&quot;</span><span class="p">,</span> <span class="s2">&quot;*** END OF THIS PROJECT&quot;</span><span class="p">,</span> 
+                         <span class="s2">&quot;***END OF THE PROJECT GUTENBER&quot;</span><span class="p">,</span> <span class="s2">&quot;Ende dieses Projekt Gutenberg&quot;</span><span class="p">,</span> 
+                         <span class="s2">&quot;End of Project Gutenberg&quot;</span><span class="p">,</span> <span class="s2">&quot;Transcriber&#39;s Note&quot;</span><span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
@@ -357,20 +365,30 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to cache file </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data</span></div>
     
-<div class="viewcode-block" id="Gutenberg_Dataset.filter_text"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.filter_text">[docs]</a>    <span class="k">def</span> <span class="nf">filter_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_text</span><span class="p">):</span>
+<div class="viewcode-block" id="Gutenberg_Dataset.filter_text"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.filter_text">[docs]</a>    <span class="k">def</span> <span class="nf">filter_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_text</span><span class="p">,</span> <span class="n">add_start_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_near_start_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_end_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Heuristically remove header and trailer texts not part of the actual books</span>
 
+<span class="sd">        Unfortunatelly, formatting of Gutenberg books is an unbelievable mess. Using lists of tokens `self.start_tokens` (indicating</span>
+<span class="sd">        the start of the actual book text), `self.near_start_tokens` (indicating the surrounding of start of text), and `self.end_tokens`</span>
+<span class="sd">        (indicating the end of the book text), this function tries to find the start and end of the book text. The user can either extend</span>
+<span class="sd">        the lists of class member tokens, of provide temporary additional tokens as parameter to this function.</span>
+<span class="sd">        </span>
 <span class="sd">        :param book_text: text of the book (string)</span>
+<span class="sd">        :param add_start_tokens: additional start tokens (list of strings)</span>
+<span class="sd">        :param add_near_start_tokens: additional near start tokens (list of strings)</span>
+<span class="sd">        :param add_end_tokens: additional end tokens (list of strings)</span>
 <span class="sd">        :returns: filtered text (string)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">start_tokens</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;*** START OF THIS PROJECT&quot;</span><span class="p">,</span> <span class="s2">&quot;E-text prepared by&quot;</span><span class="p">,</span> 
-                      <span class="s2">&quot;This book was generously provided by the &quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;START OF THE PROJECT GUTENBERG&quot;</span><span class="p">]</span>
-        <span class="n">near_start_tokens</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;produced by &quot;</span><span class="p">,</span> <span class="s2">&quot;Produced by &quot;</span><span class="p">,</span> <span class="s2">&quot;Transcriber&#39;s Note&quot;</span><span class="p">,</span> 
-                           <span class="s2">&quot;Transcriber&#39;s note:&quot;</span><span class="p">,</span> <span class="s2">&quot;Anmerkungen zur Tanskription&quot;</span><span class="p">]</span>
-        <span class="n">end_tokens</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;End of the Project Gutenberg&quot;</span><span class="p">,</span> <span class="s2">&quot;*** END OF THIS PROJECT&quot;</span><span class="p">,</span> 
-                    <span class="s2">&quot;***END OF THE PROJECT GUTENBER&quot;</span><span class="p">,</span> <span class="s2">&quot;Ende dieses Projekt Gutenberg&quot;</span><span class="p">,</span> 
-                    <span class="s2">&quot;End of Project Gutenberg&quot;</span><span class="p">,</span> <span class="s2">&quot;Transcriber&#39;s Note&quot;</span><span class="p">]</span>
+        <span class="n">start_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_tokens</span>
+        <span class="k">if</span> <span class="n">add_start_tokens</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">start_tokens</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">add_start_tokens</span><span class="p">)</span>
+        <span class="n">near_start_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">near_start_tokens</span>
+        <span class="k">if</span> <span class="n">add_near_start_tokens</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">near_start_tokens</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">add_near_start_tokens</span><span class="p">)</span>
+        <span class="n">end_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_tokens</span>
+        <span class="k">if</span> <span class="n">add_end_tokens</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">end_tokens</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">add_end_tokens</span><span class="p">)</span>
+
         <span class="n">blen</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">book_text</span><span class="p">)</span>
         
         <span class="n">pstart</span><span class="o">=</span><span class="mi">0</span>
@@ -428,8 +446,11 @@
         
 <div class="viewcode-block" id="Gutenberg_Dataset.find_keywords"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.find_keywords">[docs]</a>    <span class="k">def</span> <span class="nf">find_keywords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">search_keys</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Search of an arbitrary number of keywords in a book record</span>
-<span class="sd">        </span>
-<span class="sd">        :returns: list of records that contain all keywords in any field. &quot;&quot;&quot;</span>
+<span class="sd">       </span>
+<span class="sd">        *Note:* :func:`my text &lt;mymodule.MyClass.foo&gt;` needs to be called once before this function can be used.</span>
+
+<span class="sd">        :returns: list of records that contain all keywords in any field.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">frecs</span><span class="o">=</span><span class="p">[]</span>
         <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">:</span>
             <span class="n">found</span><span class="o">=</span><span class="kc">True</span>
@@ -450,6 +471,8 @@
         <span class="sd">&quot;&quot;&quot; Search for book record with key specific key values</span>
 <span class="sd">        For a list of valid keys, use `get_record_keys()`</span>
 <span class="sd">        Standard keys are: `ebook_id`, `author`, `language`, `title`</span>
+
+<span class="sd">        *Note:* :func:`my text &lt;mymodule.MyClass.foo&gt;` needs to be called once before this function can be used.</span>
 
 <span class="sd">        Example: `search({&quot;title&quot;: [&quot;philosoph&quot;,&quot;phenomen&quot;,&quot;physic&quot;,&quot;hermeneu&quot;,&quot;logic&quot;], &quot;language&quot;:&quot;english&quot;})`</span>
 <span class="sd">        Find all books whose titles contain at least one of the keywords, language english. Search keys can either be</span>
@@ -483,6 +506,8 @@
         <span class="sd">&quot;&quot;&quot; Get a list of all keys that are used within records. </span>
 <span class="sd">        Standard keys are: `ebook_id`, `author`, `language`, `title`.</span>
 <span class="sd">        </span>
+<span class="sd">        *Note:* :func:`my text &lt;mymodule.MyClass.foo&gt;` needs to be called once before this function can be used.</span>
+
 <span class="sd">        :returns: list of all different keys that are somehow used.&quot;&quot;&quot;</span>
         <span class="n">rks</span><span class="o">=</span><span class="p">[]</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">:</span>
@@ -492,6 +517,8 @@
 <div class="viewcode-block" id="Gutenberg_Dataset.get_unique_record_values"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.get_unique_record_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_unique_record_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get a list of all unique values a given keys has for all records.</span>
 <span class="sd">        </span>
+<span class="sd">        *Note:* :func:`my text &lt;mymodule.MyClass.foo&gt;` needs to be called once before this function can be used.</span>
+
 <span class="sd">        Example: `get_unique_records_values(&#39;language&#39;)` returns all languages in Gutenberg.</span>
 
 <span class="sd">        :param key: key to search for.</span>

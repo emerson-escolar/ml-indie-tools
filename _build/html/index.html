@@ -120,11 +120,20 @@ environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerat
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.filter_text">
-<span class="sig-name descname"><span class="pre">filter_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">book_text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.filter_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.filter_text" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">filter_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">book_text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_start_tokens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_near_start_tokens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_end_tokens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.filter_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.filter_text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Heuristically remove header and trailer texts not part of the actual books</p>
+<p>Unfortunatelly, formatting of Gutenberg books is an unbelievable mess. Using lists of tokens <cite>self.start_tokens</cite> (indicating
+the start of the actual book text), <cite>self.near_start_tokens</cite> (indicating the surrounding of start of text), and <cite>self.end_tokens</cite>
+(indicating the end of the book text), this function tries to find the start and end of the book text. The user can either extend
+the lists of class member tokens, of provide temporary additional tokens as parameter to this function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>book_text</strong> – text of the book (string)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>book_text</strong> – text of the book (string)</p></li>
+<li><p><strong>add_start_tokens</strong> – additional start tokens (list of strings)</p></li>
+<li><p><strong>add_near_start_tokens</strong> – additional near start tokens (list of strings)</p></li>
+<li><p><strong>add_end_tokens</strong> – additional end tokens (list of strings)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>filtered text (string)</p>
@@ -136,6 +145,7 @@ environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerat
 <dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.find_keywords">
 <span class="sig-name descname"><span class="pre">find_keywords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">search_keys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.find_keywords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.find_keywords" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search of an arbitrary number of keywords in a book record</p>
+<p><em>Note:</em> <code class="xref py py-func docutils literal notranslate"><span class="pre">my</span> <span class="pre">text</span></code> needs to be called once before this function can be used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>list of records that contain all keywords in any field.</p>
@@ -148,6 +158,7 @@ environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerat
 <span class="sig-name descname"><span class="pre">get_record_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.get_record_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.get_record_keys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of all keys that are used within records. 
 Standard keys are: <cite>ebook_id</cite>, <cite>author</cite>, <cite>language</cite>, <cite>title</cite>.</p>
+<p><em>Note:</em> <code class="xref py py-func docutils literal notranslate"><span class="pre">my</span> <span class="pre">text</span></code> needs to be called once before this function can be used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>list of all different keys that are somehow used.</p>
@@ -159,6 +170,7 @@ Standard keys are: <cite>ebook_id</cite>, <cite>author</cite>, <cite>language</c
 <dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.get_unique_record_values">
 <span class="sig-name descname"><span class="pre">get_unique_record_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.get_unique_record_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.get_unique_record_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of all unique values a given keys has for all records.</p>
+<p><em>Note:</em> <code class="xref py py-func docutils literal notranslate"><span class="pre">my</span> <span class="pre">text</span></code> needs to be called once before this function can be used.</p>
 <p>Example: <cite>get_unique_records_values(‘language’)</cite> returns all languages in Gutenberg.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -204,6 +216,7 @@ Standard keys are: <cite>ebook_id</cite>, <cite>author</cite>, <cite>language</c
 <dd><p>Search for book record with key specific key values
 For a list of valid keys, use <cite>get_record_keys()</cite>
 Standard keys are: <cite>ebook_id</cite>, <cite>author</cite>, <cite>language</cite>, <cite>title</cite></p>
+<p><em>Note:</em> <code class="xref py py-func docutils literal notranslate"><span class="pre">my</span> <span class="pre">text</span></code> needs to be called once before this function can be used.</p>
 <p>Example: <cite>search({“title”: [“philosoph”,”phenomen”,”physic”,”hermeneu”,”logic”], “language”:”english”})</cite>
 Find all books whose titles contain at least one of the keywords, language english. Search keys can either be
 search for a single keyword (e.g. english), or an array of keywords.</p>
