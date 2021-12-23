@@ -1,21 +1,24 @@
-'''Setup tools to configure ML environment for Tensorflow, Pytorch or JAX and optional notebook/colab environment'''
+'''Tools to configure ML environment for Tensorflow, Pytorch or JAX and 
+optional notebook/colab environment'''
+
 import os
 import time
 import shutil
 
 class MLEnv():
-        """ Initialize platform and accelerator. 
-
-        This checks initialization and available accelerator hardware for different ml platforms.
-        At return, the following variables are set: `self.is_tensorflow`, `self.is_pytorch`, `self.is_jax`,
-        indicating that the ml environment is available for Tensorflow, Pytorch or JAX respectively if `True`.
-        `self.is_notebook` and `self.is_colab` indicate if the environment is a notebook or colab environment.
-        `self.is_gpu` indicates if the environment is a GPU environment, `self.is_tpu` indicates if the 
-        environment is a TPU environment, and `self.is_cpu` that no accelerator is available.
-        
-        :param platform: Known platforms are: `'tf'` (tensorflow), `'pt'` (pytorch), and `'jax'`
-        :param accelerator: known accelerators are: `'fastest'` (pick best available hardware), `'cpu'`, 'gpu'`, `'tpu'`.
-        :param verbose: show information about configuration """
+    """ Initialize platform and accelerator. 
+    
+    This checks initialization and available accelerator hardware for different ml platforms.
+    At return, the following variables are set: `self.is_tensorflow`, `self.is_pytorch`, `self.is_jax`,
+    indicating that the ml environment is available for Tensorflow, Pytorch or JAX respectively if `True`.
+    `self.is_notebook` and `self.is_colab` indicate if the environment is a notebook or colab environment.
+    `self.is_gpu` indicates if the environment is a GPU environment, `self.is_tpu` indicates if the 
+    environment is a TPU environment, and `self.is_cpu` that no accelerator is available.
+    
+    :param platform: Known platforms are: `'tf'` (tensorflow), `'pt'` (pytorch), and `'jax'`
+    :param accelerator: known accelerators are: `'fastest'` (pick best available hardware), `'cpu'`, 'gpu'`, `'tpu'`.
+    :param verbose: show information about configuration
+    """
 
     def __init__(self, platform='tf', accelerator='fastest', verbose=True):
         self.known_platforms = ['tf', 'pt', 'jax']
