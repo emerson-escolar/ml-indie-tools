@@ -375,10 +375,16 @@
         <span class="sd">&quot;&quot;&quot; Heuristically remove header and trailer texts not part of the actual books</span>
 
 <span class="sd">        Unfortunatelly, formatting of Gutenberg books is an unbelievable mess. Using lists of tokens `self.start_tokens` (indicating</span>
-<span class="sd">        the start of the actual book text), `self.near_start_tokens` (indicating the surrounding of start of text), and `self.end_tokens`</span>
-<span class="sd">        (indicating the end of the book text), this function tries to find the start and end of the book text. The user can either extend</span>
-<span class="sd">        the lists of class member tokens, of provide temporary additional tokens as parameter to this function.</span>
+<span class="sd">        the start of the actual book text), `self.near_start_tokens` (indicating possibly ambiguous tokens near a `start_tokens` token, </span>
+<span class="sd">        further narrowing the start of text), and `self.end_tokens` (indicating the end of the book text), this function tries to find </span>
+<span class="sd">        the start and end of the book text. The user can either extend the lists of class member tokens, of provide temporary additional </span>
+<span class="sd">        tokens as parameter to this function.</span>
 <span class="sd">        </span>
+<span class="sd">        The list of `start_tokens` contains only tokens that are always significant as being part of header-cruft (e.g. &#39;*** START OF&#39;). </span>
+<span class="sd">        `near_start_tokens` are tokens that might be ambiguous, but are still part of the header-cruft, (e.g. &#39;produced by&#39;). </span>
+<span class="sd">        `near_start_tokens` are only used, if they are within `self.NEAR` bytes to the latest `start_tokens` token, </span>
+<span class="sd">        to heuristically prevent false positives.</span>
+
 <span class="sd">        *Note:* Use logging via `logging.basicConfig(level=logging.DEBUG)` to analyze the filtering process.</span>
 
 <span class="sd">        :param book_text: text of the book (string)</span>
