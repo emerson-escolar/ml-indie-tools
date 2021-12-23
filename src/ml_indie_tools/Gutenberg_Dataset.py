@@ -311,10 +311,11 @@ class Gutenberg_Dataset():
                 break
             except Exception as e:
                 self.log.debug(f"URL-Download failed: {file_url}, {e}")
-                pass
-            if data is not None:
-                data=data.encode(encoding='utf-8')
-        if data is None:
+        if data is not None:
+            if data[0]=='\ufeff':  # Ignore BOM
+                data=data[1:]
+            data=data.replace('\r','')
+        else:
             self.log.warning(f"Failed to download {filenames}, last URL {file_url}, skipping book.")
             return None
         if cache_file is not None:
@@ -367,7 +368,6 @@ class Gutenberg_Dataset():
         if pstart>blen/2:
             self.log.warning("Preamble is taking more than half of the book!")
         new_book=book_text[pstart:]
-        
         xpos=-1
         for token in near_start_tokens:
             pos=new_book.find(token)
@@ -377,13 +377,23 @@ class Gutenberg_Dataset():
                     xpos=pos
         if xpos > -1:
             pos2=new_book[xpos:].find("\n\n")
-            self.log.debug(f"Trying extra skipping for {pos2}...")
             if pos2<=self.NEAR and pos2>0:
-                self.log.debug("Trying extra skipping (2)...")
+                self.log.debug(f"Trying extra skipping (2) for {pos2}...")
                 while new_book[xpos+pos2]=='\n':
                     pos2 += 1
                 new_book=new_book[xpos+pos2:]
                 self.log.debug(f"Additionally shortened start by {xpos+pos2} chars")
+            else:
+                pos2=new_book[xpos:].find("\n")
+                if pos2<=self.NEAR and pos2>0:
+                    self.log.debug(f"Trying extra skipping (3) for {pos2}...")
+                    while new_book[xpos+pos2]=='\n':
+                        pos2 += 1
+                    new_book=new_book[xpos+pos2:]
+                    self.log.debug(f"Additionally shortened start by {xpos+pos2}, {xpos}+{pos2} chars")
+                else:
+                    pos2=0
+                    new_book=new_book[xpos+pos2:]
         
         pend=len(new_book)
         for token in end_tokens:
