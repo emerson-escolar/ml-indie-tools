@@ -65,12 +65,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">=</span><span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">NEAR</span><span class="o">=</span><span class="mi">2048</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_tokens</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;*** START OF THIS PROJECT&quot;</span><span class="p">,</span> <span class="s2">&quot;E-text prepared by&quot;</span><span class="p">,</span> 
-                           <span class="s2">&quot;This book was generously provided by the &quot;</span><span class="p">,</span>
-                           <span class="s2">&quot;START OF THE PROJECT GUTENBERG&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">near_start_tokens</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;produced by &quot;</span><span class="p">,</span> <span class="s2">&quot;Produced by &quot;</span><span class="p">,</span> <span class="s2">&quot;Transcriber&#39;s Note&quot;</span><span class="p">,</span> 
-                                <span class="s2">&quot;Transcriber&#39;s note:&quot;</span><span class="p">,</span> <span class="s2">&quot;Anmerkungen zur Tanskription&quot;</span><span class="p">]</span>
+                           <span class="s2">&quot;This book was generously provided by the &quot;</span><span class="p">,</span> <span class="s2">&quot;*** START OF THIS PROJECT GUTENBERG&quot;</span><span class="p">,</span>
+                           <span class="s2">&quot;START OF THE PROJECT GUTENBERG&quot;</span><span class="p">]</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">near_start_tokens</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;produced by &quot;</span><span class="p">,</span> <span class="s2">&quot;Produced by &quot;</span><span class="p">,</span> <span class="s2">&quot;, prepared by&quot;</span><span class="p">,</span> <span class="s2">&quot;Transcriber&#39;s Note&quot;</span><span class="p">,</span> 
+                                <span class="s2">&quot;Transcriber&#39;s note:&quot;</span><span class="p">,</span> <span class="s2">&quot;Anmerkungen zur Tanskription&quot;</span><span class="p">,</span> <span class="s2">&quot;Distributed Proofreading Team&quot;</span><span class="p">]</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">end_tokens</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;End of the Project Gutenberg&quot;</span><span class="p">,</span> <span class="s2">&quot;*** END OF THIS PROJECT&quot;</span><span class="p">,</span> 
                          <span class="s2">&quot;***END OF THE PROJECT GUTENBER&quot;</span><span class="p">,</span> <span class="s2">&quot;Ende dieses Projekt Gutenberg&quot;</span><span class="p">,</span> 
+                         <span class="s2">&quot;*** END OF THE PROJECT GUTENBERG&quot;</span><span class="p">,</span>
                          <span class="s2">&quot;End of Project Gutenberg&quot;</span><span class="p">,</span> <span class="s2">&quot;Transcriber&#39;s Note&quot;</span><span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">):</span>
@@ -334,6 +335,7 @@
         <span class="n">path_stub</span><span class="o">+=</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">ebook_id</span><span class="o">+</span><span class="s2">&quot;/&quot;</span>
         <span class="n">filenames</span><span class="o">=</span><span class="p">[(</span><span class="n">ebook_id</span><span class="o">+</span><span class="s2">&quot;-0.txt&quot;</span><span class="p">,</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="n">ebook_id</span><span class="o">+</span><span class="s2">&quot;.txt&quot;</span><span class="p">,</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="n">ebook_id</span><span class="o">+</span><span class="s2">&quot;-8.txt&quot;</span><span class="p">,</span><span class="s2">&quot;latin1&quot;</span><span class="p">),</span> <span class="p">(</span><span class="n">ebook_id</span><span class="o">+</span><span class="s2">&quot;.txt&quot;</span><span class="p">,</span><span class="s2">&quot;latin1&quot;</span><span class="p">)]</span>
         <span class="n">cache_name</span><span class="o">=</span><span class="n">ebook_id</span><span class="o">+</span><span class="s2">&quot;.txt&quot;</span>
+        <span class="n">cache_file</span><span class="o">=</span><span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">cache_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span><span class="n">cache_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cache_file</span><span class="p">):</span>
@@ -345,6 +347,7 @@
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to read cached file </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">data</span><span class="o">=</span><span class="kc">None</span>
+        <span class="n">file_url</span><span class="o">=</span><span class="kc">None</span>
         <span class="k">for</span> <span class="n">filename</span><span class="p">,</span> <span class="n">encoding</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
             <span class="n">file_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root_url</span><span class="o">+</span><span class="n">path_stub</span><span class="o">+</span><span class="n">filename</span>
             <span class="k">try</span><span class="p">:</span>
@@ -353,11 +356,14 @@
                 <span class="k">break</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;URL-Download failed: </span><span class="si">{</span><span class="n">file_url</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">pass</span>
-        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;</span><span class="se">\ufeff</span><span class="s1">&#39;</span><span class="p">:</span>  <span class="c1"># Ignore BOM</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to download </span><span class="si">{</span><span class="n">filenames</span><span class="si">}</span><span class="s2">, last URL </span><span class="si">{</span><span class="n">file_url</span><span class="si">}</span><span class="s2">, skipping book.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cache_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cache_file</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -373,6 +379,8 @@
 <span class="sd">        (indicating the end of the book text), this function tries to find the start and end of the book text. The user can either extend</span>
 <span class="sd">        the lists of class member tokens, of provide temporary additional tokens as parameter to this function.</span>
 <span class="sd">        </span>
+<span class="sd">        *Note:* Use logging via `logging.basicConfig(level=logging.DEBUG) to analyze the filtering process.</span>
+
 <span class="sd">        :param book_text: text of the book (string)</span>
 <span class="sd">        :param add_start_tokens: additional start tokens (list of strings)</span>
 <span class="sd">        :param add_near_start_tokens: additional near start tokens (list of strings)</span>
@@ -407,7 +415,6 @@
         <span class="k">if</span> <span class="n">pstart</span><span class="o">&gt;</span><span class="n">blen</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Preamble is taking more than half of the book!&quot;</span><span class="p">)</span>
         <span class="n">new_book</span><span class="o">=</span><span class="n">book_text</span><span class="p">[</span><span class="n">pstart</span><span class="p">:]</span>
-        
         <span class="n">xpos</span><span class="o">=-</span><span class="mi">1</span>
         <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">near_start_tokens</span><span class="p">:</span>
             <span class="n">pos</span><span class="o">=</span><span class="n">new_book</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
@@ -417,13 +424,23 @@
                     <span class="n">xpos</span><span class="o">=</span><span class="n">pos</span>
         <span class="k">if</span> <span class="n">xpos</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">pos2</span><span class="o">=</span><span class="n">new_book</span><span class="p">[</span><span class="n">xpos</span><span class="p">:]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying extra skipping for </span><span class="si">{</span><span class="n">pos2</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">pos2</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">NEAR</span> <span class="ow">and</span> <span class="n">pos2</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Trying extra skipping (2)...&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying extra skipping (2) for </span><span class="si">{</span><span class="n">pos2</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
                 <span class="k">while</span> <span class="n">new_book</span><span class="p">[</span><span class="n">xpos</span><span class="o">+</span><span class="n">pos2</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
                     <span class="n">pos2</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">new_book</span><span class="o">=</span><span class="n">new_book</span><span class="p">[</span><span class="n">xpos</span><span class="o">+</span><span class="n">pos2</span><span class="p">:]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Additionally shortened start by </span><span class="si">{</span><span class="n">xpos</span><span class="o">+</span><span class="n">pos2</span><span class="si">}</span><span class="s2"> chars&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pos2</span><span class="o">=</span><span class="n">new_book</span><span class="p">[</span><span class="n">xpos</span><span class="p">:]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pos2</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">NEAR</span> <span class="ow">and</span> <span class="n">pos2</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying extra skipping (3) for </span><span class="si">{</span><span class="n">pos2</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+                    <span class="k">while</span> <span class="n">new_book</span><span class="p">[</span><span class="n">xpos</span><span class="o">+</span><span class="n">pos2</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+                        <span class="n">pos2</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">new_book</span><span class="o">=</span><span class="n">new_book</span><span class="p">[</span><span class="n">xpos</span><span class="o">+</span><span class="n">pos2</span><span class="p">:]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Additionally shortened start by </span><span class="si">{</span><span class="n">xpos</span><span class="o">+</span><span class="n">pos2</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">xpos</span><span class="si">}</span><span class="s2">+</span><span class="si">{</span><span class="n">pos2</span><span class="si">}</span><span class="s2"> chars&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">pos2</span><span class="o">=</span><span class="mi">0</span>
+                    <span class="n">new_book</span><span class="o">=</span><span class="n">new_book</span><span class="p">[</span><span class="n">xpos</span><span class="o">+</span><span class="n">pos2</span><span class="p">:]</span>
         
         <span class="n">pend</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">new_book</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">end_tokens</span><span class="p">:</span>
