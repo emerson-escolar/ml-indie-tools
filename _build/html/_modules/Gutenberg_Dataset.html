@@ -473,7 +473,7 @@
 <div class="viewcode-block" id="Gutenberg_Dataset.find_keywords"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.find_keywords">[docs]</a>    <span class="k">def</span> <span class="nf">find_keywords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">search_keys</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Search of an arbitrary number of keywords in a book record</span>
 <span class="sd">       </span>
-<span class="sd">        *Note:* :func:`Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.</span>
+<span class="sd">        *Note:* :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.</span>
 
 <span class="sd">        :returns: list of records that contain all keywords in any field.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -498,7 +498,7 @@
 <span class="sd">        For a list of valid keys, use `get_record_keys()`</span>
 <span class="sd">        Standard keys are: `ebook_id`, `author`, `language`, `title`</span>
 
-<span class="sd">        *Note:* :func:`Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.</span>
+<span class="sd">        *Note:* :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.</span>
 
 <span class="sd">        Example: `search({&quot;title&quot;: [&quot;philosoph&quot;,&quot;phenomen&quot;,&quot;physic&quot;,&quot;hermeneu&quot;,&quot;logic&quot;], &quot;language&quot;:&quot;english&quot;})`</span>
 <span class="sd">        Find all books whose titles contain at least one of the keywords, language english. Search keys can either be</span>
@@ -552,7 +552,7 @@
 <span class="sd">        This function returns a dictionary with metadata and filtered text. Use :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_book` </span>
 <span class="sd">        to get the raw unfiltered text.</span>
 <span class="sd">        </span>
-<span class="sd">        *Note:* :func:`Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.</span>
+<span class="sd">        *Note:* :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.</span>
 
 <span class="sd">        :param ebook_id: ebook_id (String, since some IDs contain letters) of the book to be retrieved</span>
 <span class="sd">        :returns: book record (dictionary with metadata and filtered text)</span>
@@ -567,7 +567,7 @@
         <span class="sd">&quot;&quot;&quot; Get a list of all keys that are used within records. </span>
 <span class="sd">        Standard keys are: `ebook_id`, `author`, `language`, `title`.</span>
 <span class="sd">        </span>
-<span class="sd">        *Note:* :func:`Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.</span>
+<span class="sd">        *Note:* :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.</span>
 
 <span class="sd">        :returns: list of all different keys that are somehow used.&quot;&quot;&quot;</span>
         <span class="n">rks</span><span class="o">=</span><span class="p">[]</span>
@@ -578,7 +578,7 @@
 <div class="viewcode-block" id="Gutenberg_Dataset.get_unique_record_values"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.get_unique_record_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_unique_record_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get a list of all unique values a given keys has for all records.</span>
 <span class="sd">        </span>
-<span class="sd">        *Note:* :func:`Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.</span>
+<span class="sd">        *Note:* :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.</span>
 
 <span class="sd">        Example: `get_unique_records_values(&#39;language&#39;)` returns all languages in Gutenberg.</span>
 

@@ -151,7 +151,7 @@ to heuristically prevent false positives.</p>
 <dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.find_keywords">
 <span class="sig-name descname"><span class="pre">find_keywords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">search_keys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.find_keywords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.find_keywords" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search of an arbitrary number of keywords in a book record</p>
-<p><em>Note:</em> <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">Gutenberg_Dataset.Gutenberg_Dataset.load_index()</span></code></a> needs to be called once before this function can be used.</p>
+<p><em>Note:</em> <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_index()</span></code></a> needs to be called once before this function can be used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>list of records that contain all keywords in any field.</p>
@@ -165,7 +165,7 @@ to heuristically prevent false positives.</p>
 <dd><p>Get a book record and text by its ebook_id</p>
 <p>This function returns a dictionary with metadata and filtered text. Use <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_book" title="Gutenberg_Dataset.Gutenberg_Dataset.load_book"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_book()</span></code></a> 
 to get the raw unfiltered text.</p>
-<p><em>Note:</em> <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">Gutenberg_Dataset.Gutenberg_Dataset.load_index()</span></code></a> needs to be called once before this function can be used.</p>
+<p><em>Note:</em> <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_index()</span></code></a> needs to be called once before this function can be used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>ebook_id</strong> – ebook_id (String, since some IDs contain letters) of the book to be retrieved</p>
@@ -181,7 +181,7 @@ to get the raw unfiltered text.</p>
 <span class="sig-name descname"><span class="pre">get_record_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.get_record_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.get_record_keys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of all keys that are used within records. 
 Standard keys are: <cite>ebook_id</cite>, <cite>author</cite>, <cite>language</cite>, <cite>title</cite>.</p>
-<p><em>Note:</em> <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">Gutenberg_Dataset.Gutenberg_Dataset.load_index()</span></code></a> needs to be called once before this function can be used.</p>
+<p><em>Note:</em> <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_index()</span></code></a> needs to be called once before this function can be used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>list of all different keys that are somehow used.</p>
@@ -193,7 +193,7 @@ Standard keys are: <cite>ebook_id</cite>, <cite>author</cite>, <cite>language</c
 <dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.get_unique_record_values">
 <span class="sig-name descname"><span class="pre">get_unique_record_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.get_unique_record_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.get_unique_record_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of all unique values a given keys has for all records.</p>
-<p><em>Note:</em> <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">Gutenberg_Dataset.Gutenberg_Dataset.load_index()</span></code></a> needs to be called once before this function can be used.</p>
+<p><em>Note:</em> <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_index()</span></code></a> needs to be called once before this function can be used.</p>
 <p>Example: <cite>get_unique_records_values(‘language’)</cite> returns all languages in Gutenberg.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -259,7 +259,7 @@ Use <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.get
 <dd><p>Search for book record with key specific key values
 For a list of valid keys, use <cite>get_record_keys()</cite>
 Standard keys are: <cite>ebook_id</cite>, <cite>author</cite>, <cite>language</cite>, <cite>title</cite></p>
-<p><em>Note:</em> <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">Gutenberg_Dataset.Gutenberg_Dataset.load_index()</span></code></a> needs to be called once before this function can be used.</p>
+<p><em>Note:</em> <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_index()</span></code></a> needs to be called once before this function can be used.</p>
 <p>Example: <cite>search({“title”: [“philosoph”,”phenomen”,”physic”,”hermeneu”,”logic”], “language”:”english”})</cite>
 Find all books whose titles contain at least one of the keywords, language english. Search keys can either be
 search for a single keyword (e.g. english), or an array of keywords.</p>
