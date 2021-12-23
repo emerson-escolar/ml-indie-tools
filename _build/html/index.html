@@ -109,7 +109,7 @@ environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerat
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Gutenberg_Dataset.</span></span><span class="sig-name descname"><span class="pre">Gutenberg_Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gutenberg'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A fuzzy, lightweight class to access, search and filter Project Gutenberg resources</p>
-<p>GutenbergLib by default uses a mirror’s root URL.</p>
+<p>GutenbergLib by default uses a mirror’s root URL. :ref: self.load_index() needs to be called before any other methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -174,6 +174,9 @@ Standard keys are: <cite>ebook_id</cite>, <cite>author</cite>, <cite>language</c
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>ebook_id</strong> – Gutenberg id (Note: string, since this sometimes contains a character!)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>book text as string, unfiltered. Can be filtered with :ref: self.filter_text()</p>
 </dd>
 </dl>
 </dd></dl>
