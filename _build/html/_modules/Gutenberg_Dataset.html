@@ -54,7 +54,7 @@
 <div class="viewcode-block" id="Gutenberg_Dataset"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset">[docs]</a><span class="k">class</span> <span class="nc">Gutenberg_Dataset</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot; A fuzzy, lightweight class to access, search and filter Project Gutenberg resources</span>
 <span class="sd">        </span>
-<span class="sd">        GutenbergLib by default uses a mirror&#39;s root URL. :ref: self.load_index() needs to be called before any other methods.</span>
+<span class="sd">        GutenbergLib by default uses a mirror&#39;s root URL. :ref:`Gutenberg_Dataset.load_index` needs to be called before any other methods.</span>
 <span class="sd">        </span>
 <span class="sd">        :param root_url: url of Project Gutenberg or any mirror URL.</span>
 <span class="sd">        :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts</span>
@@ -313,7 +313,7 @@
         <span class="sd">&quot;&quot;&quot; get text of an ebook from Gutenberg by ebook_id </span>
 <span class="sd">        </span>
 <span class="sd">        :param ebook_id: Gutenberg id (Note: string, since this sometimes contains a character!)</span>
-<span class="sd">        :returns: book text as string, unfiltered. Can be filtered with :ref: self.filter_text()</span>
+<span class="sd">        :returns: book text as string, unfiltered. Can be filtered with :ref:`self.filter_text`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">ebook_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ebook_id</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
