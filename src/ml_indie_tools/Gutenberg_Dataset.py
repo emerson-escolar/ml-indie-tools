@@ -20,12 +20,13 @@ class Gutenberg_Dataset():
         self.index=None
         self.NEAR=2048
         self.start_tokens=["*** START OF THIS PROJECT", "E-text prepared by", 
-                           "This book was generously provided by the ",
-                           "START OF THE PROJECT GUTENBERG"]
-        self.near_start_tokens=["produced by ", "Produced by ", "Transcriber's Note", 
-                                "Transcriber's note:", "Anmerkungen zur Tanskription"]
+                           "This book was generously provided by the ", "*** START OF THIS PROJECT GUTENBERG",
+                           "START OF THE PROJECT GUTENBERG"]    
+        self.near_start_tokens=["produced by ", "Produced by ", ", prepared by", "Transcriber's Note", 
+                                "Transcriber's note:", "Anmerkungen zur Tanskription", "Distributed Proofreading Team"] 
         self.end_tokens=["End of the Project Gutenberg", "*** END OF THIS PROJECT", 
                          "***END OF THE PROJECT GUTENBER", "Ende dieses Projekt Gutenberg", 
+                         "*** END OF THE PROJECT GUTENBERG",
                          "End of Project Gutenberg", "Transcriber's Note"]
         try:
             if not os.path.exists(cache_dir):
@@ -289,6 +290,7 @@ class Gutenberg_Dataset():
         path_stub+="/"+ebook_id+"/"
         filenames=[(ebook_id+"-0.txt",'utf-8'), (ebook_id+".txt",'utf-8'), (ebook_id+"-8.txt","latin1"), (ebook_id+".txt","latin1")]
         cache_name=ebook_id+".txt"
+        cache_file=None
         if self.cache_dir is not None:
             cache_file=os.path.join(self.cache_dir,cache_name)
             if os.path.isfile(cache_file):
@@ -300,6 +302,7 @@ class Gutenberg_Dataset():
                 except Exception as e:
                     self.log.error(f"Failed to read cached file {cache_file}")
         data=None
+        file_url=None
         for filename, encoding in filenames:
             file_url=self.root_url+path_stub+filename
             try:
@@ -308,11 +311,14 @@ class Gutenberg_Dataset():
                 break
             except Exception as e:
                 self.log.debug(f"URL-Download failed: {file_url}, {e}")
-                pass
-        if data is None:
+        if data is not None:
+            if data[0]=='\ufeff':  # Ignore BOM
+                data=data[1:]
+            data=data.replace('\r','')
+        else:
             self.log.warning(f"Failed to download {filenames}, last URL {file_url}, skipping book.")
             return None
-        if self.cache_dir is not None:
+        if cache_file is not None:
             try:
                 with open(cache_file,'w') as f:
                     f.write(data)
@@ -328,6 +334,8 @@ class Gutenberg_Dataset():
         (indicating the end of the book text), this function tries to find the start and end of the book text. The user can either extend
         the lists of class member tokens, of provide temporary additional tokens as parameter to this function.
         
+        *Note:* Use logging via `logging.basicConfig(level=logging.DEBUG) to analyze the filtering process.
+
         :param book_text: text of the book (string)
         :param add_start_tokens: additional start tokens (list of strings)
         :param add_near_start_tokens: additional near start tokens (list of strings)
@@ -362,7 +370,6 @@ class Gutenberg_Dataset():
         if pstart>blen/2:
             self.log.warning("Preamble is taking more than half of the book!")
         new_book=book_text[pstart:]
-        
         xpos=-1
         for token in near_start_tokens:
             pos=new_book.find(token)
@@ -372,13 +379,23 @@ class Gutenberg_Dataset():
                     xpos=pos
         if xpos > -1:
             pos2=new_book[xpos:].find("\n\n")
-            self.log.debug(f"Trying extra skipping for {pos2}...")
             if pos2<=self.NEAR and pos2>0:
-                self.log.debug("Trying extra skipping (2)...")
+                self.log.debug(f"Trying extra skipping (2) for {pos2}...")
                 while new_book[xpos+pos2]=='\n':
                     pos2 += 1
                 new_book=new_book[xpos+pos2:]
                 self.log.debug(f"Additionally shortened start by {xpos+pos2} chars")
+            else:
+                pos2=new_book[xpos:].find("\n")
+                if pos2<=self.NEAR and pos2>0:
+                    self.log.debug(f"Trying extra skipping (3) for {pos2}...")
+                    while new_book[xpos+pos2]=='\n':
+                        pos2 += 1
+                    new_book=new_book[xpos+pos2:]
+                    self.log.debug(f"Additionally shortened start by {xpos+pos2}, {xpos}+{pos2} chars")
+                else:
+                    pos2=0
+                    new_book=new_book[xpos+pos2:]
         
         pend=len(new_book)
         for token in end_tokens:
