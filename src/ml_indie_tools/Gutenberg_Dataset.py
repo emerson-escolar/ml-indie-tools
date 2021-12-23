@@ -276,6 +276,9 @@ class Gutenberg_Dataset():
     def load_book(self, ebook_id):
         """ get text of an ebook from Gutenberg by ebook_id 
         
+        This function returns the unfiltered raw text including all Gutenberg headers and footers.
+        Use :func:`~Gutenberg_Dataset.Gutenberg_Dataset.get_book` to retrieve a dictionary with metadata and filtered text.
+
         :param ebook_id: Gutenberg id (Note: string, since this sometimes contains a character!)
         :returns: book text as string, unfiltered. Can be filtered with :func:`~Gutenberg_Dataset.Gutenberg_Dataset.filter_text`
         """
@@ -479,7 +482,42 @@ class Gutenberg_Dataset():
                 frecs += [rec]
         return frecs
         
-    
+    def insert_book_texts(self, search_dict, download_count_limit=20):
+        """ Inserts book texts into the records returned by :func:`~Gutenberg_Dataset.Gutenberg_Dataset.search`.
+
+        In order to prevent the download of too many books, the download count limit is set to `download_count_limit`.
+
+        :param search_dict: search array of dictionaries that at least contain the key `ebook_id`.
+        :param download_count_limit: maximum number of books to download_count_limit
+        :returns: list of records including filtered book text-based
+        """
+        if len(search_dict)>download_count_limit:
+            self.log.warning(f"Too many books to download ({len(search_dict)}), limit is {download_count_limit}")
+            dlc=download_count_limit
+        else:
+            dlc=len(search_dict)
+        for i in range(0, dlc):
+            self.log.info(f"Downloading book {i+1} of {dlc}")
+            search_dict[i]['text']=self.filter_text(self.load_book(search_dict[i]['ebook_id']))
+        return search_dict  
+
+    def get_book(self, ebook_id: str):
+        """ Get a book record and text by its ebook_id
+       
+        This function returns a dictionary with metadata and filtered text. Use :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_book` 
+        to get the raw unfiltered text.
+        
+        *Note:* :func:`Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.
+
+        :param ebook_id: ebook_id (String, since some IDs contain letters) of the book to be retrieved
+        :returns: book record (dictionary with metadata and filtered text)
+        """
+        for rec in self.records:
+            if rec["ebook_id"]==ebook_id:
+                rec['text']=self.filter_text(self.load_book(ebook_id))
+                return rec
+        return None
+
     def get_record_keys(self):
         """ Get a list of all keys that are used within records. 
         Standard keys are: `ebook_id`, `author`, `language`, `title`.
