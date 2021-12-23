@@ -22,10 +22,11 @@ class Gutenberg_Dataset():
         self.start_tokens=["*** START OF THIS PROJECT", "E-text prepared by", 
                            "This book was generously provided by the ",
                            "START OF THE PROJECT GUTENBERG"]
-        self.near_start_tokens=["produced by ", "Produced by ", "Transcriber's Note", 
+        self.near_start_tokens=["produced by ", "Produced by ", ", prepared by", "Transcriber's Note", 
                                 "Transcriber's note:", "Anmerkungen zur Tanskription"]
         self.end_tokens=["End of the Project Gutenberg", "*** END OF THIS PROJECT", 
                          "***END OF THE PROJECT GUTENBER", "Ende dieses Projekt Gutenberg", 
+                         "*** END OF THE PROJECT GUTENBERG",
                          "End of Project Gutenberg", "Transcriber's Note"]
         try:
             if not os.path.exists(cache_dir):
