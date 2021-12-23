@@ -6,14 +6,15 @@ import time
 from enum import Enum
 from urllib.request import urlopen
 
-class GutenbergLib:
+class Gutenberg_Dataset():
     """ A fuzzy, lightweight class to access, search and filter Project Gutenberg resources
-        
-        GutenbergLib by default uses a mirror's root URL. 
-        
-        :param root_url: url of Project Gutenberg or any mirror URL.
-        :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts
-        """
+    
+    GutenbergLib by default uses a mirror's root URL. 
+    
+    :param root_url: url of Project Gutenberg or any mirror URL.
+    :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts
+    """
+
     def __init__(self, root_url="http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg", cache_dir="gutenberg"):
         self.log = logging.getLogger('GutenbergLib')
         self.root_url = root_url

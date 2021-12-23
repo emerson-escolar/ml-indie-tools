@@ -23,6 +23,19 @@ MLEnv object
    :undoc-members:
    :show-inheritance:
 
+.. currentmodule:: Gutenberg_Dataset
+
+========================
+Gutenberg_Dataset object
+========================
+
+.. automodule:: Gutenberg_Dataset
+
+.. autoclass:: Gutenberg_Dataset
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Indices and tables
 ==================
 
