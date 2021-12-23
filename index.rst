@@ -16,6 +16,8 @@ Welcome to ml-indie-tools's documentation!
 MLEnv object
 ============
 
+.. automodule:: env_tools
+   
 .. autoclass:: MLEnv
    :members:
    :undoc-members:
