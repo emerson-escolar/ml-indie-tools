@@ -9,7 +9,7 @@ from urllib.request import urlopen
 class Gutenberg_Dataset():
     """ A fuzzy, lightweight class to access, search and filter Project Gutenberg resources
         
-        GutenbergLib by default uses a mirror's root URL. :ref: self.load_index() needs to be called before any other methods.
+        GutenbergLib by default uses a mirror's root URL. :ref:`Gutenberg_Dataset.load_index` needs to be called before any other methods.
         
         :param root_url: url of Project Gutenberg or any mirror URL.
         :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts
@@ -268,7 +268,7 @@ class Gutenberg_Dataset():
         """ get text of an ebook from Gutenberg by ebook_id 
         
         :param ebook_id: Gutenberg id (Note: string, since this sometimes contains a character!)
-        :returns: book text as string, unfiltered. Can be filtered with :ref: self.filter_text()
+        :returns: book text as string, unfiltered. Can be filtered with :ref:`self.filter_text`
         """
         if ebook_id is None or len(ebook_id)==0:
             return None
