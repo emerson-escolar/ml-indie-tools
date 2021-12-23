@@ -14,9 +14,9 @@ class MLEnv():
         environment is a TPU environment, and `self.is_cpu` that no accelerator is available.
         
         :param platform: Known platforms are: `'tf'` (tensorflow), `'pt'` (pytorch), and `'jax'`
-        :param accelerator: known accelerators are: `'fastest'` (pick best available hardware), `'cpu'`, 
-                            `'gpu'`, `'tpu'`.
+        :param accelerator: known accelerators are: `'fastest'` (pick best available hardware), `'cpu'`, 'gpu'`, `'tpu'`.
         :param verbose: show information about configuration """
+
     def __init__(self, platform='tf', accelerator='fastest', verbose=True):
         self.known_platforms = ['tf', 'pt', 'jax']
         self.known_accelerators = ['cpu', 'gpu', 'tpu', 'fastest']
