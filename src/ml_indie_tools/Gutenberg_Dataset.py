@@ -9,7 +9,7 @@ from urllib.request import urlopen
 class Gutenberg_Dataset():
     """ A fuzzy, lightweight class to access, search and filter Project Gutenberg resources
         
-        GutenbergLib by default uses a mirror's root URL. :ref:`Gutenberg_Dataset.load_index` needs to be called before any other methods.
+        GutenbergLib by default uses a mirror's root URL. :ref:`load_index` needs to be called before any other methods.
         
         :param root_url: url of Project Gutenberg or any mirror URL.
         :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts
@@ -206,7 +206,7 @@ class Gutenberg_Dataset():
     def load_index(self, cache=True, cache_expire_days=30):
         """ This function loads the Gutenberg record index, either from cache, or from a website
         
-        :param cache: default True, use the cache directory to cache both index and text files. Index expires after cache_expire_days, text files never expire. Should *NOT* be set to False in order to prevent unnecessary re-downloading.
+        :param cache: default `True`, use the cache directory to cache both index and text files. Index expires after `cache_expire_days`, text files never expire. Should *NOT* be set to `False` in order to prevent unnecessary re-downloading.
         :param cache_expire_days: Number of days after which the index is re-downloaded.
         """
         raw_index=None
@@ -268,7 +268,7 @@ class Gutenberg_Dataset():
         """ get text of an ebook from Gutenberg by ebook_id 
         
         :param ebook_id: Gutenberg id (Note: string, since this sometimes contains a character!)
-        :returns: book text as string, unfiltered. Can be filtered with :ref:`self.filter_text`
+        :returns: book text as string, unfiltered. Can be filtered with :ref:`filter_text`
         """
         if ebook_id is None or len(ebook_id)==0:
             return None
@@ -316,6 +316,7 @@ class Gutenberg_Dataset():
         """ Heuristically remove header and trailer texts not part of the actual books
 
         :param book_text: text of the book (string)
+        :returns: filtered text (string)
         """
         start_tokens=["*** START OF THIS PROJECT", "E-text prepared by", 
                       "This book was generously provided by the ",
