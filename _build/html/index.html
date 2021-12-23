@@ -127,7 +127,7 @@ the start of the actual book text), <cite>self.near_start_tokens</cite> (indicat
 further narrowing the start of text), and <cite>self.end_tokens</cite> (indicating the end of the book text), this function tries to find 
 the start and end of the book text. The user can either extend the lists of class member tokens, of provide temporary additional 
 tokens as parameter to this function.</p>
-<p>The list of <cite>start_tokens</cite> contains only tokens that are always significant as being part of header-cruft (e.g. ‘<a href="#id1"><span class="problematic" id="id2">**</span></a>* START OF’). 
+<p>The list of <cite>start_tokens</cite> contains only tokens that are always significant as being part of header-cruft (e.g. ‘START OF THIS GUTENBERG’). 
 <cite>near_start_tokens</cite> are tokens that might be ambiguous, but are still part of the header-cruft, (e.g. ‘produced by’). 
 <cite>near_start_tokens</cite> are only used, if they are within <cite>self.NEAR</cite> bytes to the latest <cite>start_tokens</cite> token, 
 to heuristically prevent false positives.</p>
