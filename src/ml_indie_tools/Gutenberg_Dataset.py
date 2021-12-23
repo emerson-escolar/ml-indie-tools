@@ -1,20 +1,20 @@
 import logging
 import os
 import re
-import sys
 import time
 
 from enum import Enum
 from urllib.request import urlopen
 
 class GutenbergLib:
-    """ A fuzzy, lightweight library to access, search and filter Project Gutenberg resources """
-    def __init__(self, root_url="http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg", cache_dir="gutenberg"):
-        """ GutenbergLib by default uses a mirror's root URL
+    """ A fuzzy, lightweight class to access, search and filter Project Gutenberg resources
         
-        root_url -- url of Project Gutenberg or any mirror URL.
-        cache_dir -- path to a directory that will be used to cache the Gutenberg index and already downloaded texts
+        GutenbergLib by default uses a mirror's root URL. 
+        
+        :param root_url: url of Project Gutenberg or any mirror URL.
+        :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts
         """
+    def __init__(self, root_url="http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg", cache_dir="gutenberg"):
         self.log = logging.getLogger('GutenbergLib')
         self.root_url = root_url
         self.index=None
@@ -206,10 +206,9 @@ class GutenbergLib:
     def load_index(self, cache=True, cache_expire_days=30):
         """ This function loads the Gutenberg record index, either from cache, or from a website
         
-        cache -- default True, use the cache directory to cache both index and text files. Index
-        expires after cache_expire_days, text files never expire. Should *NOT* be set to False
-        in order to prevent unnecessary re-downloading.
-        cache_expire_days -- Number of days after which the index is re-downloaded."""
+        :param cache: default True, use the cache directory to cache both index and text files. Index expires after cache_expire_days, text files never expire. Should *NOT* be set to False in order to prevent unnecessary re-downloading.
+        :param cache_expire_days: Number of days after which the index is re-downloaded.
+        """
         raw_index=None
         if self.cache_dir is None:
             self.log.error("Cannot cache library index, no valid cache directory.")
@@ -268,7 +267,7 @@ class GutenbergLib:
     def load_book(self, ebook_id):
         """ get text of an ebook from Gutenberg by ebook_id 
         
-        ebook_id -- Gutenberg id
+        :param ebook_id: Gutenberg id (Note: string, since this sometimes contains a character!)
         """
         if ebook_id is None or len(ebook_id)==0:
             return None
@@ -313,7 +312,9 @@ class GutenbergLib:
         return data
     
     def filter_text(self, book_text):
-        """ Heuristically remove header and trailer texts not part of the actual book 
+        """ Heuristically remove header and trailer texts not part of the actual books
+
+        :param book_text: text of the book (string)
         """
         start_tokens=["*** START OF THIS PROJECT", "E-text prepared by", 
                       "This book was generously provided by the ",
@@ -381,7 +382,7 @@ class GutenbergLib:
     def find_keywords(self,*search_keys):
         """ Search of an arbitrary number of keywords in a book record
         
-        returns -- list of records that contain all keywords in any field. """
+        :returns: list of records that contain all keywords in any field. """
         frecs=[]
         for rec in self.records:
             found=True
@@ -401,12 +402,13 @@ class GutenbergLib:
     def search(self, search_dict):
         """ Search for book record with key specific key values
         For a list of valid keys, use `get_record_keys()`
-        Standard keys are:
-        ebook_id, author, language, title
-        example: search({"title": ["philosoph","phenomen","physic","hermeneu","logic"], "language":"english"})
-        Find all books whose titles contain at least one the keywords, language english. Search keys can either be
+        Standard keys are: `ebook_id`, `author`, `language`, `title`
+
+        Example: `search({"title": ["philosoph","phenomen","physic","hermeneu","logic"], "language":"english"})`
+        Find all books whose titles contain at least one of the keywords, language english. Search keys can either be
         search for a single keyword (e.g. english), or an array of keywords. 
-        returns -- list of records """
+        
+        :returns: list of records """
         frecs=[]
         for rec in self.records:
             found=True
@@ -431,10 +433,10 @@ class GutenbergLib:
         
     
     def get_record_keys(self):
-        """ Get a list of all keys that are used within records. Standard keys are:
-        ebook_id, author, language, title
+        """ Get a list of all keys that are used within records. 
+        Standard keys are: `ebook_id`, `author`, `language`, `title`.
         
-        returns -- list of all different keys that are somehow used."""
+        :returns: list of all different keys that are somehow used."""
         rks=[]
         for r in self.records:
             rks=set(list(rks) + list(r.keys()))
@@ -442,7 +444,12 @@ class GutenbergLib:
 
     def get_unique_record_values(self, key):
         """ Get a list of all unique values a given keys has for all records.
-        get_unique_records_values('language') returns all languages in Gutenberg."""
+        
+        Example: `get_unique_records_values('language')` returns all languages in Gutenberg.
+
+        :param key: key to search for.
+        :returns: list of all unique values for a given key.
+        """
         uv=[]
         if key not in self.get_record_keys():
             print(f"{key} is not a key used in any record!")
