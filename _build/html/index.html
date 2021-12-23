@@ -104,6 +104,112 @@ environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerat
 </div>
 <div class="section" id="module-Gutenberg_Dataset">
 <span id="gutenberg-dataset-object"></span><h2>Gutenberg_Dataset object<a class="headerlink" href="#module-Gutenberg_Dataset" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Gutenberg_Dataset.</span></span><span class="sig-name descname"><span class="pre">Gutenberg_Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gutenberg'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A fuzzy, lightweight class to access, search and filter Project Gutenberg resources</p>
+<p>GutenbergLib by default uses a mirror’s root URL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root_url</strong> – url of Project Gutenberg or any mirror URL.</p></li>
+<li><p><strong>cache_dir</strong> – path to a directory that will be used to cache the Gutenberg index and already downloaded texts</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.filter_text">
+<span class="sig-name descname"><span class="pre">filter_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">book_text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.filter_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.filter_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heuristically remove header and trailer texts not part of the actual books</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>book_text</strong> – text of the book (string)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.find_keywords">
+<span class="sig-name descname"><span class="pre">find_keywords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">search_keys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.find_keywords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.find_keywords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search of an arbitrary number of keywords in a book record</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of records that contain all keywords in any field.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.get_record_keys">
+<span class="sig-name descname"><span class="pre">get_record_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.get_record_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.get_record_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of all keys that are used within records. 
+Standard keys are: <cite>ebook_id</cite>, <cite>author</cite>, <cite>language</cite>, <cite>title</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of all different keys that are somehow used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.get_unique_record_values">
+<span class="sig-name descname"><span class="pre">get_unique_record_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.get_unique_record_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.get_unique_record_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of all unique values a given keys has for all records.</p>
+<p>Example: <cite>get_unique_records_values(‘language’)</cite> returns all languages in Gutenberg.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – key to search for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of all unique values for a given key.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.load_book">
+<span class="sig-name descname"><span class="pre">load_book</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ebook_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.load_book"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>get text of an ebook from Gutenberg by ebook_id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ebook_id</strong> – Gutenberg id (Note: string, since this sometimes contains a character!)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.load_index">
+<span class="sig-name descname"><span class="pre">load_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_expire_days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.load_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function loads the Gutenberg record index, either from cache, or from a website</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cache</strong> – default True, use the cache directory to cache both index and text files. Index expires after cache_expire_days, text files never expire. Should <em>NOT</em> be set to False in order to prevent unnecessary re-downloading.</p></li>
+<li><p><strong>cache_expire_days</strong> – Number of days after which the index is re-downloaded.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.search">
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for book record with key specific key values
+For a list of valid keys, use <cite>get_record_keys()</cite>
+Standard keys are: <cite>ebook_id</cite>, <cite>author</cite>, <cite>language</cite>, <cite>title</cite></p>
+<p>Example: <cite>search({“title”: [“philosoph”,”phenomen”,”physic”,”hermeneu”,”logic”], “language”:”english”})</cite>
+Find all books whose titles contain at least one of the keywords, language english. Search keys can either be
+search for a single keyword (e.g. english), or an array of keywords.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of records</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 <div class="section" id="indices-and-tables">
