@@ -335,7 +335,7 @@ class Gutenberg_Dataset():
         the start and end of the book text. The user can either extend the lists of class member tokens, of provide temporary additional 
         tokens as parameter to this function.
         
-        The list of `start_tokens` contains only tokens that are always significant as being part of header-cruft (e.g. '*** START OF'). 
+        The list of `start_tokens` contains only tokens that are always significant as being part of header-cruft (e.g. 'START OF THIS GUTENBERG'). 
         `near_start_tokens` are tokens that might be ambiguous, but are still part of the header-cruft, (e.g. 'produced by'). 
         `near_start_tokens` are only used, if they are within `self.NEAR` bytes to the latest `start_tokens` token, 
         to heuristically prevent false positives.
