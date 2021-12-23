@@ -334,7 +334,7 @@ class Gutenberg_Dataset():
         (indicating the end of the book text), this function tries to find the start and end of the book text. The user can either extend
         the lists of class member tokens, of provide temporary additional tokens as parameter to this function.
         
-        *Note:* Use logging via `logging.basicConfig(level=logging.DEBUG) to analyze the filtering process.
+        *Note:* Use logging via `logging.basicConfig(level=logging.DEBUG)` to analyze the filtering process.
 
         :param book_text: text of the book (string)
         :param add_start_tokens: additional start tokens (list of strings)
