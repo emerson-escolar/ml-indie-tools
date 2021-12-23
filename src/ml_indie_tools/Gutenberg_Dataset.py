@@ -20,10 +20,10 @@ class Gutenberg_Dataset():
         self.index=None
         self.NEAR=2048
         self.start_tokens=["*** START OF THIS PROJECT", "E-text prepared by", 
-                           "This book was generously provided by the ",
-                           "START OF THE PROJECT GUTENBERG"]
+                "This book was generously provided by the ", "*** START OF THIS PROJECT GUTENBERG",
+                           "START OF THE PROJECT GUTENBERG"]    
         self.near_start_tokens=["produced by ", "Produced by ", ", prepared by", "Transcriber's Note", 
-                                "Transcriber's note:", "Anmerkungen zur Tanskription"]
+                                "Transcriber's note:", "Anmerkungen zur Tanskription", "Distributed Proofreading Team"] 
         self.end_tokens=["End of the Project Gutenberg", "*** END OF THIS PROJECT", 
                          "***END OF THE PROJECT GUTENBER", "Ende dieses Projekt Gutenberg", 
                          "*** END OF THE PROJECT GUTENBERG",
