@@ -321,6 +321,9 @@
 <div class="viewcode-block" id="Gutenberg_Dataset.load_book"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.load_book">[docs]</a>    <span class="k">def</span> <span class="nf">load_book</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebook_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; get text of an ebook from Gutenberg by ebook_id </span>
 <span class="sd">        </span>
+<span class="sd">        This function returns the unfiltered raw text including all Gutenberg headers and footers.</span>
+<span class="sd">        Use :func:`~Gutenberg_Dataset.Gutenberg_Dataset.get_book` to retrieve a dictionary with metadata and filtered text.</span>
+
 <span class="sd">        :param ebook_id: Gutenberg id (Note: string, since this sometimes contains a character!)</span>
 <span class="sd">        :returns: book text as string, unfiltered. Can be filtered with :func:`~Gutenberg_Dataset.Gutenberg_Dataset.filter_text`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -524,7 +527,42 @@
                 <span class="n">frecs</span> <span class="o">+=</span> <span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">frecs</span></div>
         
-    
+<div class="viewcode-block" id="Gutenberg_Dataset.insert_book_texts"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.insert_book_texts">[docs]</a>    <span class="k">def</span> <span class="nf">insert_book_texts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_dict</span><span class="p">,</span> <span class="n">download_count_limit</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Inserts book texts into the records returned by :func:`~Gutenberg_Dataset.Gutenberg_Dataset.search`.</span>
+
+<span class="sd">        In order to prevent the download of too many books, the download count limit is set to `download_count_limit`.</span>
+
+<span class="sd">        :param search_dict: search array of dictionaries that at least contain the key `ebook_id`.</span>
+<span class="sd">        :param download_count_limit: maximum number of books to download_count_limit</span>
+<span class="sd">        :returns: list of records including filtered book text-based</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">search_dict</span><span class="p">)</span><span class="o">&gt;</span><span class="n">download_count_limit</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Too many books to download (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">search_dict</span><span class="p">)</span><span class="si">}</span><span class="s2">), limit is </span><span class="si">{</span><span class="n">download_count_limit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">dlc</span><span class="o">=</span><span class="n">download_count_limit</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dlc</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">search_dict</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dlc</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Downloading book </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">dlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">search_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_book</span><span class="p">(</span><span class="n">search_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;ebook_id&#39;</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">search_dict</span>  </div>
+
+<div class="viewcode-block" id="Gutenberg_Dataset.get_book"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.get_book">[docs]</a>    <span class="k">def</span> <span class="nf">get_book</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebook_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get a book record and text by its ebook_id</span>
+<span class="sd">       </span>
+<span class="sd">        This function returns a dictionary with metadata and filtered text. Use :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_book` </span>
+<span class="sd">        to get the raw unfiltered text.</span>
+<span class="sd">        </span>
+<span class="sd">        *Note:* :func:`Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.</span>
+
+<span class="sd">        :param ebook_id: ebook_id (String, since some IDs contain letters) of the book to be retrieved</span>
+<span class="sd">        :returns: book record (dictionary with metadata and filtered text)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;ebook_id&quot;</span><span class="p">]</span><span class="o">==</span><span class="n">ebook_id</span><span class="p">:</span>
+                <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_book</span><span class="p">(</span><span class="n">ebook_id</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">rec</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
 <div class="viewcode-block" id="Gutenberg_Dataset.get_record_keys"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset.get_record_keys">[docs]</a>    <span class="k">def</span> <span class="nf">get_record_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get a list of all keys that are used within records. </span>
 <span class="sd">        Standard keys are: `ebook_id`, `author`, `language`, `title`.</span>
