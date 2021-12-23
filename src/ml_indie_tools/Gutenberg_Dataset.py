@@ -402,7 +402,7 @@ class Gutenberg_Dataset():
     def find_keywords(self,*search_keys):
         """ Search of an arbitrary number of keywords in a book record
        
-        *Note:* :func:`my text <mymodule.MyClass.foo>` needs to be called once before this function can be used.
+        *Note:* :func:`Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.
 
         :returns: list of records that contain all keywords in any field.
         """
@@ -427,7 +427,7 @@ class Gutenberg_Dataset():
         For a list of valid keys, use `get_record_keys()`
         Standard keys are: `ebook_id`, `author`, `language`, `title`
 
-        *Note:* :func:`my text <mymodule.MyClass.foo>` needs to be called once before this function can be used.
+        *Note:* :func:`Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.
 
         Example: `search({"title": ["philosoph","phenomen","physic","hermeneu","logic"], "language":"english"})`
         Find all books whose titles contain at least one of the keywords, language english. Search keys can either be
@@ -461,7 +461,7 @@ class Gutenberg_Dataset():
         """ Get a list of all keys that are used within records. 
         Standard keys are: `ebook_id`, `author`, `language`, `title`.
         
-        *Note:* :func:`my text <mymodule.MyClass.foo>` needs to be called once before this function can be used.
+        *Note:* :func:`Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.
 
         :returns: list of all different keys that are somehow used."""
         rks=[]
@@ -472,7 +472,7 @@ class Gutenberg_Dataset():
     def get_unique_record_values(self, key):
         """ Get a list of all unique values a given keys has for all records.
         
-        *Note:* :func:`my text <mymodule.MyClass.foo>` needs to be called once before this function can be used.
+        *Note:* :func:`Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called once before this function can be used.
 
         Example: `get_unique_records_values('language')` returns all languages in Gutenberg.
 
