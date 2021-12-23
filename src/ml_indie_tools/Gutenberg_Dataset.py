@@ -330,10 +330,16 @@ class Gutenberg_Dataset():
         """ Heuristically remove header and trailer texts not part of the actual books
 
         Unfortunatelly, formatting of Gutenberg books is an unbelievable mess. Using lists of tokens `self.start_tokens` (indicating
-        the start of the actual book text), `self.near_start_tokens` (indicating the surrounding of start of text), and `self.end_tokens`
-        (indicating the end of the book text), this function tries to find the start and end of the book text. The user can either extend
-        the lists of class member tokens, of provide temporary additional tokens as parameter to this function.
+        the start of the actual book text), `self.near_start_tokens` (indicating possibly ambiguous tokens near a `start_tokens` token, 
+        further narrowing the start of text), and `self.end_tokens` (indicating the end of the book text), this function tries to find 
+        the start and end of the book text. The user can either extend the lists of class member tokens, of provide temporary additional 
+        tokens as parameter to this function.
         
+        The list of `start_tokens` contains only tokens that are always significant as being part of header-cruft (e.g. '*** START OF'). 
+        `near_start_tokens` are tokens that might be ambiguous, but are still part of the header-cruft, (e.g. 'produced by'). 
+        `near_start_tokens` are only used, if they are within `self.NEAR` bytes to the latest `start_tokens` token, 
+        to heuristically prevent false positives.
+
         *Note:* Use logging via `logging.basicConfig(level=logging.DEBUG)` to analyze the filtering process.
 
         :param book_text: text of the book (string)
