@@ -36,7 +36,7 @@ class Gutenberg_Dataset():
             self.cache_dir=None
             self.log.error(f"Failed to create cache directory {cache_dir}, {e}")
 
-    def _parse_record(self,record,verbose=True):
+    def _parse_record(self,record):
         """ internal function to recreate some consistent record information from near-freestyle text """
         rl=record.split('\n')
         white=str(chr(160))+str(chr(9))+" " # non-breaking space, TAB, and space
@@ -54,16 +54,14 @@ class Gutenberg_Dataset():
             fa=re.findall(ebook_no,"\A[0-9]+[A-C]\Z")
         except Exception as e:
             fa=None
-            if verbose is True:
-                self.log.debug(f"Failed to apply regex on >{ebook_no}<")
+            self.log.debug(f"Failed to apply regex on >{ebook_no}<")
             
         if len(rl[0])<5 or fa==None or len(ebook_no)>7:
-            if verbose is True:
-                print("-------------------------------------")
-                print(record)
-                print("- - - - - - - - - - - - - - - - - - -")
-                print(f"Dodgy record: {rl[0]}")
-                print(f"    ebook-id:  >{ebook_no}<")
+            self.log.warning("-------------------------------------")
+            self.log.warning(record)
+            self.log.warning("- - - - - - - - - - - - - - - - - - -")
+            self.log.warning(f"Dodgy record: {rl[0]}")
+            self.log.warning(f"    ebook-id:  >{ebook_no}<")
             return None
         
         for i in range(len(rl)):
@@ -72,7 +70,7 @@ class Gutenberg_Dataset():
         p=0
         while p<len(rl)-1:
             if len(rl[p+1])==0:
-                print(f"Invalid rec: {record}")
+                self.log.error(f"Invalid rec: {record}")
                 p+=1
             else:
                 if rl[p+1][0]!="[":
@@ -82,13 +80,10 @@ class Gutenberg_Dataset():
                         p+=1
                 else:
                     p+=1
-        
         rec={}
         l0=rl[0].split(", by ")
         rec['title']=l0[0]
         rec['ebook_id']=ebook_no
-        # if len(l0)>2:
-        #    print(f"Chaos title: {rl[0]}")
         if len(l0)>1:
             rec['author']=l0[-1]
         for r in rl[1:]:
@@ -96,13 +91,9 @@ class Gutenberg_Dataset():
                 if r[0]=='[':
                     ind=r.rfind(']')
                     if ind != -1:
-                        # print(f"Garbage trail {r}")
                         r=r[:ind+1]
-                        # print(f"Fixed: {r}")
                     else:
-                        # print(f"Missing closing ] {r}")
                         r+=']'
-                        # print(f"Fixed: {r}")
             if r[0]=='[' and r[-1]==']':
                 r=r[1:-1]
                 i1=r.find(':')
@@ -115,22 +106,18 @@ class Gutenberg_Dataset():
                     i2=-1
                 if i1==-1 and i2==-1:
                     pass
-                    # print(f"Invalid attribut in {rl}::{r}")
                 else:
                     if i2-i1==1:
                         key=r[:i1]
                         val=r[i2+1:]
                         if '[' in key or ']' in key or '[' in val or ']' in val or len(key)>15:
                             pass
-                            # print("messy key/val")
                         else:
                             rec[key.strip().lower()]=val.strip()
                     else:
                         pass
-                        # print(f"Bad attribute name terminator, missing ': ' {r}")
             else:
                 pass
-                # print(f"Invalid attribut in {rl}::{r}")
         if len(rec)>1:
             if "language" not in rec.keys():
                 rec["language"]="English"
@@ -195,11 +182,7 @@ class Gutenberg_Dataset():
                     continue
             if state==State.SYNC_REC:
                 if len(line.strip())==0 or line[0] not in white:
-                    if len(records)<10:
-                        parsed_rec=self._parse_record(rec, verbose=True)
-                    else:
-                        parsed_rec=self._parse_record(rec, verbose=False)
-                        
+                    parsed_rec=self._parse_record(rec)
                     if parsed_rec is not None:
                         records.append(parsed_rec)
                     empty_lines=1
@@ -263,13 +246,13 @@ class Gutenberg_Dataset():
                     f.write(str(time.time()))
                     self.log.debug("Wrote read cache timestamp.")
             except Exception as e:
-                print(f"Failed to write cache timestamp to {ts_file}, {e}")
+                self.log.error(f"Failed to write cache timestamp to {ts_file}, {e}")
             try:
                 with open(cache_file,'w') as f:
                     f.write(raw_index)
                     self.log.debug("Wrote read cached index.")
             except Exception as e:
-                print(f"Failed to write cached index to {cache_file}, {e}")
+                self.log.error(f"Failed to write cached index to {cache_file}, {e}")
         lines=raw_index.split('\n')
         self.records=self._parse_index(lines)
 
@@ -524,7 +507,7 @@ class Gutenberg_Dataset():
             if dl is True:
                 dls += 1
                 if dls>dlc:
-                    print(f"Download limit reached ({dlc}), stopping download...")
+                    self.log.warning(f"Download limit reached ({dlc}), stopping download...")
                     break
         return search_dict  
 
@@ -569,7 +552,7 @@ class Gutenberg_Dataset():
         """
         uv=[]
         if key not in self.get_record_keys():
-            print(f"{key} is not a key used in any record!")
+            self.log.warning(f"{key} is not a key used in any record!")
             return None
         for r in self.records:
             if key in r:
