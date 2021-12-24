@@ -48,6 +48,7 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 
@@ -61,19 +62,21 @@
 <span class="sd">    `self.is_gpu` indicates if the environment is a GPU environment, `self.is_tpu` indicates if the </span>
 <span class="sd">    environment is a TPU environment, and `self.is_cpu` that no accelerator is available.</span>
 <span class="sd">    </span>
+<span class="sd">    The logger `MLEnv` provdides details about the hardware and ml environment.</span>
+
 <span class="sd">    :param platform: Known platforms are: `&#39;tf&#39;` (tensorflow), `&#39;pt&#39;` (pytorch), and `&#39;jax&#39;`</span>
 <span class="sd">    :param accelerator: known accelerators are: `&#39;fastest&#39;` (pick best available hardware), `&#39;cpu&#39;`, `&#39;gpu&#39;`, `&#39;tpu&#39;`.</span>
-<span class="sd">    :param verbose: show information about configuration</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">platform</span><span class="o">=</span><span class="s1">&#39;tf&#39;</span><span class="p">,</span> <span class="n">accelerator</span><span class="o">=</span><span class="s1">&#39;fastest&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">platform</span><span class="o">=</span><span class="s1">&#39;tf&#39;</span><span class="p">,</span> <span class="n">accelerator</span><span class="o">=</span><span class="s1">&#39;fastest&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;MLEnv&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">known_platforms</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tf&#39;</span><span class="p">,</span> <span class="s1">&#39;pt&#39;</span><span class="p">,</span> <span class="s1">&#39;jax&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">known_accelerators</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="s1">&#39;gpu&#39;</span><span class="p">,</span> <span class="s1">&#39;tpu&#39;</span><span class="p">,</span> <span class="s1">&#39;fastest&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">platform</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">known_platforms</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Platform </span><span class="si">{</span><span class="n">platform</span><span class="si">}</span><span class="s2"> is not known, please check spelling.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Platform </span><span class="si">{</span><span class="n">platform</span><span class="si">}</span><span class="s2"> is not known, please check spelling.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">accelerator</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">known_accelerators</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accelerator </span><span class="si">{</span><span class="n">accelerator</span><span class="si">}</span><span class="s2"> is not known, please check spelling.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accelerator </span><span class="si">{</span><span class="n">accelerator</span><span class="si">}</span><span class="s2"> is not known, please check spelling.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">=</span> <span class="n">platform</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">=</span> <span class="n">accelerator</span>
@@ -90,71 +93,58 @@
                 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">is_tensorflow</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensorflow not available: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensorflow not available: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">tensorflow.python.profiler</span> <span class="kn">import</span> <span class="n">profiler_client</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tf_prof</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tf_prof</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="c1"># %tensorflow_version 2.x</span>
-            <span class="c1"># import tensorflow as tf</span>
-            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tensorflow version: &quot;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Tensorflow version: &quot;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;tpu&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">tpu</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">cluster_resolver</span><span class="o">.</span><span class="n">TPUClusterResolver</span><span class="p">()</span>  <span class="c1"># TPU detection</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running on TPU &#39;</span><span class="p">,</span> <span class="n">tpu</span><span class="o">.</span><span class="n">cluster_spec</span><span class="p">()</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()[</span><span class="s1">&#39;worker&#39;</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Running on TPU &#39;</span><span class="p">,</span> <span class="n">tpu</span><span class="o">.</span><span class="n">cluster_spec</span><span class="p">()</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()[</span><span class="s1">&#39;worker&#39;</span><span class="p">])</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="n">tpu</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span><span class="o">!=</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No TPU available&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No TPU available&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>    
                     <span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">experimental_connect_to_cluster</span><span class="p">(</span><span class="n">tpu</span><span class="p">)</span>
                     <span class="n">tf</span><span class="o">.</span><span class="n">tpu</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">initialize_tpu_system</span><span class="p">(</span><span class="n">tpu</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">tpu_strategy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">TPUStrategy</span><span class="p">(</span><span class="n">tpu</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">tpu_num_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tpu_strategy</span><span class="o">.</span><span class="n">extended</span><span class="o">.</span><span class="n">worker_devices</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TPU strategy available&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;TPU strategy available&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;gpu&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">list_physical_devices</span><span class="p">(</span><span class="s1">&#39;GPU&#39;</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;GPU not available: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;GPU not available: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GPU available&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No GPU or TPU available, this is going to be very slow!&quot;</span><span class="p">)</span>
-
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;GPU available&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No GPU or TPU available, this is going to be very slow!&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;jax&#39;</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="kn">import</span> <span class="nn">jax</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">is_jax</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Jax not available&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Jax not available&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_jax</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;tpu&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="kn">import</span> <span class="nn">jax.tools.colab_tpu</span>
                         <span class="n">jax</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">colab_tpu</span><span class="o">.</span><span class="n">setup_tpu</span><span class="p">()</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="o">=</span> <span class="kc">True</span>
-                        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;JAX TPU detected.&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;JAX TPU detected.&quot;</span><span class="p">)</span>
                     <span class="k">except</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">!=</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;JAX TPU not detected.&quot;</span><span class="p">)</span>
-                                <span class="k">return</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;JAX TPU not detected.&quot;</span><span class="p">)</span>
+                            <span class="k">return</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;gpu&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">jd</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">devices</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -162,17 +152,14 @@
                         <span class="k">for</span> <span class="n">gpu_device_name</span> <span class="ow">in</span> <span class="n">gpu_device_names</span><span class="p">:</span>
                             <span class="k">if</span> <span class="n">gpu_device_name</span> <span class="ow">in</span> <span class="n">jd</span><span class="o">.</span><span class="n">device_kind</span><span class="p">:</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="o">=</span> <span class="kc">True</span>
-                                <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;JAX GPU: </span><span class="si">{</span><span class="n">jd</span><span class="o">.</span><span class="n">device_kind</span><span class="si">}</span><span class="s2"> detected.&quot;</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;JAX GPU: </span><span class="si">{</span><span class="n">jd</span><span class="o">.</span><span class="n">device_kind</span><span class="si">}</span><span class="s2"> detected.&quot;</span><span class="p">)</span>
                                 <span class="k">break</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;JAX GPU not available.&quot;</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;JAX GPU not available.&quot;</span><span class="p">)</span>
                     <span class="k">except</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">!=</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;JAX GPU not available.&quot;</span><span class="p">)</span>
-                                <span class="k">return</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;JAX GPU not available.&quot;</span><span class="p">)</span>
+                            <span class="k">return</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;cpu&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">jd</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">devices</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -180,21 +167,19 @@
                         <span class="k">for</span> <span class="n">cpu_device_name</span> <span class="ow">in</span> <span class="n">cpu_device_names</span><span class="p">:</span>
                             <span class="k">if</span> <span class="n">cpu_device_name</span> <span class="ow">in</span> <span class="n">jd</span><span class="o">.</span><span class="n">device_kind</span><span class="p">:</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">is_cpu</span> <span class="o">=</span> <span class="kc">True</span>
-                                <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;JAX CPU: </span><span class="si">{</span><span class="n">jd</span><span class="o">.</span><span class="n">device_kind</span><span class="si">}</span><span class="s2"> detected.&quot;</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;JAX CPU: </span><span class="si">{</span><span class="n">jd</span><span class="o">.</span><span class="n">device_kind</span><span class="si">}</span><span class="s2"> detected.&quot;</span><span class="p">)</span>
                                 <span class="k">break</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cpu</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;JAX CPU not available.&quot;</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;JAX CPU not available.&quot;</span><span class="p">)</span>
                     <span class="k">except</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No JAX CPU available.&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No JAX CPU available.&quot;</span><span class="p">)</span>
                         <span class="k">return</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;pt&#39;</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="kn">import</span> <span class="nn">torch</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">is_pytorch</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pytorch not available.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Pytorch not available.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_pytorch</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;tpu&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
@@ -203,20 +188,18 @@
                         <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;COLAB_TPU_ADDR&#39;</span><span class="p">]</span>
                         <span class="n">tpu_env</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">except</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">!=</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pytorch TPU instance not detected.&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Pytorch TPU instance not detected.&quot;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">tpu_env</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="kn">import</span> <span class="nn">torch</span>
-                            <span class="k">if</span> <span class="s1">&#39;1.9.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">torch</span><span class="o">.</span><span class="n">__version__</span> <span class="ow">and</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pytorch version probably not supported with TPUs. Try (as of 12/2021): &quot;</span><span class="p">)</span>
-                                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;!pip install cloud-tpu-client==0.10 torch==1.9.0 https://storage.googleapis.com/tpu-pytorch/wheels/torch_xla-1.9-cp37-cp37m-linux_x86_64.whl&quot;</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="s1">&#39;1.9.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">torch</span><span class="o">.</span><span class="n">__version__</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Pytorch version probably not supported with TPUs. Try (as of 12/2021): &quot;</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;!pip install cloud-tpu-client==0.10 torch==1.9.0 https://storage.googleapis.com/tpu-pytorch/wheels/torch_xla-1.9-cp37-cp37m-linux_x86_64.whl&quot;</span><span class="p">)</span>
                             <span class="kn">import</span> <span class="nn">torch_xla.core.xla_model</span> <span class="k">as</span> <span class="nn">xm</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="o">=</span> <span class="kc">True</span>
-                            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pytorch TPU detected.&quot;</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Pytorch TPU detected.&quot;</span><span class="p">)</span>
                         <span class="k">except</span><span class="p">:</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pytorch TPU would be available, but failed to</span><span class="se">\</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Pytorch TPU would be available, but failed to</span><span class="se">\</span>
 <span class="s2">                                    import torch_xla.core.xla_model.&quot;</span><span class="p">)</span>
                             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">!=</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
                                 <span class="k">return</span>
@@ -225,39 +208,32 @@
                         <span class="kn">import</span> <span class="nn">torch.cuda</span>
                         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="o">=</span> <span class="kc">True</span>
-                            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pytorch GPU detected.&quot;</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Pytorch GPU detected.&quot;</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pytorch GPU not available.&quot;</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Pytorch GPU not available.&quot;</span><span class="p">)</span>
                     <span class="k">except</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">!=</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pytorch GPU not available.&quot;</span><span class="p">)</span>
-                                <span class="k">return</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Pytorch GPU not available.&quot;</span><span class="p">)</span>
+                            <span class="k">return</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;cpu&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">==</span> <span class="s1">&#39;fastest&#39;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">is_cpu</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pytorch CPU detected.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Pytorch CPU detected.&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No Pytorch CPU accelerator available.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No Pytorch CPU accelerator available.&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flush_timer</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flush_timeout</span> <span class="o">=</span> <span class="mi">180</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_notebook_type</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-        <span class="c1"># self.check_hardware(verbose=verbose)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_notebook_type</span><span class="p">()</span>
 
-<div class="viewcode-block" id="MLEnv.check_notebook_type"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.check_notebook_type">[docs]</a>    <span class="k">def</span> <span class="nf">check_notebook_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_check_notebook_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Internal function, use :func:`describe` instead &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="s1">&#39;IPKernelApp&#39;</span> <span class="ow">in</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You are on a Jupyter instance.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;You are on a Jupyter instance.&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You are not on a Jupyter instance.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;You are not on a Jupyter instance.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span> <span class="c1"># Colab instance?</span>
                 <span class="kn">from</span> <span class="nn">google.colab</span> <span class="kn">import</span> <span class="n">drive</span>
@@ -268,16 +244,13 @@
                         <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">run_line_magic</span><span class="p">(</span><span class="s1">&#39;tensorflow_version&#39;</span><span class="p">,</span> <span class="s1">&#39;2.x&#39;</span><span class="p">)</span>
                     <span class="k">except</span><span class="p">:</span>
                         <span class="k">pass</span>
-                <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You are on a Colab instance.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;You are on a Colab instance.&quot;</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span> <span class="c1"># Not? ignore.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You are not on a Colab instance, so no Google Drive access is possible.&quot;</span><span class="p">)</span>
-                <span class="k">pass</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;You are not on a Colab instance, so no Google Drive access is possible.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span>
 
-<div class="viewcode-block" id="MLEnv.describe"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.describe">[docs]</a>    <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="MLEnv.describe"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.describe">[docs]</a>    <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Describe machine learning environment.</span>
 
 <span class="sd">        This lists the machine learning environment, os, python version, ml lib versions and hardware</span>
@@ -288,7 +261,6 @@
 <span class="sd">        For `return_dict=True`: `{&#39;os&#39;: &#39;Darwin&#39;, &#39;python&#39;: &#39;3.9.9&#39;, &#39;conda&#39;: True, &#39;colab&#39;: False, &#39;jupyter&#39;: True, &#39;ml_platform&#39;: &#39;tensorflow&#39;, &#39;ml_version&#39;: &#39;2.7.0&#39;, &#39;ml_accelerator&#39;: &#39;GPU&#39;, &#39;ml_accelerator_desc&#39;: &#39;METAL&#39; }`</span>
 <span class="sd">        </span>
 <span class="sd">        :param return_dict: If True, return a dictionary of the results, otherwise return a string.</span>
-<span class="sd">        :param verbose: If True, print debug infos.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span><span class="o">=</span><span class="p">{}</span>
         <span class="n">ospl</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">platform</span>
@@ -328,8 +300,7 @@
                     <span class="n">state</span><span class="o">=</span><span class="n">profiler_client</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="n">tpu_profile_service_address</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
                     <span class="k">if</span> <span class="s1">&#39;TPU v2&#39;</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
                         <span class="n">tpu_desc</span><span class="o">=</span><span class="n">tpu_desc</span><span class="o">+</span><span class="s1">&#39;v2 (8GB)&#39;</span>  <span class="c1"># that&#39;s what you currently get on Colab    </span>
-                        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: you got old TPU v2 which is limited to 8GB Ram.&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;You got old TPU v2 which is limited to 8GB Ram.&quot;</span><span class="p">)</span>
                 <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="o">+</span><span class="n">tpu_desc</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_accelerator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GPU&#39;</span>
@@ -362,94 +333,39 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">desc</span></div>
 
-    <span class="c1"># Hardware check:</span>
-<div class="viewcode-block" id="MLEnv.check_hardware"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.check_hardware">[docs]</a>    <span class="k">def</span> <span class="nf">check_hardware</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tpu_is_init</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tpu_address</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tensorflow</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">tpu</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">cluster_resolver</span><span class="o">.</span><span class="n">TPUClusterResolver</span><span class="p">()</span>  <span class="c1"># TPU detection</span>
-                    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running on TPU &#39;</span><span class="p">,</span> <span class="n">tpu</span><span class="o">.</span><span class="n">cluster_spec</span><span class="p">()</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()[</span><span class="s1">&#39;worker&#39;</span><span class="p">])</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="n">tpu_profile_service_address</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;COLAB_TPU_ADDR&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;8470&#39;</span><span class="p">,</span> <span class="s1">&#39;8466&#39;</span><span class="p">)</span>
-                    <span class="n">state</span><span class="o">=</span><span class="n">profiler_client</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="n">tpu_profile_service_address</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="s1">&#39;TPU v2&#39;</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: you got old TPU v2 which is limited to 8GB Ram.&quot;</span><span class="p">)</span>
-
-                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No TPU available&quot;</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="o">=</span> <span class="kc">False</span>
-
-            <span class="k">for</span> <span class="n">hw</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;CPU&quot;</span><span class="p">,</span> <span class="s2">&quot;GPU&quot;</span><span class="p">,</span> <span class="s2">&quot;TPU&quot;</span><span class="p">]:</span>
-                <span class="n">hw_list</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">list_physical_devices</span><span class="p">(</span><span class="n">hw</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hw_list</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">hw</span><span class="o">==</span><span class="s1">&#39;TPU&#39;</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span><span class="o">=</span><span class="kc">True</span>
-                    <span class="k">if</span> <span class="n">hw</span><span class="o">==</span><span class="s1">&#39;GPU&#39;</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span><span class="o">=</span><span class="kc">True</span>
-                    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hw</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">hw_list</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">get_device_details</span><span class="p">(</span><span class="n">hw_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> 
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: You have neither TPU nor GPU, this is going to be very slow!&quot;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GPU available&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">tf</span><span class="o">.</span><span class="n">compat</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">disable_eager_execution</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TPU: eager execution disabled!&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tensorflow not available, so no hardware check (yet).&quot;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="MLEnv.mount_gdrive"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.mount_gdrive">[docs]</a>    <span class="k">def</span> <span class="nf">mount_gdrive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mount_point</span><span class="o">=</span><span class="s2">&quot;/content/drive&quot;</span><span class="p">,</span> <span class="n">root_path</span><span class="o">=</span><span class="s2">&quot;/content/drive/My Drive&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="MLEnv.mount_gdrive"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.mount_gdrive">[docs]</a>    <span class="k">def</span> <span class="nf">mount_gdrive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mount_point</span><span class="o">=</span><span class="s2">&quot;/content/drive&quot;</span><span class="p">,</span> <span class="n">root_path</span><span class="o">=</span><span class="s2">&quot;/content/drive/My Drive&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You will now be asked to authenticate Google Drive access in order to store training data (cache) and model state.&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/ALU_Net`.&quot;</span><span class="p">)</span>
+            <span class="kn">from</span> <span class="nn">google.colab</span> <span class="kn">import</span> <span class="n">drive</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;You will now be asked to authenticate Google Drive access in order to store training data (cache) and model state.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/ALU_Net`.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">root_path</span><span class="p">):</span>
-                <span class="c1"># drive.flush_and_unmount()</span>
-                <span class="n">drive</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">mount_point</span><span class="p">)</span> <span class="c1">#, force_remount=True)</span>
+                <span class="n">drive</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">mount_point</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">root_path</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">root_path</span><span class="p">):</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Something went wrong with Google Drive access. Cannot save model to </span><span class="si">{</span><span class="n">root_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Something went wrong with Google Drive access. Cannot save model to </span><span class="si">{</span><span class="n">root_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">root_path</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You are not on a Colab instance, so no Google Drive access is possible.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;You are not on a Colab instance, so no Google Drive access is possible.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="MLEnv.init_paths"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.init_paths">[docs]</a>    <span class="k">def</span> <span class="nf">init_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model_variant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_to_gdrive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="MLEnv.init_paths"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.init_paths">[docs]</a>    <span class="k">def</span> <span class="nf">init_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model_variant</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_model</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="o">=</span><span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="o">=</span><span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">=</span> <span class="s2">&quot;./logs&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_to_gdrive</span> <span class="o">=</span> <span class="n">log_to_gdrive</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_gdrive</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Root path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Root path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_model</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;Colab Notebooks/</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">log_to_gdrive</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;Colab Notebooks/</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">/logs&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logs will be mirrored to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="si">}</span><span class="s2">, they can be used with a remote Tensorboard instance.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root_path</span>
             <span class="k">if</span> <span class="n">model_variant</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -462,31 +378,11 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model save-path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model save-path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Weights save-path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Data cache path </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span></div>
-
-<div class="viewcode-block" id="MLEnv.gdrive_log_mirror"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.gdrive_log_mirror">[docs]</a>    <span class="k">def</span> <span class="nf">gdrive_log_mirror</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># copy directory self.log_path to self.log_mirror_path</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_to_gdrive</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">4</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">:]</span><span class="o">==</span><span class="s1">&#39;/logs&#39;</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removing old log files from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Staring tree-copy of files from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="si">}</span><span class="s2">. [This can be astonishingly slow!]&quot;</span><span class="p">)</span>
-                    <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensorboard data mirrored to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Log-mirror path is not valid: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_mirror_path</span><span class="si">}</span><span class="s2">, it needs to end with &#39;/logs&#39; as sanity-check&quot;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="MLEnv.epoch_time_func"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.epoch_time_func">[docs]</a>    <span class="k">def</span> <span class="nf">epoch_time_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_to_gdrive</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">flush_timer</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">flush_timeout</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">flush_timer</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">gdrive_log_mirror</span><span class="p">()</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Weights save-path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Data cache path </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span></div></div>
 
 </pre></div>
 

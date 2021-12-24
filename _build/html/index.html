@@ -51,7 +51,7 @@
 optional notebook/colab environment</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="env_tools.MLEnv">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">env_tools.</span></span><span class="sig-name descname"><span class="pre">MLEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fastest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">env_tools.</span></span><span class="sig-name descname"><span class="pre">MLEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fastest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Initialize platform and accelerator.</p>
 <p>This checks initialization and available accelerator hardware for different ml platforms.
@@ -60,28 +60,18 @@ indicating that the ml environment is available for Tensorflow, Pytorch or JAX r
 <cite>self.is_notebook</cite> and <cite>self.is_colab</cite> indicate if the environment is a notebook or colab environment.
 <cite>self.is_gpu</cite> indicates if the environment is a GPU environment, <cite>self.is_tpu</cite> indicates if the 
 environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerator is available.</p>
+<p>The logger <cite>MLEnv</cite> provdides details about the hardware and ml environment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>platform</strong> – Known platforms are: <cite>‘tf’</cite> (tensorflow), <cite>‘pt’</cite> (pytorch), and <cite>‘jax’</cite></p></li>
 <li><p><strong>accelerator</strong> – known accelerators are: <cite>‘fastest’</cite> (pick best available hardware), <cite>‘cpu’</cite>, <cite>‘gpu’</cite>, <cite>‘tpu’</cite>.</p></li>
-<li><p><strong>verbose</strong> – show information about configuration</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="env_tools.MLEnv.check_hardware">
-<span class="sig-name descname"><span class="pre">check_hardware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.check_hardware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.check_hardware" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="env_tools.MLEnv.check_notebook_type">
-<span class="sig-name descname"><span class="pre">check_notebook_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.check_notebook_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.check_notebook_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="env_tools.MLEnv.describe">
-<span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.describe" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.describe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Describe machine learning environment.</p>
 <p>This lists the machine learning environment, os, python version, ml lib versions and hardware
 either as text string or a dictionary of key-value pairs.</p>
@@ -89,32 +79,19 @@ either as text string or a dictionary of key-value pairs.</p>
 <p>For <cite>return_dict=True</cite>: <cite>{‘os’: ‘Darwin’, ‘python’: ‘3.9.9’, ‘conda’: True, ‘colab’: False, ‘jupyter’: True, ‘ml_platform’: ‘tensorflow’, ‘ml_version’: ‘2.7.0’, ‘ml_accelerator’: ‘GPU’, ‘ml_accelerator_desc’: ‘METAL’ }</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>return_dict</strong> – If True, return a dictionary of the results, otherwise return a string.</p></li>
-<li><p><strong>verbose</strong> – If True, print debug infos.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>return_dict</strong> – If True, return a dictionary of the results, otherwise return a string.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="env_tools.MLEnv.epoch_time_func">
-<span class="sig-name descname"><span class="pre">epoch_time_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.epoch_time_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.epoch_time_func" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="env_tools.MLEnv.gdrive_log_mirror">
-<span class="sig-name descname"><span class="pre">gdrive_log_mirror</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.gdrive_log_mirror"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.gdrive_log_mirror" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="env_tools.MLEnv.init_paths">
-<span class="sig-name descname"><span class="pre">init_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_variant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_to_gdrive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.init_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.init_paths" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">init_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_variant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.init_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.init_paths" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="env_tools.MLEnv.mount_gdrive">
-<span class="sig-name descname"><span class="pre">mount_gdrive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mount_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/content/drive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/content/drive/My</span> <span class="pre">Drive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.mount_gdrive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.mount_gdrive" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">mount_gdrive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mount_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/content/drive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/content/drive/My</span> <span class="pre">Drive'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.mount_gdrive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.mount_gdrive" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
