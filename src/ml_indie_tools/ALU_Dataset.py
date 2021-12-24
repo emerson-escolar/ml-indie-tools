@@ -3,13 +3,7 @@ import os
 import random
 import numpy as np
 
-# import tensorflow as tf
 
-# from ml_indie_tools import MLEnv
-
-from ml_indie_tools.env_tools import MLEnv
-
-# ## Training data
 class ALU_Dataset():
     """ Generate training data for all ALU operations """
     # The ALU takes two integers and applies one of the supported
@@ -18,8 +12,7 @@ class ALU_Dataset():
     # arbitrary op1, op2 (positive integers, 0..2**bit_count - 1) and 
     # the twelve supported ops 
 
-    def __init__(self, ml_env:MLEnv, bit_count=31, pre_weight=False):
-        self.ml_env=ml_env
+    def __init__(self, bit_count=31, pre_weight=False):
         self.model_ops = ["+", "-", "*", "/", "%",
                           "AND", "OR", "XOR", ">", "<", "=", "!="]
         self.model_is_boolean = [False, False, False, False, False,
@@ -116,7 +109,7 @@ class ALU_Dataset():
 
     def generator(self, samples=20000, equal_distrib=False, valid_ops=None):
         while True:
-            x, Y = self.create_training_data(samples=samples, valid_ops=valid_ops, verbose=False, title=None)
+            x, Y = self.create_training_data(samples=samples, valid_ops=valid_ops, title=None)
             #x, Y, _, _, _ = self.get_data_point(equal_distrib=equal_distrib, valid_ops=valid_ops)
             yield x, Y
 
@@ -327,7 +320,7 @@ class ALU_Dataset():
         return dpx, dpy
 
     if 'tensorflow' in sys.modules:
-        def create_dataset(self, samples=10000, batch_size=2000, vector=False, positional_encoding=True, is_training=True, valid_ops=None, name=None, cache_path=None, use_cache=True, regenerate_cached_data=False):
+        def create_dataset(self, samples=10000, batch_size=2000, vector=False, positional_encoding=True, is_training=True, valid_ops=None, name=None, cache_path=None, use_cache=True, regenerate_cached_data=False, for_tpu=False):
             is_loaded=False
             if use_cache is True and cache_path is None:
                 print("can't use cache if no cache_path is given, disabling cache!")
@@ -386,7 +379,7 @@ class ALU_Dataset():
             dataset=tf.data.Dataset.from_tensor_slices((x, Y)).cache()
             if is_training is True:
                 dataset=dataset.shuffle(shuffle_buffer, reshuffle_each_iteration=True)
-                if self.ml_env.is_tpu is True:
+                if for_tpu is True:
                     dataset=dataset.repeat() # Mandatory for Keras TPU for now
             dataset=dataset.batch(batch_size, drop_remainder=True) # drop_remainder is important on TPU, batch size must be fixed
             dataset=dataset.prefetch(-1) # fetch next batches while training on the current one (-1: autotune prefetch buffer size)
