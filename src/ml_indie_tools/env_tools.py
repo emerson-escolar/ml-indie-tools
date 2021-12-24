@@ -21,7 +21,7 @@ class MLEnv():
     :param verbose: show information about configuration
     """
 
-    def __init__(self, platform='tf', accelerator='fastest', verbose=True):
+    def __init__(self, platform='tf', accelerator='fastest', verbose=False):
         self.known_platforms = ['tf', 'pt', 'jax']
         self.known_accelerators = ['cpu', 'gpu', 'tpu', 'fastest']
         if platform not in self.known_platforms:
