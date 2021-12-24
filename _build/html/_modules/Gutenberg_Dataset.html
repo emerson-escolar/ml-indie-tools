@@ -60,7 +60,7 @@
 <span class="sd">        :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts</span>
 <span class="sd">        &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_url</span><span class="o">=</span><span class="s2">&quot;http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg&quot;</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="s2">&quot;gutenberg&quot;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;GutenbergLib&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;Datasets&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root_url</span> <span class="o">=</span> <span class="n">root_url</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">=</span><span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">NEAR</span><span class="o">=</span><span class="mi">2048</span>
@@ -81,7 +81,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create cache directory </span><span class="si">{</span><span class="n">cache_dir</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_parse_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">record</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_parse_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">record</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; internal function to recreate some consistent record information from near-freestyle text &quot;&quot;&quot;</span>
         <span class="n">rl</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">white</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="mi">160</span><span class="p">))</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="mi">9</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot; &quot;</span> <span class="c1"># non-breaking space, TAB, and space</span>
@@ -99,16 +99,14 @@
             <span class="n">fa</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">ebook_no</span><span class="p">,</span><span class="s2">&quot;\A[0-9]+[A-C]\Z&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">fa</span><span class="o">=</span><span class="kc">None</span>
-            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to apply regex on &gt;</span><span class="si">{</span><span class="n">ebook_no</span><span class="si">}</span><span class="s2">&lt;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to apply regex on &gt;</span><span class="si">{</span><span class="n">ebook_no</span><span class="si">}</span><span class="s2">&lt;&quot;</span><span class="p">)</span>
             
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rl</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">&lt;</span><span class="mi">5</span> <span class="ow">or</span> <span class="n">fa</span><span class="o">==</span><span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ebook_no</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">7</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-------------------------------------&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;- - - - - - - - - - - - - - - - - - -&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dodgy record: </span><span class="si">{</span><span class="n">rl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    ebook-id:  &gt;</span><span class="si">{</span><span class="n">ebook_no</span><span class="si">}</span><span class="s2">&lt;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;-------------------------------------&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;- - - - - - - - - - - - - - - - - - -&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dodgy record: </span><span class="si">{</span><span class="n">rl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    ebook-id:  &gt;</span><span class="si">{</span><span class="n">ebook_no</span><span class="si">}</span><span class="s2">&lt;&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rl</span><span class="p">)):</span>
@@ -117,7 +115,7 @@
         <span class="n">p</span><span class="o">=</span><span class="mi">0</span>
         <span class="k">while</span> <span class="n">p</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">(</span><span class="n">rl</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rl</span><span class="p">[</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid rec: </span><span class="si">{</span><span class="n">record</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid rec: </span><span class="si">{</span><span class="n">record</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">p</span><span class="o">+=</span><span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">rl</span><span class="p">[</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="s2">&quot;[&quot;</span><span class="p">:</span>
@@ -127,13 +125,10 @@
                         <span class="n">p</span><span class="o">+=</span><span class="mi">1</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">p</span><span class="o">+=</span><span class="mi">1</span>
-        
         <span class="n">rec</span><span class="o">=</span><span class="p">{}</span>
         <span class="n">l0</span><span class="o">=</span><span class="n">rl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, by &quot;</span><span class="p">)</span>
         <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">l0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;ebook_id&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">ebook_no</span>
-        <span class="c1"># if len(l0)&gt;2:</span>
-        <span class="c1">#    print(f&quot;Chaos title: {rl[0]}&quot;)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l0</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;author&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">l0</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rl</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
@@ -141,13 +136,9 @@
                 <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;[&#39;</span><span class="p">:</span>
                     <span class="n">ind</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">ind</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                        <span class="c1"># print(f&quot;Garbage trail {r}&quot;)</span>
                         <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">[:</span><span class="n">ind</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
-                        <span class="c1"># print(f&quot;Fixed: {r}&quot;)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="c1"># print(f&quot;Missing closing ] {r}&quot;)</span>
                         <span class="n">r</span><span class="o">+=</span><span class="s1">&#39;]&#39;</span>
-                        <span class="c1"># print(f&quot;Fixed: {r}&quot;)</span>
             <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;[&#39;</span> <span class="ow">and</span> <span class="n">r</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;]&#39;</span><span class="p">:</span>
                 <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                 <span class="n">i1</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
@@ -160,22 +151,18 @@
                     <span class="n">i2</span><span class="o">=-</span><span class="mi">1</span>
                 <span class="k">if</span> <span class="n">i1</span><span class="o">==-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">i2</span><span class="o">==-</span><span class="mi">1</span><span class="p">:</span>
                     <span class="k">pass</span>
-                    <span class="c1"># print(f&quot;Invalid attribut in {rl}::{r}&quot;)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">i2</span><span class="o">-</span><span class="n">i1</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
                         <span class="n">key</span><span class="o">=</span><span class="n">r</span><span class="p">[:</span><span class="n">i1</span><span class="p">]</span>
                         <span class="n">val</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="n">i2</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
                         <span class="k">if</span> <span class="s1">&#39;[&#39;</span> <span class="ow">in</span> <span class="n">key</span> <span class="ow">or</span> <span class="s1">&#39;]&#39;</span> <span class="ow">in</span> <span class="n">key</span> <span class="ow">or</span> <span class="s1">&#39;[&#39;</span> <span class="ow">in</span> <span class="n">val</span> <span class="ow">or</span> <span class="s1">&#39;]&#39;</span> <span class="ow">in</span> <span class="n">val</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">15</span><span class="p">:</span>
                             <span class="k">pass</span>
-                            <span class="c1"># print(&quot;messy key/val&quot;)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">rec</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">=</span><span class="n">val</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">pass</span>
-                        <span class="c1"># print(f&quot;Bad attribute name terminator, missing &#39;: &#39; {r}&quot;)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">pass</span>
-                <span class="c1"># print(f&quot;Invalid attribut in {rl}::{r}&quot;)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;language&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rec</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;language&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;English&quot;</span>
@@ -240,11 +227,7 @@
                     <span class="k">continue</span>
             <span class="k">if</span> <span class="n">state</span><span class="o">==</span><span class="n">State</span><span class="o">.</span><span class="n">SYNC_REC</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span><span class="o">==</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">white</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">:</span>
-                        <span class="n">parsed_rec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_record</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">parsed_rec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_record</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                        
+                    <span class="n">parsed_rec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_record</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">parsed_rec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parsed_rec</span><span class="p">)</span>
                     <span class="n">empty_lines</span><span class="o">=</span><span class="mi">1</span>
@@ -308,13 +291,13 @@
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()))</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Wrote read cache timestamp.&quot;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write cache timestamp to </span><span class="si">{</span><span class="n">ts_file</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write cache timestamp to </span><span class="si">{</span><span class="n">ts_file</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cache_file</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">raw_index</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Wrote read cached index.&quot;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write cached index to </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write cached index to </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">lines</span><span class="o">=</span><span class="n">raw_index</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_index</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
 
@@ -569,7 +552,7 @@
             <span class="k">if</span> <span class="n">dl</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="n">dls</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">if</span> <span class="n">dls</span><span class="o">&gt;</span><span class="n">dlc</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Download limit reached (</span><span class="si">{</span><span class="n">dlc</span><span class="si">}</span><span class="s2">), stopping download...&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Download limit reached (</span><span class="si">{</span><span class="n">dlc</span><span class="si">}</span><span class="s2">), stopping download...&quot;</span><span class="p">)</span>
                     <span class="k">break</span>
         <span class="k">return</span> <span class="n">search_dict</span>  </div>
 
@@ -614,7 +597,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">uv</span><span class="o">=</span><span class="p">[]</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_record_keys</span><span class="p">():</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not a key used in any record!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not a key used in any record!&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
