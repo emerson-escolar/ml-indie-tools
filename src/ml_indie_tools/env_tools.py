@@ -240,21 +240,8 @@ class MLEnv():
         
         Example output for default string: `'Darwin, Python 3.9.9 (conda), Jupyter-instance, Tensorflow 2.7.0 GPU (METAL)'`
 
-        For `return_dict=True`:
+        For `return_dict=True`: `{'os': 'Darwin', 'python': '3.9.9', 'conda': True, 'colab': False, 'jupyter': True, 'ml_platform': 'tensorflow', 'ml_version': '2.7.0', 'ml_accelerator': 'GPU', 'ml_accelerator_desc': 'METAL' }`
         
-        ```
-        {'os': 'Darwin',
-         'python': '3.9.9',
-         'conda': True,
-         'colab': False,
-         'jupyter': True,
-         'ml_platform': 'tensorflow',
-         'ml_version': '2.7.0',
-         'ml_accelerator': 'GPU',
-         'ml_accelerator_desc': 'METAL'
-        }
-        ```
-
         :param return_dict: If True, return a dictionary of the results, otherwise return a string.
         :param verbose: If True, print debug infos.
         """
