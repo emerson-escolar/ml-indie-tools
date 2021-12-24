@@ -233,6 +233,31 @@ class MLEnv():
         return self.is_notebook, self.is_colab
 
     def describe(self, return_dict=False, verbose=False):
+        """Describe machine learning environment.
+
+        This lists the machine learning environment, os, python version, ml lib versions and hardware
+        either as text string or a dictionary of key-value pairs.
+        
+        Example output for default string: `'Darwin, Python 3.9.9 (conda), Jupyter-instance, Tensorflow 2.7.0 GPU (METAL)'`
+
+        For `return_dict=True`:
+        
+        ```
+        {'os': 'Darwin',
+         'python': '3.9.9',
+         'conda': True,
+         'colab': False,
+         'jupyter': True,
+         'ml_platform': 'tensorflow',
+         'ml_version': '2.7.0',
+         'ml_accelerator': 'GPU',
+         'ml_accelerator_desc': 'METAL'
+        }
+        ```
+
+        :param return_dict: If True, return a dictionary of the results, otherwise return a string.
+        :param verbose: If True, print debug infos.
+        """
         res={}
         ospl=sys.platform
         ospl=ospl[0].upper()+ospl[1:]
