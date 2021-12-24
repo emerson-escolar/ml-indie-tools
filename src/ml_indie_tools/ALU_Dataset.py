@@ -1,24 +1,28 @@
 import sys
 import os
+import logging
 import random
 import numpy as np
 
-# import tensorflow as tf
-
-# from ml_indie_tools import MLEnv
-
 from ml_indie_tools.env_tools import MLEnv
 
-# ## Training data
+
 class ALU_Dataset():
-    """ Generate training data for all ALU operations """
-    # The ALU takes two integers and applies one of the supported
-    # model_ops. Eg op1=123, op2=100, op='-' -> result 23
-    # The net is supposed to learn to 'calculate' the results for
-    # arbitrary op1, op2 (positive integers, 0..2**bit_count - 1) and 
-    # the twelve supported ops 
+    """ Generate training data for all ALU operations
+    
+    The ALU takes two integers and applies one of the supported
+    model_ops. Eg op1=123, op2=100, op='-' -> result 23
+    The net is supposed to learn to 'calculate' the results for
+    arbitrary op1, op2 (positive integers, 0..2**bit_count - 1) and 
+    the twelve supported ops
+
+    :param ml_env: MLEnv object
+    :bit_count: number of bits in the integers operands
+    :param pre_weight: if True, the probabilities for generating samples for each of the ops are reweighted to favor 'difficult' ops
+    """
 
     def __init__(self, ml_env:MLEnv, bit_count=31, pre_weight=False):
+        self.log = logging.getLogger("Datasets")
         self.ml_env=ml_env
         self.model_ops = ["+", "-", "*", "/", "%",
                           "AND", "OR", "XOR", ">", "<", "=", "!="]
@@ -84,11 +88,11 @@ class ALU_Dataset():
             valid_ops=None
         if valid_ops is not None:
             if equal_distrib is False:
-                print("Op restriction via valid_ops forces equal_distrib=True")
+                self.log.info("Op restriction via valid_ops forces equal_distrib=True")
                 equal_distrib=True
             for op in valid_ops:
                 if op not in self.model_ops:
-                    print(f'Cannot restrict valid_ops to {op}, unknown operation, ignoring all valid_ops')
+                    self.log.warning(f'Cannot restrict valid_ops to {op}, unknown operation, ignoring all valid_ops')
                     valid_ops=None
                     break
 
@@ -116,8 +120,7 @@ class ALU_Dataset():
 
     def generator(self, samples=20000, equal_distrib=False, valid_ops=None):
         while True:
-            x, Y = self.create_training_data(samples=samples, valid_ops=valid_ops, verbose=False, title=None)
-            #x, Y, _, _, _ = self.get_data_point(equal_distrib=equal_distrib, valid_ops=valid_ops)
+            x, Y = self.create_training_data(samples=samples, valid_ops=valid_ops, title=None)
             yield x, Y
 
     def encode_op(self, op1, op2, op_index, vector=False, positional_suffix=False):
@@ -174,8 +177,6 @@ class ALU_Dataset():
         op1 = op1 % modul
         op2 = op2 % modul
         result = op1*op2
-        return op1, op2, result
-
     def div_smpl(self, op1, op2):
         """ integer division training example """
         while op2 == 0:
@@ -254,27 +255,27 @@ class ALU_Dataset():
         """ create training data from given ints op1, op2 and op_string """
         op_index = self.op_string_to_index(op_string)
         if op_index == -1:
-            print(f"Invalid operation {op_string}")
+            self.log.error(f"Invalid operation {op_string}")
             return np.array([]), np.array([]), -1, -1, None
         return self.encode_op(op1, op2, op_index, vector, positional_suffix)
 
-    def create_training_data(self, samples=10000, valid_ops=None, verbose=True, title=None):
+    def create_training_data(self, samples=10000, valid_ops=None, title=None, show_progress=True):
         """ create a number of training samples """
         x, y, _, _, _ = self.get_data_point()
         dpx = np.zeros((samples, len(x)), dtype=np.float32)
         dpy = np.zeros((samples, len(y)), dtype=np.float32)
-        if verbose is True:
+        if show_progress is True:
             if title is None:
                 print(f"Creating {samples} data points (. = 1000 progress)")
             else:
                 print(f"{title}: Creating {samples} data points (. = 1000 progress)")
 
         for i in range(0, samples):
-            if verbose is True:
+            if show_progress is True:
                 if i%100000 == 0:
                     print(f"{i:>10} ", end="")
             if (i+1) % 1000 == 0:
-                if verbose is True:
+                if show_progress is True:
                     print(".", end="")
                     sys.stdout.flush()
                     if (i+1) % 100000 == 0:
@@ -286,11 +287,11 @@ class ALU_Dataset():
                     equal_distrib=True, valid_ops=valid_ops)
             dpx[i, :] = x
             dpy[i, :] = y
-        if verbose is True:
+        if show_progress is True:
             print()
         return dpx, dpy
 
-    def create_vector_training_data(self, samples=10000, valid_ops=None, verbose=True, title=None, positional_encoding=True):
+    def create_vector_training_data(self, samples=10000, valid_ops=None, title=None, positional_encoding=True, show_progress=True):
         """ create a number of training samples """
         x, y, _, _, _ = self.get_data_point()
         if positional_encoding is True:
@@ -299,18 +300,18 @@ class ALU_Dataset():
             sz=self.embedding_size
         dpx = np.zeros((samples, 3, sz), dtype=np.float32)
         dpy = np.zeros((samples, len(y)), dtype=np.float32)
-        if verbose is True:
+        if show_progress is True:
             if title is None:
                 print(f"Creating {samples} data points (. = 1000 progress)")
             else:
                 print(f"{title}: Creating {samples} data points (. = 1000 progress)")
 
         for i in range(0, samples):
-            if verbose is True:
+            if show_progress is True:
                 if i%100000 == 0:
                     print(f"{i:>10} ", end="")
             if (i+1) % 1000 == 0:
-                if verbose is True:
+                if show_progress is True:
                     print(".", end="")
                     sys.stdout.flush()
                     if (i+1) % 100000 == 0:
@@ -322,7 +323,7 @@ class ALU_Dataset():
                     equal_distrib=True, valid_ops=valid_ops, vector=True, positional_encoding=positional_encoding)
             dpx[i, :, :] = x
             dpy[i, :] = y
-        if verbose is True:
+        if show_progress is True:
             print()
         return dpx, dpy
 
@@ -330,7 +331,7 @@ class ALU_Dataset():
         def create_dataset(self, samples=10000, batch_size=2000, vector=False, positional_encoding=True, is_training=True, valid_ops=None, name=None, cache_path=None, use_cache=True, regenerate_cached_data=False):
             is_loaded=False
             if use_cache is True and cache_path is None:
-                print("can't use cache if no cache_path is given, disabling cache!")
+                self.log.warning("can't use cache if no cache_path is given, disabling cache!")
                 use_cache = False
             if use_cache is True:
                 if valid_ops is not None:
@@ -365,11 +366,11 @@ class ALU_Dataset():
                     Y = np.load(cache_file_Y, allow_pickle=True)
                     if len(x)==samples:
                         is_loaded=True
-                        print(f"Data {name} loaded from cache")
+                        self.log.debug(f"Data {name} loaded from cache")
                     else:
-                        print(f"Sample count has changed from {len(x)} to {samples}, regenerating {name} data...")
+                        self.log.warning(f"Sample count has changed from {len(x)} to {samples}, regenerating {name} data...")
                 except Exception as e:
-                    print(f"Something went wrong when loading {cache_file_x}, {cache_file_Y}: {e}")
+                    self.log.error(f"Something went wrong when loading {cache_file_x}, {cache_file_Y}: {e}")
             if is_loaded is False:
                 if vector is True:
                     x, Y = self.create_vector_training_data(
@@ -377,11 +378,11 @@ class ALU_Dataset():
                 else:
                     x, Y = self.create_training_data(samples=samples, valid_ops=valid_ops, title=name)
                 if use_cache is True:
-                    print(f"Writing data-cache {cache_file_x}, {cache_file_Y}...", end="")
+                    self.log.debug(f"Writing data-cache {cache_file_x}, {cache_file_Y}...")
                     np.save(cache_file_x, x, allow_pickle=True)
-                    print(", x", end="")
+                    self.log.debug("x done")
                     np.save(cache_file_Y, Y, allow_pickle=True)
-                    print(", Y, done.")
+                    self.log.debug("Y done.")
             shuffle_buffer=10000
             dataset=tf.data.Dataset.from_tensor_slices((x, Y)).cache()
             if is_training is True:
@@ -409,7 +410,7 @@ class ALU_Dataset():
             return train, val
     else:
         def get_datasets(self, pre_weight=True, samples=100000, validation_samples=10000, batch_size=2000, vector=False, positional_encoding=True, valid_ops=None, cache_path=None, use_cache=True, regenerate_cached_data=False):
-            print("No tensorflow, no datasets!")
+            self.log.error("No tensorflow, no datasets!")
             return None, None
 
     def decode_results(self, result_int_vects):
@@ -417,7 +418,7 @@ class ALU_Dataset():
         result_vect_ints = []
         for vect in result_int_vects:
             if (len(vect) != self.output_size):
-                print(f"Ignoring unexpected vector of length {len(vect)}")
+                self.log.warning(f"Ignoring unexpected vector of length {len(vect)}")
             else:
                 int_result = 0
                 for i in range(0, self.output_size):
@@ -426,7 +427,7 @@ class ALU_Dataset():
                 result_vect_ints.append(int_result)
         return result_vect_ints
 
-    def check_results(self, model, samples=1000, vector=False, positional_encoding=True, valid_ops=None, verbose=False):
+    def check_results(self, model, samples=1000, vector=False, positional_encoding=True, valid_ops=None):
         """ Run a number of tests on trained model """
         ok = 0
         err = 0
@@ -444,28 +445,26 @@ class ALU_Dataset():
                 err += 1
                 operr[op] += 1
                 r = "Error"
-            if verbose is True:
-                if self.model_is_boolean[op] is True:
-                    if res[0]==self.false_vect:
-                        str_result="False"
-                    elif res[0]==self.true_vect:
-                        str_result="True"
-                    else:
-                        str_result="undefined"
+            if self.model_is_boolean[op] is True:
+                if res[0]==self.false_vect:
+                    str_result="False"
+                elif res[0]==self.true_vect:
+                    str_result="True"
                 else:
-                    str_result=res[0]
-                if res[0]==z:
-                    print(f"{s} == {str_result}: {r}")
-                else:
-                    print(f"{s} != {str_result}: {r}")
-                    if self.model_is_boolean[op] is False:
-                        print(bin(res[0]))
-                        print(bin(z))
+                    str_result="undefined"
+            else:
+                str_result=res[0]
+            if res[0]==z:
+                self.log.debug(f"{s} == {str_result}: {r}")
+            else:
+                self.log.debug(f"{s} != {str_result}: {r}")
+                if self.model_is_boolean[op] is False:
+                    self.log.debug(bin(res[0]))
+                    self.log.debug(bin(z))
         opsum = ok+err
         if opsum == 0:
             opsum = 1
-        print(f"Ok: {ok}, Error: {err} -> {ok/opsum*100.0}%")
-        print("")
+        self.log.info(f"Ok: {ok}, Error: {err} -> {ok/opsum*100.0}%")
         for i in range(0, len(self.model_ops)):
             opsumi = opok[i]+operr[i]
             if opsumi == 0:
@@ -474,12 +473,9 @@ class ALU_Dataset():
             # ops with bad test results, so that more training data is
             # generated on difficult cases:
             self.model_dis[i] = int(operr[i]/opsumi*100)+10
-            print(
-                f"OP{self.model_ops[i]}: Ok: {opok[i]}, Error: {operr[i]}", end="")
-            print(f" -> {opok[i]/opsumi*100.0}%")
         if valid_ops == None:
-            print("Change probability for ops in new training data:")
-            print(f"Ops:     {self.model_ops}")
-            print(f"Weights: {self.model_dis}")
+            self.log.debug("Change probability for ops in new training data:")
+            self.log.debug(f"Ops:     {self.model_ops}")
+            self.log.debug(f"Weights: {self.model_dis}")
         return ok/opsum
 

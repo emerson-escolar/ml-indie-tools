@@ -15,7 +15,7 @@ class Gutenberg_Dataset():
         :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts
         """
     def __init__(self, root_url="http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg", cache_dir="gutenberg"):
-        self.log = logging.getLogger('GutenbergLib')
+        self.log = logging.getLogger('Datasets')
         self.root_url = root_url
         self.index=None
         self.NEAR=2048
