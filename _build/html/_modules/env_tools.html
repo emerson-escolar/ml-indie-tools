@@ -28,6 +28,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">env_tools</a></li> 
@@ -44,6 +47,7 @@
 <span class="sd">optional notebook/colab environment&#39;&#39;&#39;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 
@@ -58,7 +62,7 @@
 <span class="sd">    environment is a TPU environment, and `self.is_cpu` that no accelerator is available.</span>
 <span class="sd">    </span>
 <span class="sd">    :param platform: Known platforms are: `&#39;tf&#39;` (tensorflow), `&#39;pt&#39;` (pytorch), and `&#39;jax&#39;`</span>
-<span class="sd">    :param accelerator: known accelerators are: `&#39;fastest&#39;` (pick best available hardware), `&#39;cpu&#39;`, &#39;gpu&#39;`, `&#39;tpu&#39;`.</span>
+<span class="sd">    :param accelerator: known accelerators are: `&#39;fastest&#39;` (pick best available hardware), `&#39;cpu&#39;`, `&#39;gpu&#39;`, `&#39;tpu&#39;`.</span>
 <span class="sd">    :param verbose: show information about configuration</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -89,6 +93,11 @@
                 <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensorflow not available: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">tensorflow.python.profiler</span> <span class="kn">import</span> <span class="n">profiler_client</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tf_prof</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tf_prof</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="c1"># %tensorflow_version 2.x</span>
             <span class="c1"># import tensorflow as tf</span>
             <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
@@ -107,6 +116,7 @@
                     <span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">experimental_connect_to_cluster</span><span class="p">(</span><span class="n">tpu</span><span class="p">)</span>
                     <span class="n">tf</span><span class="o">.</span><span class="n">tpu</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">initialize_tpu_system</span><span class="p">(</span><span class="n">tpu</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">tpu_strategy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">TPUStrategy</span><span class="p">(</span><span class="n">tpu</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tpu_num_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tpu_strategy</span><span class="o">.</span><span class="n">extended</span><span class="o">.</span><span class="n">worker_devices</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TPU strategy available&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
@@ -267,6 +277,104 @@
                 <span class="k">pass</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span></div>
 
+<div class="viewcode-block" id="MLEnv.describe"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.describe">[docs]</a>    <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Describe machine learning environment.</span>
+
+<span class="sd">        This lists the machine learning environment, os, python version, ml lib versions and hardware</span>
+<span class="sd">        either as text string or a dictionary of key-value pairs.</span>
+<span class="sd">        </span>
+<span class="sd">        Example output for default string: `&#39;Darwin, Python 3.9.9 (conda), Jupyter-instance, Tensorflow 2.7.0 GPU (METAL)&#39;`</span>
+
+<span class="sd">        For `return_dict=True`:</span>
+<span class="sd">        </span>
+<span class="sd">        ```</span>
+<span class="sd">        {&#39;os&#39;: &#39;Darwin&#39;,</span>
+<span class="sd">         &#39;python&#39;: &#39;3.9.9&#39;,</span>
+<span class="sd">         &#39;conda&#39;: True,</span>
+<span class="sd">         &#39;colab&#39;: False,</span>
+<span class="sd">         &#39;jupyter&#39;: True,</span>
+<span class="sd">         &#39;ml_platform&#39;: &#39;tensorflow&#39;,</span>
+<span class="sd">         &#39;ml_version&#39;: &#39;2.7.0&#39;,</span>
+<span class="sd">         &#39;ml_accelerator&#39;: &#39;GPU&#39;,</span>
+<span class="sd">         &#39;ml_accelerator_desc&#39;: &#39;METAL&#39;</span>
+<span class="sd">        }</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        :param return_dict: If True, return a dictionary of the results, otherwise return a string.</span>
+<span class="sd">        :param verbose: If True, print debug infos.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span><span class="o">=</span><span class="p">{}</span>
+        <span class="n">ospl</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">platform</span>
+        <span class="n">ospl</span><span class="o">=</span><span class="n">ospl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">+</span><span class="n">ospl</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">pyver</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ospyver</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ospl</span><span class="si">}</span><span class="s2">, Python </span><span class="si">{</span><span class="n">pyver</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">res</span><span class="p">[</span><span class="s1">&#39;os&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ospl</span>
+        <span class="n">res</span><span class="p">[</span><span class="s1">&#39;python&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pyver</span>
+        <span class="k">if</span> <span class="s1">&#39;conda&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
+            <span class="n">ospyver</span> <span class="o">+=</span> <span class="s1">&#39; (conda)&#39;</span>
+            <span class="n">res</span><span class="p">[</span><span class="s1">&#39;conda&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span><span class="p">[</span><span class="s1">&#39;conda&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span><span class="p">:</span>
+                <span class="n">ospyver</span> <span class="o">+=</span> <span class="s1">&#39;, Colab-instance&#39;</span>
+                <span class="n">res</span><span class="p">[</span><span class="s1">&#39;colab&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">res</span><span class="p">[</span><span class="s1">&#39;jupyter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ospyver</span> <span class="o">+=</span> <span class="s1">&#39;, Jupyter-instance&#39;</span>
+                <span class="n">res</span><span class="p">[</span><span class="s1">&#39;colab&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">res</span><span class="p">[</span><span class="s1">&#39;jupyter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span><span class="p">[</span><span class="s1">&#39;colab&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">res</span><span class="p">[</span><span class="s1">&#39;jupyter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tensorflow</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+            <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ospyver</span><span class="si">}</span><span class="s1">, Tensorflow </span><span class="si">{</span><span class="n">tf</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s1"> &#39;</span>
+            <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_platform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;tensorflow&#39;</span>
+            <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">__version__</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_accelerator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;TPU&#39;</span>
+                <span class="n">tpu_profile_service_address</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;COLAB_TPU_ADDR&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;8470&#39;</span><span class="p">,</span> <span class="s1">&#39;8466&#39;</span><span class="p">)</span>
+                <span class="n">tpu_desc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;TPU, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tpu_num_nodes</span><span class="si">}</span><span class="s2"> nodes&quot;</span>
+                <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_accelerator_desc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpu_desc</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_prof</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">state</span><span class="o">=</span><span class="n">profiler_client</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="n">tpu_profile_service_address</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s1">&#39;TPU v2&#39;</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
+                        <span class="n">tpu_desc</span><span class="o">=</span><span class="n">tpu_desc</span><span class="o">+</span><span class="s1">&#39;v2 (8GB)&#39;</span>  <span class="c1"># that&#39;s what you currently get on Colab    </span>
+                        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: you got old TPU v2 which is limited to 8GB Ram.&quot;</span><span class="p">)</span>
+                <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="o">+</span><span class="n">tpu_desc</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_accelerator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GPU&#39;</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">gpu_name</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">get_device_details</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">list_physical_devices</span><span class="p">(</span><span class="s1">&#39;GPU&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])[</span><span class="s1">&#39;device_name&#39;</span><span class="p">]</span>
+                    <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_accelerator_desc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpu_name</span>
+                    <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="o">+</span><span class="sa">f</span><span class="s1">&#39;GPU (</span><span class="si">{</span><span class="n">gpu_name</span><span class="si">}</span><span class="s1">)&#39;</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="o">+</span><span class="s1">&#39;GPU (unknown)&#39;</span>
+                    <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_accelerator_desc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cpu</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="o">+</span><span class="s1">&#39;CPU&#39;</span>
+                <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_accelerator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;CPU&#39;</span>
+                <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_accelerator_desc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="o">+</span><span class="s1">&#39;unknown device (error)&#39;</span>
+                <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_accelerator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span>
+                <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_accelerator_desc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_pytorch</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Pytorch &#39;</span><span class="o">+</span><span class="n">torch</span><span class="o">.</span><span class="n">__version__</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_jax</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;JAX &#39;</span><span class="o">+</span><span class="n">jax</span><span class="o">.</span><span class="n">__version__</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Unknown&#39;</span>
+            <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_platform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span>
+            <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ml_version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span>
+            <span class="n">res</span><span class="p">[</span><span class="s1">&#39;accelerator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span>
+        <span class="k">if</span> <span class="n">return_dict</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">desc</span></div>
+
     <span class="c1"># Hardware check:</span>
 <div class="viewcode-block" id="MLEnv.check_hardware"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.check_hardware">[docs]</a>    <span class="k">def</span> <span class="nf">check_hardware</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="o">=</span> <span class="kc">False</span>
@@ -421,6 +529,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">env_tools</a></li> 

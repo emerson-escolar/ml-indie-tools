@@ -64,7 +64,7 @@ environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerat
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>platform</strong> – Known platforms are: <cite>‘tf’</cite> (tensorflow), <cite>‘pt’</cite> (pytorch), and <cite>‘jax’</cite></p></li>
-<li><p><strong>accelerator</strong> – known accelerators are: <cite>‘fastest’</cite> (pick best available hardware), <cite>‘cpu’</cite>, ‘gpu’<cite>, `’tpu’</cite>.</p></li>
+<li><p><strong>accelerator</strong> – known accelerators are: <cite>‘fastest’</cite> (pick best available hardware), <cite>‘cpu’</cite>, <cite>‘gpu’</cite>, <cite>‘tpu’</cite>.</p></li>
 <li><p><strong>verbose</strong> – show information about configuration</p></li>
 </ul>
 </dd>
@@ -78,6 +78,36 @@ environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerat
 <dt class="sig sig-object py" id="env_tools.MLEnv.check_notebook_type">
 <span class="sig-name descname"><span class="pre">check_notebook_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.check_notebook_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.check_notebook_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="env_tools.MLEnv.describe">
+<span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.describe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Describe machine learning environment.</p>
+<p>This lists the machine learning environment, os, python version, ml lib versions and hardware
+either as text string or a dictionary of key-value pairs.</p>
+<p>Example output for default string: <cite>‘Darwin, Python 3.9.9 (conda), Jupyter-instance, Tensorflow 2.7.0 GPU (METAL)’</cite></p>
+<p>For <cite>return_dict=True</cite>:</p>
+<p><a href="#id1"><span class="problematic" id="id2">``</span></a>`
+{‘os’: ‘Darwin’,</p>
+<blockquote>
+<div><p>‘python’: ‘3.9.9’,
+‘conda’: True,
+‘colab’: False,
+‘jupyter’: True,
+‘ml_platform’: ‘tensorflow’,
+‘ml_version’: ‘2.7.0’,
+‘ml_accelerator’: ‘GPU’,
+‘ml_accelerator_desc’: ‘METAL’</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>return_dict</strong> – If True, return a dictionary of the results, otherwise return a string.</p></li>
+<li><p><strong>verbose</strong> – If True, print debug infos.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="env_tools.MLEnv.epoch_time_func">
