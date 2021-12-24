@@ -2,6 +2,7 @@
 optional notebook/colab environment'''
 
 import os
+import sys
 import time
 import shutil
 
@@ -16,7 +17,7 @@ class MLEnv():
     environment is a TPU environment, and `self.is_cpu` that no accelerator is available.
     
     :param platform: Known platforms are: `'tf'` (tensorflow), `'pt'` (pytorch), and `'jax'`
-    :param accelerator: known accelerators are: `'fastest'` (pick best available hardware), `'cpu'`, 'gpu'`, `'tpu'`.
+    :param accelerator: known accelerators are: `'fastest'` (pick best available hardware), `'cpu'`, `'gpu'`, `'tpu'`.
     :param verbose: show information about configuration
     """
 
@@ -47,6 +48,11 @@ class MLEnv():
                 if verbose is True:
                     print(f"Tensorflow not available: {e}")
                 return
+            try:
+                from tensorflow.python.profiler import profiler_client
+                self.tf_prof = True
+            except:
+                self.tf_prof = False
             # %tensorflow_version 2.x
             # import tensorflow as tf
             if verbose is True:
@@ -65,6 +71,7 @@ class MLEnv():
                     tf.config.experimental_connect_to_cluster(tpu)
                     tf.tpu.experimental.initialize_tpu_system(tpu)
                     self.tpu_strategy = tf.distribute.experimental.TPUStrategy(tpu)
+                    self.tpu_num_nodes = len(self.tpu_strategy.extended.worker_devices)
                     if verbose is True:
                         print("TPU strategy available")
             if self.is_tpu is False:
@@ -224,6 +231,79 @@ class MLEnv():
                     print("You are not on a Colab instance, so no Google Drive access is possible.")
                 pass
         return self.is_notebook, self.is_colab
+
+    def describe(self, return_dict=False, verbose=False):
+        res={}
+        ospl=sys.platform
+        ospl=ospl[0].upper()+ospl[1:]
+        pyver=sys.version.split(' ')[0]
+        ospyver = f"{ospl}, Python {pyver}"
+        res['os'] = ospl
+        res['python'] = pyver
+        if 'conda' in sys.version:
+            ospyver += ' (conda)'
+            res['conda'] = True
+        else:
+            res['conda'] = False
+        if self.is_notebook:
+            if self.is_colab:
+                ospyver += ', Colab-instance'
+                res['colab'] = True
+                res['jupyter'] = True
+            else:
+                ospyver += ', Jupyter-instance'
+                res['colab'] = False
+                res['jupyter'] = True
+        else:
+            res['colab'] = False
+            res['jupyter'] = False  
+        if self.is_tensorflow is True:
+            import tensorflow as tf
+            desc=f'{ospyver}, Tensorflow {tf.__version__} '
+            res['ml_platform'] = 'tensorflow'
+            res['ml_version'] = tf.__version__
+            if self.is_tpu is True:
+                res['ml_accelerator'] = 'TPU'
+                tpu_profile_service_address = os.environ['COLAB_TPU_ADDR'].replace('8470', '8466')
+                tpu_desc = f"TPU, {self.tpu_num_nodes} nodes"
+                res['ml_accelerator_desc'] = tpu_desc
+                if self.tf_prof is True:
+                    state=profiler_client.monitor(tpu_profile_service_address, 100, 2)
+                    if 'TPU v2' in state:
+                        tpu_desc=tpu_desc+'v2 (8GB)'  # that's what you currently get on Colab    
+                        if verbose is True:
+                            print("WARNING: you got old TPU v2 which is limited to 8GB Ram.")
+                desc=desc+tpu_desc
+            elif self.is_gpu is True:
+                res['ml_accelerator'] = 'GPU'
+                try:
+                    gpu_name=tf.config.experimental.get_device_details(tf.config.list_physical_devices('GPU')[0])['device_name']
+                    res['ml_accelerator_desc'] = gpu_name
+                    desc=desc+f'GPU ({gpu_name})'
+                except:
+                    desc=desc+'GPU (unknown)'
+                    res['ml_accelerator_desc'] = 'unknown'
+            elif self.is_cpu is True:
+                desc=desc+'CPU'
+                res['ml_accelerator'] = 'CPU'
+                res['ml_accelerator_desc'] = ''
+            else:
+                desc=desc+'unknown device (error)'
+                res['ml_accelerator'] = 'unknown'
+                res['ml_accelerator_desc'] = 'unknown'
+        elif self.is_pytorch is True:
+            desc='Pytorch '+torch.__version__
+        elif self.is_jax is True:
+            desc='JAX '+jax.__version__
+        else:
+            desc='Unknown'
+            res['ml_platform'] = 'unknown'
+            res['ml_version'] = 'unknown'
+            res['accelerator'] = 'unknown'
+        if return_dict is True:
+            return res
+        else:
+            return desc
 
     # Hardware check:
     def check_hardware(self, verbose=True):
