@@ -5,13 +5,19 @@ import numpy as np
 
 
 class ALU_Dataset():
-    """ Generate training data for all ALU operations """
-    # The ALU takes two integers and applies one of the supported
-    # model_ops. Eg op1=123, op2=100, op='-' -> result 23
-    # The net is supposed to learn to 'calculate' the results for
-    # arbitrary op1, op2 (positive integers, 0..2**bit_count - 1) and 
-    # the twelve supported ops 
+    """ Generate training data for all ALU operations
 
+    The ALU takes two integers and applies one of the supported
+    model_ops. E.g. `op1=123, op2=100, op='-' -> result 23`
+
+    The net is supposed to learn to 'calculate' the results for
+    arbitrary op1, op2 (positive integers, `0..2**bit_count - 1`) and 
+    the twelve supported ops: 
+    `["+", "-", "*", "/", "%", "AND", "OR", "XOR", ">", "<", "=", "!="]`
+
+    :param bit_count: number of bits for each of the two operands, default 31 (mult uses 15 bits)
+    :param pre_weight: if True, the model_dis will be reweighted to generate samples for 'difficult' ops
+    """
     def __init__(self, bit_count=31, pre_weight=False):
         self.model_ops = ["+", "-", "*", "/", "%",
                           "AND", "OR", "XOR", ">", "<", "=", "!="]
@@ -21,10 +27,10 @@ class ALU_Dataset():
         # reweighted on checks to generate for samples for 'difficult' ops):
         self.model_dis = [10, 10, 10, 10, 10, 10,   10,  10,   10, 10, 10, 10]
         model_dis_w = [19, 12, 110, 15, 36, 10, 10, 10, 10, 10, 10, 10]
-        self.model_funcs = [self.add_smpl, self.diff_smpl, self.mult_smpl,
-                            self.div_smpl, self.mod_smpl, self.and_smpl,
-                            self.bor_smpl, self.xor_smpl, self.greater_smpl,
-                            self.lesser_smpl, self.eq_smpl, self.neq_smpl]
+        self.model_funcs = [self._add_smpl, self._diff_smpl, self._mult_smpl,
+                            self._div_smpl, self._mod_smpl, self._and_smpl,
+                            self._bor_smpl, self._xor_smpl, self._greater_smpl,
+                            self._lesser_smpl, self._eq_smpl, self._neq_smpl]
         self.bit_count = bit_count
         self.op_count = len(self.model_ops)
         if self.bit_count+1 > self.op_count:
@@ -42,7 +48,12 @@ class ALU_Dataset():
 
     @staticmethod
     def int_to_binary_vect(num_int, num_bits=8):
-        """ get a binary encoded vector of n of bit-lenght nm """
+        """ get a binary encoded vector of n of bit-lenght nm 
+
+        :param num_int: integer to encoded
+        :param num_bits: number of bits to use for positional_encoding
+        :return: binary vector of length num_bits
+        """
         num_vect = np.zeros(num_bits, dtype=np.float32)
         for i in range(0, num_bits):
             if num_int & (2**i) != 0:
@@ -51,25 +62,45 @@ class ALU_Dataset():
 
     @staticmethod
     def int_to_onehot_vect(num_int, num_bits):
-        """ get a one-hot encoded vector of n of bit-lenght nm """
+        """ get a one-hot encoded vector of n of bit-lenght nm 
+
+        :param num_int: integer to encoded
+        :param num_bits: number of bits to use for positional_encoding
+        :return: one-hot vector of length num_bits
+        """
         num_vect = np.zeros(num_bits, dtype=np.float32)
         num_vect[num_int] = 1.0
         return num_vect
 
     @staticmethod
     def get_random_bits(bits):
-        """ get bits random int 0...2**bits-1 """
+        """ get bits random int 0...2**bits-1 
+
+        :param bits: number of bits to uses
+        :return: random int `0...2**bits-1`
+        """
         return random.randint(0, 2**bits-1)
 
     def op_string_to_index(self, op_string):
-        """ transform op_string (e.g. '+' -> 0) into corresponding index """
+        """ transform op_string (e.g. '+' -> 0) into corresponding index 
+
+        :param op_string: string of op to transform
+        :return: index of op_string
+        """
         for i in range(0, len(self.model_ops)):
             if self.model_ops[i] == op_string:
                 return i
         return -1
 
     def get_data_point(self, equal_distrib=False, valid_ops=None, vector=False, positional_encoding=False):
-        """ Get a random example for on ALU operation for training """
+        """ Get a random example for on ALU operation for training 
+
+        :param equal_distrib: if False, more 'difficult' ops will be generated more often.
+        :param valid_ops: if not None, only the ops in valid_ops will be used
+        :param vector: if True, the result will be returned as an embedded encoded vector
+        :param positional_encoding: if True, the result will be returned as an embedded encoded vector with additional bits for positional positional_encoding
+
+        """
         # result = -1
         op1 = self.get_random_bits(self.bit_count)
         op2 = self.get_random_bits(self.bit_count)
@@ -148,20 +179,20 @@ class ALU_Dataset():
         return inp, oup, result, op_index, sym
 
     @staticmethod
-    def add_smpl(op1, op2):
+    def _add_smpl(op1, op2):
         """ addition training example """
         result = op1+op2
         return op1, op2, result
 
     @staticmethod
-    def diff_smpl(op1, op2):
+    def _diff_smpl(op1, op2):
         """ subtraction training example """
         if op2 > op1:
             op2, op1 = op1, op2
         result = op1-op2
         return op1, op2, result
 
-    def mult_smpl(self, op1, op2):
+    def _mult_smpl(self, op1, op2):
         """ multiplication training example """
         modul = 2**(self.bit_count//2) - 1
         op1 = op1 % modul
@@ -169,7 +200,7 @@ class ALU_Dataset():
         result = op1*op2
         return op1, op2, result
 
-    def div_smpl(self, op1, op2):
+    def _div_smpl(self, op1, op2):
         """ integer division training example """
         while op2 == 0:
             op2 = self.get_random_bits(self.bit_count)
@@ -179,7 +210,7 @@ class ALU_Dataset():
         result = op1//op2
         return op1, op2, result
 
-    def mod_smpl(self, op1, op2):
+    def _mod_smpl(self, op1, op2):
         """ modulo (remainder) training example """
         while op2 == 0:
             op2 = self.get_random_bits(self.bit_count)
@@ -190,24 +221,24 @@ class ALU_Dataset():
         return op1, op2, result
 
     @staticmethod
-    def and_smpl(op1, op2):
+    def _and_smpl(op1, op2):
         """ bitwise AND training example """
         result = op1 & op2
         return op1, op2, result
 
     @staticmethod
-    def bor_smpl(op1, op2):
+    def _bor_smpl(op1, op2):
         """ bitwise OR training example """
         result = op1 | op2
         return op1, op2, result
 
     @staticmethod
-    def xor_smpl(op1, op2):
+    def _xor_smpl(op1, op2):
         """ bitwise XOR training example """
         result = op1 ^ op2
         return op1, op2, result
 
-    def greater_smpl(self, op1, op2):
+    def _greater_smpl(self, op1, op2):
         """ integer comparisation > training example """
         if op1 > op2:
             result = self.true_vect
@@ -215,7 +246,7 @@ class ALU_Dataset():
             result = self.false_vect
         return op1, op2, result
 
-    def lesser_smpl(self, op1, op2):
+    def _lesser_smpl(self, op1, op2):
         """ integer comparisation < training example """
         if op1 < op2:
             result = self.true_vect
@@ -223,7 +254,7 @@ class ALU_Dataset():
             result = self.false_vect
         return op1, op2, result
 
-    def eq_smpl(self, op1, op2):
+    def _eq_smpl(self, op1, op2):
         """ integer comparisation == training example """
         if random.randint(0, 1) == 0:  # create more cases
             op2 = op1
@@ -233,7 +264,7 @@ class ALU_Dataset():
             result = self.false_vect
         return op1, op2, result
 
-    def neq_smpl(self, op1, op2):
+    def _neq_smpl(self, op1, op2):
         """ integer comparisation != training example """
         if random.randint(0, 1) == 0:  # create more cases
             op2 = op1
