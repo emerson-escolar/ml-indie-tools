@@ -4,8 +4,6 @@ optional notebook/colab environment'''
 import os
 import sys
 import logging
-import time
-import shutil
 
 class MLEnv():
     """ Initialize platform and accelerator. 
