@@ -1,5 +1,5 @@
 import sys
-sys.path.append('..')
+sys.path.append('../src/ml_indie_tools')
 from env_tools import *
 from Gutenberg_Dataset import *
 
