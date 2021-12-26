@@ -405,10 +405,10 @@ class ALU_Dataset():
                 else:
                     x, Y = self.create_training_data(samples=samples, valid_ops=valid_ops, title=name)
                 if use_cache is True:
-                    self.log.debug(f"Writing data-cache {cache_file_x}, {cache_file_Y}...", end="")
+                    self.log.debug(f"Writing data-cache {cache_file_x}, {cache_file_Y}...")
                     np.save(cache_file_x, x, allow_pickle=True)
                     np.save(cache_file_Y, Y, allow_pickle=True)
-                    self.log.debug"x, Y, done.")
+                    self.log.debug("x, Y, done.")
             shuffle_buffer=10000
             dataset=tf.data.Dataset.from_tensor_slices((x, Y)).cache()
             if is_training is True:
@@ -421,7 +421,7 @@ class ALU_Dataset():
 
         def create_dataset_from_generator(self, valid_ops=None):
             dataset=tf.data.Dataset.from_generator(
-                self.generator,
+                self._generator,
                 output_signature=(
                         tf.TensorSpec(shape=(None,self.input_size), dtype=np.float32),
                         tf.TensorSpec(shape=(None,self.output_size), dtype=np.float32))
