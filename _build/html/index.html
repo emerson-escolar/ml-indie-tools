@@ -157,7 +157,7 @@ to heuristically prevent false positives.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.get_book">
 <span class="sig-name descname"><span class="pre">get_book</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ebook_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.get_book"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.get_book" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a book record and text by its ebook_id</p>
+<dd><p>Get a book record metadata and filtered text by its ebook_id</p>
 <p>This function returns a dictionary with metadata and filtered text. Use <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_book" title="Gutenberg_Dataset.Gutenberg_Dataset.load_book"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_book()</span></code></a> 
 to get the raw unfiltered text.</p>
 <p><em>Note:</em> <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_index()</span></code></a> needs to be called once before this function can be used.</p>
@@ -206,7 +206,8 @@ Standard keys are: <cite>ebook_id</cite>, <cite>author</cite>, <cite>language</c
 <dd><p>Inserts book texts into the records returned by <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.search" title="Gutenberg_Dataset.Gutenberg_Dataset.search"><code class="xref py py-func docutils literal notranslate"><span class="pre">search()</span></code></a>.</p>
 <p>In order to prevent the download of too many books, the download count limit is set to <cite>download_count_limit</cite>.
 Downloaded books are cached and cached books are not counted towards the download count limit. Calling this
-function again will download books that have not been downloaded yet.</p>
+function again will download books that have not been downloaded yet. The filtered book content is inserted
+into the dictionary with the key <cite>text</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -215,7 +216,7 @@ function again will download books that have not been downloaded yet.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>list of records including filtered book text-based</p>
+<dd class="field-even"><p>list of records including filtered book text-based in the <cite>text</cite> field.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -237,28 +238,10 @@ Use <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.get
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.load_book_ex">
-<span class="sig-name descname"><span class="pre">load_book_ex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ebook_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.load_book_ex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_book_ex" title="Permalink to this definition">¶</a></dt>
-<dd><p>get text of an ebook from Gutenberg by ebook_id</p>
-<p>This function returns the unfiltered raw text including all Gutenberg headers and footers and a boolean flag
-indicating with ‘True’, if the book was downloaded from a remote source, ‘False’ indicates cached book retrieval
-without remote access.</p>
-<p>The flag can be used to control or limit the number of books downloaded from the remote source.</p>
-<p>Use <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.get_book" title="Gutenberg_Dataset.Gutenberg_Dataset.get_book"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_book()</span></code></a> to retrieve a dictionary with metadata and filtered text.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>ebook_id</strong> – Gutenberg id (Note: string, since this sometimes contains a character!)</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>tuple: book text as string, unfiltered, and a flag indicating with ‘True’ if book was downloaded from remote.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="Gutenberg_Dataset.Gutenberg_Dataset.load_index">
 <span class="sig-name descname"><span class="pre">load_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_expire_days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset.load_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function loads the Gutenberg record index, either from cache, or from a website</p>
+<p>This should be the first method being used, since many other methods rely on the index being loaded.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
