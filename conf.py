@@ -22,7 +22,8 @@ copyright = '2021, dsc'
 author = 'dsc'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
+# sync with setup.py
+release = '0.0.2'
 
 
 # -- General configuration ---------------------------------------------------

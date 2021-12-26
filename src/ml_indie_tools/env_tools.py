@@ -250,6 +250,7 @@ class MLEnv():
                 tpu_desc = f"TPU, {self.tpu_num_nodes} nodes"
                 res['ml_accelerator_desc'] = tpu_desc
                 if self.tf_prof is True:
+                    from tensorflow.python.profiler import profiler_client
                     state=profiler_client.monitor(tpu_profile_service_address, 100, 2)
                     if 'TPU v2' in state:
                         tpu_desc=tpu_desc+'v2 (8GB)'  # that's what you currently get on Colab    

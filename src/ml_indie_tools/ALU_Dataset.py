@@ -20,6 +20,7 @@ class ALU_Dataset():
     :param pre_weight: if True, the model_dis will be reweighted to generate samples for 'difficult' ops
     """
     def __init__(self, bit_count=31, pre_weight=False):
+        self.log = logging.getLogger("Datasets")
         self.model_ops = ["+", "-", "*", "/", "%",
                           "AND", "OR", "XOR", ">", "<", "=", "!="]
         self.model_is_boolean = [False, False, False, False, False,
@@ -48,7 +49,7 @@ class ALU_Dataset():
             self.model_dis=model_dis_w
 
     @staticmethod
-    def int_to_binary_vect(num_int, num_bits=8):
+    def _int_to_binary_vect(num_int, num_bits=8):
         """ get a binary encoded vector of n of bit-lenght nm 
 
         :param num_int: integer to encoded
@@ -62,7 +63,7 @@ class ALU_Dataset():
         return num_vect
 
     @staticmethod
-    def int_to_onehot_vect(num_int, num_bits):
+    def _int_to_onehot_vect(num_int, num_bits):
         """ get a one-hot encoded vector of n of bit-lenght nm 
 
         :param num_int: integer to encoded
@@ -74,7 +75,7 @@ class ALU_Dataset():
         return num_vect
 
     @staticmethod
-    def get_random_bits(bits):
+    def _get_random_bits(bits):
         """ get bits random int 0...2**bits-1 
 
         :param bits: number of bits to uses
@@ -103,13 +104,17 @@ class ALU_Dataset():
 
         """
         # result = -1
-        op1 = self.get_random_bits(self.bit_count)
-        op2 = self.get_random_bits(self.bit_count)
+        op1 = self._get_random_bits(self.bit_count)
+        op2 = self._get_random_bits(self.bit_count)
         if valid_ops is not None and len(valid_ops)==0:
             valid_ops=None
         if valid_ops is not None:
             if equal_distrib is False:
+<<<<<<< HEAD
                 self.log.info("Op restriction via valid_ops forces equal_distrib=True")
+=======
+                self.log.warning("Op restriction via valid_ops forces equal_distrib=True")
+>>>>>>> main
                 equal_distrib=True
             for op in valid_ops:
                 if op not in self.model_ops:
@@ -137,15 +142,14 @@ class ALU_Dataset():
                 rx += self.model_dis[op_index]
                 if rx > rrx:
                     break
-        return self.encode_op(op1, op2, op_index, vector=vector, positional_suffix=positional_encoding)
+        return self._encode_op(op1, op2, op_index, vector=vector, positional_suffix=positional_encoding)
 
-    def generator(self, samples=20000, equal_distrib=False, valid_ops=None):
+    def _generatorenerator(self, samples=20000, equal_distrib=False, valid_ops=None):
         while True:
-            x, Y = self.create_training_data(samples=samples, valid_ops=valid_ops, title=None)
-            #x, Y, _, _, _ = self.get_data_point(equal_distrib=equal_distrib, valid_ops=valid_ops)
+            x, Y = self.create_training_data(samples=samples, valid_ops=valid_ops, equal_distrib=equal_distrib, title=None)
             yield x, Y
 
-    def encode_op(self, op1, op2, op_index, vector=False, positional_suffix=False):
+    def _encode_op(self, op1, op2, op_index, vector=False, positional_suffix=False):
         """ turn two ints and operation into training data """
         op1, op2, result = self.model_funcs[op_index](op1, op2)
         if self.model_is_boolean[op_index] is True:
@@ -162,9 +166,9 @@ class ALU_Dataset():
                 sz=self.embedding_size+3
             else:
                 sz=self.embedding_size
-            v1=self.int_to_binary_vect(op1, num_bits=sz)
-            v2=self.int_to_onehot_vect(op_index, num_bits=sz)
-            v3=self.int_to_binary_vect(op2, num_bits=sz)
+            v1=self._int_to_binary_vect(op1, num_bits=sz)
+            v2=self._int_to_onehot_vect(op_index, num_bits=sz)
+            v3=self._int_to_binary_vect(op2, num_bits=sz)
             if positional_suffix is True:
                 v1[-3] = 1.0
                 v2[-2] = 1.0
@@ -172,11 +176,11 @@ class ALU_Dataset():
             inp = np.array([v1,v2,v3], dtype=np.float32)
         else:
             inp = np.concatenate(
-                [self.int_to_binary_vect(op1, num_bits=self.bit_count+1),
-                self.int_to_onehot_vect(op_index, num_bits=len(self.model_ops)),
-                self.int_to_binary_vect(op2, num_bits=self.bit_count+1)])
+                [self._int_to_binary_vect(op1, num_bits=self.bit_count+1),
+                self._int_to_onehot_vect(op_index, num_bits=len(self.model_ops)),
+                self._int_to_binary_vect(op2, num_bits=self.bit_count+1)])
 
-        oup = self.int_to_binary_vect(result, num_bits=self.output_size)
+        oup = self._int_to_binary_vect(result, num_bits=self.output_size)
         return inp, oup, result, op_index, sym
 
     @staticmethod
@@ -204,7 +208,7 @@ class ALU_Dataset():
     def _div_smpl(self, op1, op2):
         """ integer division training example """
         while op2 == 0:
-            op2 = self.get_random_bits(self.bit_count)
+            op2 = self._get_random_bits(self.bit_count)
         if op1 < op2 and random.randint(0, 2) != 0:
             if op1 != 0:
                 op1, op2 = op2, op1
@@ -214,7 +218,7 @@ class ALU_Dataset():
     def _mod_smpl(self, op1, op2):
         """ modulo (remainder) training example """
         while op2 == 0:
-            op2 = self.get_random_bits(self.bit_count)
+            op2 = self._get_random_bits(self.bit_count)
         if op1 < op2 and random.randint(0, 2) != 0:
             if op1 != 0:
                 op1, op2 = op2, op1
@@ -281,9 +285,13 @@ class ALU_Dataset():
         if op_index == -1:
             self.log.error(f"Invalid operation {op_string}")
             return np.array([]), np.array([]), -1, -1, None
-        return self.encode_op(op1, op2, op_index, vector, positional_suffix)
+        return self._encode_op(op1, op2, op_index, vector, positional_suffix)
 
+<<<<<<< HEAD
     def create_training_data(self, samples=10000, valid_ops=None, title=None, show_progress=True):
+=======
+    def create_training_data(self, samples=10000, valid_ops=None, equal_distrib=False, verbose=True, title=None):
+>>>>>>> main
         """ create a number of training samples """
         x, y, _, _, _ = self.get_data_point()
         dpx = np.zeros((samples, len(x)), dtype=np.float32)
@@ -305,7 +313,7 @@ class ALU_Dataset():
                     if (i+1) % 100000 == 0:
                         print()
             if valid_ops is None:
-                x, y, _, _, _ = self.get_data_point(equal_distrib=False)
+                x, y, _, _, _ = self.get_data_point(equal_distrib=equal_distrib)
             else:
                 x, y, _, _, _ = self.get_data_point(
                     equal_distrib=True, valid_ops=valid_ops)
@@ -315,7 +323,11 @@ class ALU_Dataset():
             print()
         return dpx, dpy
 
+<<<<<<< HEAD
     def create_vector_training_data(self, samples=10000, valid_ops=None, title=None, positional_encoding=True, show_progress=True):
+=======
+    def create_vector_training_data(self, samples=10000, valid_ops=None, equal_distrib=False, verbose=True, title=None, positional_encoding=True):
+>>>>>>> main
         """ create a number of training samples """
         x, y, _, _, _ = self.get_data_point()
         if positional_encoding is True:
@@ -341,7 +353,7 @@ class ALU_Dataset():
                     if (i+1) % 100000 == 0:
                         print()
             if valid_ops is None:
-                x, y, _, _, _ = self.get_data_point(equal_distrib=False, vector=True, positional_encoding=positional_encoding)
+                x, y, _, _, _ = self.get_data_point(equal_distrib=equal_distrib, vector=True, positional_encoding=positional_encoding)
             else:
                 x, y, _, _, _ = self.get_data_point(
                     equal_distrib=True, valid_ops=valid_ops, vector=True, positional_encoding=positional_encoding)
@@ -384,6 +396,9 @@ class ALU_Dataset():
                     infix+="_PE"
                 cache_file_x=os.path.join(cache_path, f"{name}_{infix}_{self.bit_count}_{samples}_x.npy")
                 cache_file_Y=os.path.join(cache_path, f"{name}_{infix}_{self.bit_count}_{samples}_Y.npy")
+            else:
+                cache_file_x=None
+                cache_file_Y=None
             if use_cache is True  and regenerate_cached_data is False and os.path.exists(cache_file_x) and os.path.exists(cache_file_Y):
                 try:
                     x = np.load(cache_file_x, allow_pickle=True)
@@ -392,7 +407,11 @@ class ALU_Dataset():
                         is_loaded=True
                         self.log.debug(f"Data {name} loaded from cache")
                     else:
+<<<<<<< HEAD
                         self.log.warning(f"Sample count has changed from {len(x)} to {samples}, regenerating {name} data...")
+=======
+                        self.log.info(f"Sample count has changed from {len(x)} to {samples}, regenerating {name} data...")
+>>>>>>> main
                 except Exception as e:
                     self.log.error(f"Something went wrong when loading {cache_file_x}, {cache_file_Y}: {e}")
             if is_loaded is False:
@@ -402,11 +421,18 @@ class ALU_Dataset():
                 else:
                     x, Y = self.create_training_data(samples=samples, valid_ops=valid_ops, title=name)
                 if use_cache is True:
+<<<<<<< HEAD
                     self.log.debug(f"Writing data-cache {cache_file_x}, {cache_file_Y}...")
                     np.save(cache_file_x, x, allow_pickle=True)
                     self.log.debug("x done")
                     np.save(cache_file_Y, Y, allow_pickle=True)
                     self.log.debug("Y done.")
+=======
+                    self.log.debug(f"Writing data-cache {cache_file_x}, {cache_file_Y}...", end="")
+                    np.save(cache_file_x, x, allow_pickle=True)
+                    np.save(cache_file_Y, Y, allow_pickle=True)
+                    self.log.debug"x, Y, done.")
+>>>>>>> main
             shuffle_buffer=10000
             dataset=tf.data.Dataset.from_tensor_slices((x, Y)).cache()
             if is_training is True:
