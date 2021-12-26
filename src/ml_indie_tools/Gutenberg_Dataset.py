@@ -54,7 +54,8 @@ class Gutenberg_Dataset():
             fa=re.findall(ebook_no,"\A[0-9]+[A-C]\Z")
         except Exception as e:
             fa=None
-            self.log.debug(f"Failed to apply regex on >{ebook_no}<")
+            if verbose is True:
+                self.log.warning(f"Failed to apply regex on >{ebook_no}<")
             
         if len(rl[0])<5 or fa==None or len(ebook_no)>7:
             self.log.warning("-------------------------------------")
@@ -198,6 +199,8 @@ class Gutenberg_Dataset():
     def load_index(self, cache=True, cache_expire_days=30):
         """ This function loads the Gutenberg record index, either from cache, or from a website
         
+        This should be the first method being used, since many other methods rely on the index being loaded.
+
         :param cache: default `True`, use the cache directory to cache both index and text files. Index expires after `cache_expire_days`, text files never expire. Should *NOT* be set to `False` in order to prevent unnecessary re-downloading.
         :param cache_expire_days: Number of days after which the index is re-downloaded.
         """
@@ -218,17 +221,17 @@ class Gutenberg_Dataset():
                     read_from_cache = True
                     self.log.debug("Cache timestamp read.")
                 else:
-                    self.log.debug("Cache for index is expired, reloading from web.")
+                    self.log.info("Cache for Gutenberg-index is expired, reloading from web.")
             except:
-                self.log.debug("Failed to read cache timestamp, reloading from web.")
+                self.log.warning("Failed to read cache timestamp, reloading from web.")
         if expired is False and os.path.isfile(cache_file):
             try:
                 with open(cache_file,'r') as f:
                     raw_index=f.read()
-                    self.log.info(f"Gutenberg index read from {cache_file}")
+                    self.log.info(f"Gutenberg index read from local cache: {cache_file}")
             except:
                 expired=True
-                self.log.debug("Failed to read cached index, reloading from web.")
+                self.log.warning("Failed to read cached index, reloading from web.")
         if expired is True:
             index_url=self.root_url+"/GUTINDEX.ALL"
             try:
@@ -265,10 +268,41 @@ class Gutenberg_Dataset():
         :param ebook_id: Gutenberg id (Note: string, since this sometimes contains a character!)
         :returns: book text as string, unfiltered. Can be filtered with :func:`~Gutenberg_Dataset.Gutenberg_Dataset.filter_text`
         """
-        return load_book_ex(self, ebook_id)[0]
+        return self._load_book_ex(ebook_id)[0]
 
-    def load_book_ex(self, ebook_id):
-        """ get text of an ebook from Gutenberg by ebook_id 
+    def _read_download(self, filenames, path_stub, cache_name):
+        """ Internal function to read ebook from cache or download it. """
+        cache_file=None
+        downloaded=False
+        if self.cache_dir is not None:
+            cache_file=os.path.join(self.cache_dir,cache_name)
+            if os.path.isfile(cache_file):
+                try:
+                    with open(cache_file,'r') as f:
+                        data=f.read()
+                        self.log.info(f"Book read from cache at {cache_file}")
+                        downloaded = False
+                        return data, None, downloaded
+                except Exception as e:
+                    self.log.error(f"Failed to read cached file {cache_file}")
+        data=None
+        file_url=None
+        for filename, encoding in filenames:
+            file_url=self.root_url+path_stub+filename
+            try:
+                if encoding != 'bin':
+                    data = urlopen(file_url).read().decode(encoding)
+                else:
+                    data = urlopen(file_url).read()
+                self.log.info(f"Book downloaded from {file_url}")
+                downloaded = True
+                break
+            except Exception as e:
+                self.log.debug(f"URL-Download failed: {file_url}, {e}")
+        return data, cache_file, downloaded
+
+    def _load_book_ex(self, ebook_id):
+        """ Internal function to get text of an ebook from Gutenberg by ebook_id with remote download information
         
         This function returns the unfiltered raw text including all Gutenberg headers and footers and a boolean flag
         indicating with 'True', if the book was downloaded from a remote source, 'False' indicates cached book retrieval
@@ -293,35 +327,19 @@ class Gutenberg_Dataset():
         path_stub+="/"+ebook_id+"/"
         filenames=[(ebook_id+"-0.txt",'utf-8'), (ebook_id+".txt",'utf-8'), (ebook_id+"-8.txt","latin1"), (ebook_id+".txt","latin1")]
         cache_name=ebook_id+".txt"
-        cache_file=None
-        if self.cache_dir is not None:
-            cache_file=os.path.join(self.cache_dir,cache_name)
-            if os.path.isfile(cache_file):
-                try:
-                    with open(cache_file,'r') as f:
-                        data=f.read()
-                        self.log.info(f"Book read from cache at {cache_file}")
-                        downloaded = False
-                        return data, downloaded
-                except Exception as e:
-                    self.log.error(f"Failed to read cached file {cache_file}")
-        data=None
-        file_url=None
-        for filename, encoding in filenames:
-            file_url=self.root_url+path_stub+filename
-            try:
-                data = urlopen(file_url).read().decode(encoding)
-                self.log.info(f"Book downloaded from {file_url}")
-                downloaded = True
-                break
-            except Exception as e:
-                self.log.debug(f"URL-Download failed: {file_url}, {e}")
+        data, cache_file, downloaded = self._read_download(filenames, path_stub, cache_name)
         if data is not None:
             if data[0]=='\ufeff':  # Ignore BOM
                 data=data[1:]
             data=data.replace('\r','')
         else:
-            self.log.warning(f"Failed to download {filenames}, last URL {file_url}, skipping book.")
+            filenames = [(ebook_id+"-pdf.pdf","bin")]
+            cache_name=ebook_id+".pdf"
+            data, cache_file, downloaded = self._read_download(filenames, path_stub, cache_name)
+            if data is not None:
+                self.log.error(f"Ebook {cache_name} is only available in PDF format, this is not supported.")
+            else:
+                self.log.warning(f"Failed to download {filenames}, skipping book.")
             return None, downloaded
         if cache_file is not None:
             try:
@@ -363,6 +381,9 @@ class Gutenberg_Dataset():
         if add_end_tokens is not None:
             end_tokens.extend(add_end_tokens)
 
+        if book_text is None:
+            self.log.warning("Filter: book text is None, returning None")
+            return None
         blen=len(book_text)
         
         pstart=0
@@ -462,6 +483,9 @@ class Gutenberg_Dataset():
         search for a single keyword (e.g. english), or an array of keywords. 
         
         :returns: list of records """
+        if not hasattr(self, 'records') or self.records is None:
+            self.log.warning("Index not loaded, trying to load...")
+            self.load_index()
         frecs=[]
         for rec in self.records:
             found=True
@@ -489,20 +513,20 @@ class Gutenberg_Dataset():
 
         In order to prevent the download of too many books, the download count limit is set to `download_count_limit`.
         Downloaded books are cached and cached books are not counted towards the download count limit. Calling this
-        function again will download books that have not been downloaded yet.
+        function again will download books that have not been downloaded yet. The filtered book content is inserted
+        into the dictionary with the key `text`.
         
         :param search_dict: search array of dictionaries that at least contain the key `ebook_id`.
         :param download_count_limit: maximum number of books to download_count_limit
-        :returns: list of records including filtered book text-based
+        :returns: list of records including filtered book text-based in the `text` field.
         """
-        if len(search_dict)>download_count_limit:
-            self.log.warning(f"Too many books to download ({len(search_dict)}), limit is {download_count_limit}")
-            dlc=download_count_limit
-        else:
-            dlc=len(search_dict)
+        dlc=len(search_dict)
         dls=0
         for i in range(0, len(search_dict)):
-            bt, dl = self.load_book_ex(search_dict[i]["ebook_id"])
+            bt, dl = self._load_book_ex(search_dict[i]["ebook_id"])
+            if bt is None:
+                self.log.error(f"Download of book {search_dict[i]['ebook_id']}, {search_dict[i]['title']} failed!")
+                continue
             search_dict[i]['text']=self.filter_text(bt)
             if dl is True:
                 dls += 1
@@ -512,7 +536,7 @@ class Gutenberg_Dataset():
         return search_dict  
 
     def get_book(self, ebook_id: str):
-        """ Get a book record and text by its ebook_id
+        """ Get a book record metadata and filtered text by its ebook_id
        
         This function returns a dictionary with metadata and filtered text. Use :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_book` 
         to get the raw unfiltered text.
