@@ -1,4 +1,36 @@
-# TBD
+# `ml_indie_tools`, a collection of machine learning tools for low-resource research and experiements
 
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://domschl.github.io/ml-indie-tools/index.html)
+
+**Note:** THIS LIBRARY IS UNFINISHED WORK-IN-PROGRESS
+
+## Description
+
+
+### `env_tools`
+
+A collection of tools that allow moving machine learning projects between local hardware and colab instances.
+
+#### Examples
+
+```python
+from ml_indie_tools.env_tools import MLEnv
+
+ml_env = MLEnv(platform='tf', accelator='fastest')
+desc = ml_env.describe()
+desc_dict = ml_env.describe(return_dict=True)
+
+print(desc)
+
+print(desc_dict)
+```
+
+### `Gutenberg_Dataset`
+
+### `ALU_Dataset`
+
+## History
+
+* (2021-12-26, 0.0.x) First pre-alpha versions published for testing purposes, not ready for use.
+
