@@ -66,7 +66,7 @@ class MLEnv():
                 if self.is_tpu is True:    
                     tf.config.experimental_connect_to_cluster(tpu)
                     tf.tpu.experimental.initialize_tpu_system(tpu)
-                    self.tpu_strategy = tf.distribute.experimental.TPUStrategy(tpu)
+                    self.tpu_strategy = tf.distribute.TPUStrategy(tpu)
                     self.tpu_num_nodes = len(self.tpu_strategy.extended.worker_devices)
                     self.log.debug("TPU strategy available")
             if self.is_tpu is False:
