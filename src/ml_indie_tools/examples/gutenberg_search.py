@@ -1,3 +1,5 @@
+import sys
+sys.path.append('..')
 from env_tools import *
 from Gutenberg_Dataset import *
 
