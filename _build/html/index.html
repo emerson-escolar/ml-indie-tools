@@ -272,8 +272,94 @@ search for a single keyword (e.g. english), or an array of keywords.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="alu-dataset-object">
-<h2>ALU_Dataset object<a class="headerlink" href="#alu-dataset-object" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ALU_Dataset">
+<span id="alu-dataset-object"></span><h2>ALU_Dataset object<a class="headerlink" href="#module-ALU_Dataset" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ALU_Dataset.ALU_Dataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ALU_Dataset.</span></span><span class="sig-name descname"><span class="pre">ALU_Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bit_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">31</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ALU_Dataset.html#ALU_Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ALU_Dataset.ALU_Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generate training data for all ALU operations</p>
+<p>The ALU takes two integers and applies one of the supported
+model_ops. E.g. <cite>op1=123, op2=100, op=’-‘ -&gt; result 23</cite></p>
+<p>The net is supposed to learn to ‘calculate’ the results for
+arbitrary op1, op2 (positive integers, <cite>0..2**bit_count - 1</cite>) and 
+the twelve supported ops: 
+<cite>[“+”, “-“, “*”, “/”, “%”, “AND”, “OR”, “XOR”, “&gt;”, “&lt;”, “=”, “!=”]</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bit_count</strong> – number of bits for each of the two operands, default 31 (mult uses 15 bits)</p></li>
+<li><p><strong>pre_weight</strong> – if True, the model_dis will be reweighted to generate samples for ‘difficult’ ops</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ALU_Dataset.ALU_Dataset.check_results">
+<span class="sig-name descname"><span class="pre">check_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positional_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_ops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ALU_Dataset.html#ALU_Dataset.check_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ALU_Dataset.ALU_Dataset.check_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a number of tests on trained model</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ALU_Dataset.ALU_Dataset.create_data_point">
+<span class="sig-name descname"><span class="pre">create_data_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">op1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positional_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ALU_Dataset.html#ALU_Dataset.create_data_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ALU_Dataset.ALU_Dataset.create_data_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>create training data from given ints op1, op2 and op_string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ALU_Dataset.ALU_Dataset.create_training_data">
+<span class="sig-name descname"><span class="pre">create_training_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_ops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equal_distrib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ALU_Dataset.html#ALU_Dataset.create_training_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ALU_Dataset.ALU_Dataset.create_training_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a number of training samples</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ALU_Dataset.ALU_Dataset.create_vector_training_data">
+<span class="sig-name descname"><span class="pre">create_vector_training_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_ops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equal_distrib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positional_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ALU_Dataset.html#ALU_Dataset.create_vector_training_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ALU_Dataset.ALU_Dataset.create_vector_training_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a number of training samples</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ALU_Dataset.ALU_Dataset.decode_results">
+<span class="sig-name descname"><span class="pre">decode_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_int_vects</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ALU_Dataset.html#ALU_Dataset.decode_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ALU_Dataset.ALU_Dataset.decode_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>take an array of 32-float results from neural net and convert to ints</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ALU_Dataset.ALU_Dataset.get_data_point">
+<span class="sig-name descname"><span class="pre">get_data_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">equal_distrib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_ops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positional_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ALU_Dataset.html#ALU_Dataset.get_data_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ALU_Dataset.ALU_Dataset.get_data_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a random example for on ALU operation for training</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>equal_distrib</strong> – if False, more ‘difficult’ ops will be generated more often.</p></li>
+<li><p><strong>valid_ops</strong> – if not None, only the ops in valid_ops will be used</p></li>
+<li><p><strong>vector</strong> – if True, the result will be returned as an embedded encoded vector</p></li>
+<li><p><strong>positional_encoding</strong> – if True, the result will be returned as an embedded encoded vector with additional bits for positional positional_encoding</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ALU_Dataset.ALU_Dataset.get_datasets">
+<span class="sig-name descname"><span class="pre">get_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pre_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positional_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_ops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regenerate_cached_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ALU_Dataset.html#ALU_Dataset.get_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ALU_Dataset.ALU_Dataset.get_datasets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ALU_Dataset.ALU_Dataset.op_string_to_index">
+<span class="sig-name descname"><span class="pre">op_string_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">op_string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ALU_Dataset.html#ALU_Dataset.op_string_to_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ALU_Dataset.ALU_Dataset.op_string_to_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>transform op_string (e.g. ‘+’ -&gt; 0) into corresponding index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>op_string</strong> – string of op to transform</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>index of op_string</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 <div class="section" id="indices-and-tables">
@@ -297,7 +383,7 @@ search for a single keyword (e.g. english), or an array of keywords.</p>
 <li><a class="reference internal" href="#">Welcome to ml-indie-tools’s documentation!</a><ul>
 <li><a class="reference internal" href="#module-env_tools">MLEnv object</a></li>
 <li><a class="reference internal" href="#module-Gutenberg_Dataset">Gutenberg_Dataset object</a></li>
-<li><a class="reference internal" href="#alu-dataset-object">ALU_Dataset object</a></li>
+<li><a class="reference internal" href="#module-ALU_Dataset">ALU_Dataset object</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
