@@ -274,10 +274,12 @@ class MLEnv():
                 res['ml_accelerator'] = 'unknown'
                 res['ml_accelerator_desc'] = 'unknown'
         elif self.is_pytorch is True:
+            import torch
             desc='Pytorch '+torch.__version__
         elif self.is_jax is True:
             desc='JAX '+jax.__version__
         else:
+            import jax
             desc='Unknown'
             res['ml_platform'] = 'unknown'
             res['ml_version'] = 'unknown'
