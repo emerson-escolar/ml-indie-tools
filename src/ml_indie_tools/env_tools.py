@@ -64,7 +64,8 @@ class MLEnv():
             if accelerator == 'tpu' or accelerator == 'fastest':
                 try:
                     tpu = tf.distribute.cluster_resolver.TPUClusterResolver()  # TPU detection
-                    self.log.debug('Running on TPU ', tpu.cluster_spec().as_dict()['worker'])
+                    tpc=tpu.cluster_spec().as_dict()['worker']
+                    self.log.debug(f'Running on TPU {tpc}')
                     self.is_tpu = True
                 except ValueError:
                     tpu = None
@@ -81,7 +82,7 @@ class MLEnv():
                         from tensorflow.python.profiler import profiler_client
                         state=profiler_client.monitor(tpu_profile_service_address, 100, 2)
                         if 'TPU v2' in state:
-                            tpu_type=tpu_type+'v2 (8GB)'  # that's what you currently get on Colab    
+                            tpu_type=tpu_type+' v2 (8GB)'  # that's what you currently get on Colab    
                             self.log.info("You got old TPU v2 which is limited to 8GB Ram.")
                     self.tpu_type = tpu_type
                     self.log.debug("TPU strategy available")
@@ -115,6 +116,7 @@ class MLEnv():
                         jax.tools.colab_tpu.setup_tpu()
                         self.is_tpu = True
                         jd=jax.devices()
+                        self.tpu_type = f"TPU, {len(jd)} nodes"
                         self.log.debug(f"JAX TPU detected: {jd}")
                     except:
                         if accelerator != 'fastest':
@@ -278,8 +280,6 @@ class MLEnv():
         Returns:
             str: description of the machine environment.
         """
-        print(self.describe_osenv())
-        print(self.describe_mlenv())
         return self.describe_osenv()+" "+self.describe_mlenv()
 
     def mount_gdrive(self, mount_point="/content/drive", root_path="/content/drive/My Drive"):
