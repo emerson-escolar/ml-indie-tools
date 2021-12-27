@@ -18,12 +18,6 @@ A collection of tools that allow moving machine learning projects between local 
 from ml_indie_tools.env_tools import MLEnv
 
 ml_env = MLEnv(platform='tf', accelator='fastest')
-desc = ml_env.describe()
-desc_dict = ml_env.describe(return_dict=True)
-
-print(desc)
-
-print(desc_dict)
 ```
 
 ### `Gutenberg_Dataset`
