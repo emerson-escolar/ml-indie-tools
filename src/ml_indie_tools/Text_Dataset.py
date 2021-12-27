@@ -5,21 +5,22 @@ except:
     pass
 
 class Text_Dataset:
-    """ Collection of tools to prepare text data for training and testing. """
     def __init__(self, text_list):
         """ Initialize the Text_Dataset with a list of texts.
+
         The Gutenberg_Dataset can be used to create such a list, by:
-            ```
-            from Gutenberg_Dataset import Gutenberg_Dataset
-            gd = Gutenberg_Dataset()
-            gd.load_index()
-            ls = gd.search({'author': 'kant', 'title': 'kritik', 'language': 'german'})  # returns a list of texts
-            ls = gd.insert_texts(ls)  # this inserts the actual text of the books into field 'text'.
-            # Now ls contains a valid list of text records:
-            td = Text_Dataset(ls)
-            ```
-        :param text_list: list of text-records of the form:
-            {'author': 'author', 'title': 'title', 'language': 'some-language', 'text': 'the-long-text'}
+            
+        ```
+        from Gutenberg_Dataset import Gutenberg_Dataset
+        gd = Gutenberg_Dataset()
+        gd.load_index()
+        ls = gd.search({'author': 'kant', 'title': 'kritik', 'language': 'german'})  # returns a list of texts
+        ls = gd.insert_texts(ls)  # this inserts the actual text of the books into field 'text'.
+        # Now ls contains a valid list of text records:
+        td = Text_Dataset(ls)
+        ```
+        
+        :param text_list: list of text-records of the form: {'author': 'author', 'title': 'title', 'language': 'some-language', 'text': 'the-long-text'}
         """
         self.log = logging.getLogger("Datasets")
         self.text_list = []
