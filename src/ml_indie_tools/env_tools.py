@@ -115,6 +115,7 @@ class MLEnv():
                         jax.tools.colab_tpu.setup_tpu()
                         self.is_tpu = True
                         jd=jax.devices()
+                        self.tpu_type = f"TPU, {len(jd)} nodes"
                         self.log.debug(f"JAX TPU detected: {jd}")
                     except:
                         if accelerator != 'fastest':
