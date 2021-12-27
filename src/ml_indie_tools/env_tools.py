@@ -64,7 +64,8 @@ class MLEnv():
             if accelerator == 'tpu' or accelerator == 'fastest':
                 try:
                     tpu = tf.distribute.cluster_resolver.TPUClusterResolver()  # TPU detection
-                    self.log.debug(f'Running on TPU {tpu.cluster_spec().as_dict()['worker']}')
+                    tpc=tpu.cluster_spec().as_dict()['worker']
+                    self.log.debug(f'Running on TPU {tpc}')
                     self.is_tpu = True
                 except ValueError:
                     tpu = None
