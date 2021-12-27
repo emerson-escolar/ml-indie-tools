@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>env_tools &#8212; ml-indie-tools 0.0.2 documentation</title>
+    <title>env_tools &#8212; ml-indie-tools 0.0.4 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">env_tools</a></li> 
       </ul>
@@ -76,22 +76,22 @@
         <span class="k">if</span> <span class="n">accelerator</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">known_accelerators</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accelerator </span><span class="si">{</span><span class="n">accelerator</span><span class="si">}</span><span class="s2"> is not known, please check spelling.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">os_type</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_conda</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_tensorflow</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tf_version</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_pytorch</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pt_version</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_jax</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">jax_version</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_cpu</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tpu_type</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gpu_type</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">os_type</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: Operating system type, e.g. `&#39;Linux&#39;`, `&#39;Darwin&#39;`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: Python version, e.g. `&#39;3.7.3&#39;`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_conda</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#: `True` if running in a conda environment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_tensorflow</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#: `True` if running on Tensorflow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tf_version</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: Tensorflow version, e.g. `&#39;2.7.0&#39;`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_pytorch</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#: `True` if running on Pytorch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pt_version</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: Pytorch version, e.g. `&#39;1.6.0&#39;`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_jax</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#: `True` if running on Jax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jax_version</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: Jax version, e.g. `&#39;0.1.0&#39;`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_cpu</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#: `True` if no accelerator is available</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#: `True` if a GPU is is available</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#: `True` if a TPU is is available</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tpu_type</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: TPU type, e.g. `&#39;TPU v2&#39;`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpu_type</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: GPU type, e.g. `&#39;Tesla V100&#39;`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#: `True` if running in a notebook</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#: `True` if running in a colab notebook</span>
         <span class="k">if</span> <span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;tf&#39;</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
@@ -230,7 +230,8 @@
                         <span class="kn">import</span> <span class="nn">torch.cuda</span>
                         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="o">=</span> <span class="kc">True</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Pytorch GPU detected.&quot;</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">gpu_type</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pytorch GPU </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gpu_type</span><span class="si">}</span><span class="s2"> detected.&quot;</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Pytorch GPU not available.&quot;</span><span class="p">)</span>
                     <span class="k">except</span><span class="p">:</span>
@@ -247,6 +248,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">flush_timeout</span> <span class="o">=</span> <span class="mi">180</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_osenv</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_notebook_type</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_check_osenv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">os_type</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span>
@@ -285,6 +288,44 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;You are not on a Colab instance, so no Google Drive access is possible.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span>
+
+<div class="viewcode-block" id="MLEnv.describe_osenv"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.describe_osenv">[docs]</a>    <span class="k">def</span> <span class="nf">describe_osenv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;OS: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">os_type</span><span class="si">}</span><span class="s2">, Python: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">py_version</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_conda</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot; (Conda)&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_notebook</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span><span class="p">:</span>
+                <span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot;, Colab Jupyter Notebook&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot;, Jupyter Notebook&quot;</span>
+        <span class="k">return</span> <span class="n">desc</span></div>
+
+<div class="viewcode-block" id="MLEnv.describe_mlenv"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.describe_mlenv">[docs]</a>    <span class="k">def</span> <span class="nf">describe_mlenv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tensorflow</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Tensorflow: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tf_version</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_pytorch</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Pytorch: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pt_version</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_jax</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;JAX: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">jax_version</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;(no-ml-platform) &quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, TPU: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tpu_type</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_gpu</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, GPU: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gpu_type</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cpu</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, CPU&quot;</span>
+        <span class="k">return</span> <span class="n">desc</span></div>
+
+<div class="viewcode-block" id="MLEnv.describe"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.describe">[docs]</a>    <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Prints a description of the machine environment.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: description of the machine environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">describe_osenv</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">describe_mlenv</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">describe_osenv</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot; &quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">describe_mlenv</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MLEnv.mount_gdrive"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.mount_gdrive">[docs]</a>    <span class="k">def</span> <span class="nf">mount_gdrive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mount_point</span><span class="o">=</span><span class="s2">&quot;/content/drive&quot;</span><span class="p">,</span> <span class="n">root_path</span><span class="o">=</span><span class="s2">&quot;/content/drive/My Drive&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
@@ -368,7 +409,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">env_tools</a></li> 
       </ul>
