@@ -185,7 +185,8 @@ class MLEnv():
                         import torch.cuda
                         if torch.cuda.is_available():
                             self.is_gpu = True
-                            self.log.debug("Pytorch GPU detected.")
+                            self.gpu_type = torch.cuda.get_device_name(0)
+                            self.log.debug(f"Pytorch GPU {self.gpu_type} detected.")
                         else:
                             self.log.debug("Pytorch GPU not available.")
                     except:
