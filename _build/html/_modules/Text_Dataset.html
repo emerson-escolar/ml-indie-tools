@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Text_Dataset &#8212; ml-indie-tools 0.0.6 documentation</title>
+    <title>Text_Dataset &#8212; ml-indie-tools 0.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Text_Dataset</a></li> 
       </ul>
@@ -50,21 +50,22 @@
     <span class="k">pass</span>
 
 <div class="viewcode-block" id="Text_Dataset"><a class="viewcode-back" href="../index.html#Text_Dataset.Text_Dataset">[docs]</a><span class="k">class</span> <span class="nc">Text_Dataset</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Collection of tools to prepare text data for training and testing. &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Initialize the Text_Dataset with a list of texts.</span>
+
 <span class="sd">        The Gutenberg_Dataset can be used to create such a list, by:</span>
-<span class="sd">            ```</span>
-<span class="sd">            from Gutenberg_Dataset import Gutenberg_Dataset</span>
-<span class="sd">            gd = Gutenberg_Dataset()</span>
-<span class="sd">            gd.load_index()</span>
-<span class="sd">            ls = gd.search({&#39;author&#39;: &#39;kant&#39;, &#39;title&#39;: &#39;kritik&#39;, &#39;language&#39;: &#39;german&#39;})  # returns a list of texts</span>
-<span class="sd">            ls = gd.insert_texts(ls)  # this inserts the actual text of the books into field &#39;text&#39;.</span>
-<span class="sd">            # Now ls contains a valid list of text records:</span>
-<span class="sd">            td = Text_Dataset(ls)</span>
-<span class="sd">            ```</span>
-<span class="sd">        :param text_list: list of text-records of the form:</span>
-<span class="sd">            {&#39;author&#39;: &#39;author&#39;, &#39;title&#39;: &#39;title&#39;, &#39;language&#39;: &#39;some-language&#39;, &#39;text&#39;: &#39;the-long-text&#39;}</span>
+<span class="sd">            </span>
+<span class="sd">        ```</span>
+<span class="sd">        from Gutenberg_Dataset import Gutenberg_Dataset</span>
+<span class="sd">        gd = Gutenberg_Dataset()</span>
+<span class="sd">        gd.load_index()</span>
+<span class="sd">        ls = gd.search({&#39;author&#39;: &#39;kant&#39;, &#39;title&#39;: &#39;kritik&#39;, &#39;language&#39;: &#39;german&#39;})  # returns a list of texts</span>
+<span class="sd">        ls = gd.insert_texts(ls)  # this inserts the actual text of the books into field &#39;text&#39;.</span>
+<span class="sd">        # Now ls contains a valid list of text records:</span>
+<span class="sd">        td = Text_Dataset(ls)</span>
+<span class="sd">        ```</span>
+<span class="sd">        </span>
+<span class="sd">        :param text_list: list of text-records of the form: {&#39;author&#39;: &#39;author&#39;, &#39;title&#39;: &#39;title&#39;, &#39;language&#39;: &#39;some-language&#39;, &#39;text&#39;: &#39;the-long-text&#39;}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;Datasets&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -197,7 +198,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Text_Dataset</a></li> 
       </ul>

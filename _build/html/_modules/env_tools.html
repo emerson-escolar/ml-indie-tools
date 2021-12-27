@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>env_tools &#8212; ml-indie-tools 0.0.5 documentation</title>
+    <title>env_tools &#8212; ml-indie-tools 0.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.5 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">env_tools</a></li> 
       </ul>
@@ -337,46 +337,64 @@
                 <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">root_path</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">root_path</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Something went wrong with Google Drive access. Cannot save model to </span><span class="si">{</span><span class="n">root_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">root_path</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;You are not on a Colab instance, so no Google Drive access is possible.&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span></div>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span></div>
 
-<div class="viewcode-block" id="MLEnv.init_paths"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.init_paths">[docs]</a>    <span class="k">def</span> <span class="nf">init_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model_variant</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_model</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="o">=</span><span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="o">=</span><span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span> <span class="o">=</span> <span class="kc">None</span>
+<div class="viewcode-block" id="MLEnv.init_paths"><a class="viewcode-back" href="../index.html#env_tools.MLEnv.init_paths">[docs]</a>    <span class="k">def</span> <span class="nf">init_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initializes the paths for the project.</span>
+
+<span class="sd">        Depending on if this is a Colab environment or not, persistent data will be stored in either</span>
+<span class="sd">        `project_path=&#39;/content/drive/My Drive/Colab Notebooks/&lt;project_name&gt;&#39;` or `project_path=&#39;.&#39;`.</span>
+
+<span class="sd">        If Google drive access is not available, data will be stored in `project_path=&#39;.&#39;`. This data</span>
+<span class="sd">        is lost, once the Colab session is closed.</span>
+<span class="sd">        </span>
+<span class="sd">        ```</span>
+<span class="sd">        project_path/data  # training data (cache)</span>
+<span class="sd">        project_path/model[/&lt;model_name&gt;]  # model state, weights, etc.</span>
+<span class="sd">        .logs  # log files</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        Note that log_path is always local, since Colab Google drive caching prevents useful logs to Google drive.</span>
+
+<span class="sd">        :param project_name: name of the project. Only used for Colab environments. Is always current directory for non-Colab environments.</span>
+<span class="sd">        :param model_name: name of the model. Optional name for model subdirectory to allow support for multiple models.</span>
+<span class="sd">        :return: (root_path, project_path, model_path, data_path, log_path)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_persistence</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_path</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="o">=</span><span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">=</span> <span class="s2">&quot;./logs&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">save_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_gdrive</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">has_persistence</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_gdrive</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Root path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_model</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;Colab Notebooks/</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root_path</span>
-            <span class="k">if</span> <span class="n">model_variant</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">_weights.h5&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">model_variant</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">model_variant</span><span class="si">}</span><span class="s2">_weights.h5&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tpu</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model save-path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Weights save-path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Data cache path </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span></div></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_colab</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_persistence</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;Colab Notebooks/</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root_path</span>
+        <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;model/</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_persistence</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No persistent storage available. Cannot save data to Google Drive.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span></div></div>
 
 </pre></div>
 
@@ -409,7 +427,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.5 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">env_tools</a></li> 
       </ul>

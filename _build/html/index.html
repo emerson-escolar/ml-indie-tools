@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.6 documentation</title>
+    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.7 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>  
@@ -97,8 +97,30 @@ environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerat
 
 <dl class="py method">
 <dt class="sig sig-object py" id="env_tools.MLEnv.init_paths">
-<span class="sig-name descname"><span class="pre">init_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_variant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.init_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.init_paths" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">init_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.init_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.init_paths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the paths for the project.</p>
+<p>Depending on if this is a Colab environment or not, persistent data will be stored in either
+<cite>project_path=’/content/drive/My Drive/Colab Notebooks/&lt;project_name&gt;’</cite> or <cite>project_path=’.’</cite>.</p>
+<p>If Google drive access is not available, data will be stored in <cite>project_path=’.’</cite>. This data
+is lost, once the Colab session is closed.</p>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">project_path/data</span>&#160; <span class="pre">#</span> <span class="pre">training</span> <span class="pre">data</span> <span class="pre">(cache)</span>
+<span class="pre">project_path/model[/&lt;model_name&gt;]</span>&#160; <span class="pre">#</span> <span class="pre">model</span> <span class="pre">state,</span> <span class="pre">weights,</span> <span class="pre">etc.</span>
+<span class="pre">.logs</span>&#160; <span class="pre">#</span> <span class="pre">log</span> <span class="pre">files</span>
+<span class="pre">`</span></code></p>
+<p>Note that log_path is always local, since Colab Google drive caching prevents useful logs to Google drive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_name</strong> – name of the project. Only used for Colab environments. Is always current directory for non-Colab environments.</p></li>
+<li><p><strong>model_name</strong> – name of the model. Optional name for model subdirectory to allow support for multiple models.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(root_path, project_path, model_path, data_path, log_path)</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="env_tools.MLEnv.is_colab">
@@ -205,7 +227,8 @@ environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerat
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Gutenberg_Dataset.</span></span><span class="sig-name descname"><span class="pre">Gutenberg_Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gutenberg'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A fuzzy, lightweight class to access, search and filter Project Gutenberg resources</p>
-<p>GutenbergLib by default uses a mirror’s root URL. <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_index()</span></code></a> needs to be called before any other methods.</p>
+<p>GutenbergLib by default uses a mirror’s root URL. <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_index()</span></code></a> 
+needs to be called before any other methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -379,7 +402,6 @@ search for a single keyword (e.g. english), or an array of keywords.</p>
 <dt class="sig sig-object py" id="Text_Dataset.Text_Dataset">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Text_Dataset.</span></span><span class="sig-name descname"><span class="pre">Text_Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Text_Dataset.html#Text_Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Text_Dataset.Text_Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Collection of tools to prepare text data for training and testing.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="Text_Dataset.Text_Dataset.source_highlight">
 <span class="sig-name descname"><span class="pre">source_highlight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_txt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minQuoteSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_ref_anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Text_Dataset.html#Text_Dataset.source_highlight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Text_Dataset.Text_Dataset.source_highlight" title="Permalink to this definition">¶</a></dt>
@@ -548,7 +570,7 @@ the twelve supported ops:
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.7 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>
