@@ -31,22 +31,22 @@ class MLEnv():
         if accelerator not in self.known_accelerators:
             self.log.error(f"Accelerator {accelerator} is not known, please check spelling.")
             return
-        self.os_type = None
-        self.py_version = None
-        self.is_conda = False
-        self.is_tensorflow = False
-        self.tf_version = None
-        self.is_pytorch = False
-        self.pt_version = None
-        self.is_jax = False
-        self.jax_version = None
-        self.is_cpu = False
-        self.is_gpu = False
-        self.is_tpu = False
-        self.tpu_type = None
-        self.gpu_type = None
-        self.is_notebook = False
-        self.is_colab = False
+        self.os_type = None  #: Operating system type, e.g. `'Linux'`, `'Darwin'`
+        self.py_version = None  #: Python version, e.g. `'3.7.3'`
+        self.is_conda = False  #: `True` if running in a conda environment
+        self.is_tensorflow = False  #: `True` if running on Tensorflow
+        self.tf_version = None  #: Tensorflow version, e.g. `'2.7.0'`
+        self.is_pytorch = False  #: `True` if running on Pytorch
+        self.pt_version = None  #: Pytorch version, e.g. `'1.6.0'`
+        self.is_jax = False  #: `True` if running on Jax
+        self.jax_version = None  #: Jax version, e.g. `'0.1.0'`
+        self.is_cpu = False  #: `True` if no accelerator is available
+        self.is_gpu = False  #: `True` if a GPU is is available
+        self.is_tpu = False  #: `True` if a TPU is is available
+        self.tpu_type = None  #: TPU type, e.g. `'TPU v2'`
+        self.gpu_type = None  #: GPU type, e.g. `'Tesla V100'`
+        self.is_notebook = False  #: `True` if running in a notebook
+        self.is_colab = False  #: `True` if running in a colab notebook
         if platform == 'tf':
             try:
                 import tensorflow as tf
@@ -203,6 +203,8 @@ class MLEnv():
         self.flush_timeout = 180
         self._check_osenv()
         self._check_notebook_type()
+        self.desc = self.describe()
+        self.log.info(self.desc)
 
     def _check_osenv(self):
         os_type = sys.platform
@@ -241,6 +243,44 @@ class MLEnv():
                 self.is_colab = False
                 self.log.debug("You are not on a Colab instance, so no Google Drive access is possible.")
         return self.is_notebook, self.is_colab
+
+    def describe_osenv(self):
+        desc=f"OS: {self.os_type}, Python: {self.py_version}"
+        if self.is_conda:
+            desc += " (Conda)"
+        if self.is_notebook:
+            if self.is_colab:
+                desc += ", Colab Jupyter Notebook"
+            else:
+                desc += ", Jupyter Notebook"
+        return desc
+
+    def describe_mlenv(self):
+        if self.is_tensorflow is True:
+            desc = f"Tensorflow: {self.tf_version}"
+        elif self.is_pytorch is True:
+            desc = f"Pytorch: {self.pt_version}"
+        elif self.is_jax is True:
+            desc = f"JAX: {self.jax_version}"
+        else:
+            desc = "(no-ml-platform) "
+        if self.is_tpu is True:
+            desc += f", TPU: {self.tpu_type}"
+        if self.is_gpu is True:
+            desc += f", GPU: {self.gpu_type}"
+        if self.is_cpu is True:
+            desc += f", CPU"
+        return desc
+
+    def describe(self):
+        """ Prints a description of the machine environment.
+
+        Returns:
+            str: description of the machine environment.
+        """
+        print(self.describe_osenv())
+        print(self.describe_mlenv())
+        return self.describe_osenv()+" "+self.describe_mlenv()
 
     def mount_gdrive(self, mount_point="/content/drive", root_path="/content/drive/My Drive"):
         if self.is_colab is True:
