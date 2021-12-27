@@ -308,12 +308,11 @@ class MLEnv():
         If Google drive access is not available, data will be stored in `project_path='.'`. This data
         is lost, once the Colab session is closed.
 
-        .. highlight:: python
         .. code-block:: python
 
-        project_path/data  # training data (cache)
-        project_path/model[/<model_name>]  # model state, weights, etc.
-        .logs  # log files
+            project_path/data  # training data (cache)
+            project_path/model[/<model_name>]  # model state, weights, etc.
+            .logs  # log files
 
         Note that log_path is always local, since Colab Google drive caching prevents useful logs to Google drive.
 
