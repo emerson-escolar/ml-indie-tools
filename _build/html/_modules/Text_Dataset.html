@@ -55,7 +55,9 @@
 
 <span class="sd">        The Gutenberg_Dataset can be used to create such a list, by:</span>
 <span class="sd">            </span>
-<span class="sd">        ```</span>
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
+
 <span class="sd">        from Gutenberg_Dataset import Gutenberg_Dataset</span>
 <span class="sd">        gd = Gutenberg_Dataset()</span>
 <span class="sd">        gd.load_index()</span>
@@ -63,7 +65,6 @@
 <span class="sd">        ls = gd.insert_texts(ls)  # this inserts the actual text of the books into field &#39;text&#39;.</span>
 <span class="sd">        # Now ls contains a valid list of text records:</span>
 <span class="sd">        td = Text_Dataset(ls)</span>
-<span class="sd">        ```</span>
 <span class="sd">        </span>
 <span class="sd">        :param text_list: list of text-records of the form: {&#39;author&#39;: &#39;author&#39;, &#39;title&#39;: &#39;title&#39;, &#39;language&#39;: &#39;some-language&#39;, &#39;text&#39;: &#39;the-long-text&#39;}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
