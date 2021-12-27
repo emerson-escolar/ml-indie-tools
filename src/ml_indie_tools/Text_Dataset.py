@@ -10,16 +10,15 @@ class Text_Dataset:
 
         The Gutenberg_Dataset can be used to create such a list, by:
             
-        .. highlight:: python
         .. code-block:: python
 
-        from Gutenberg_Dataset import Gutenberg_Dataset
-        gd = Gutenberg_Dataset()
-        gd.load_index()
-        ls = gd.search({'author': 'kant', 'title': 'kritik', 'language': 'german'})  # returns a list of texts
-        ls = gd.insert_texts(ls)  # this inserts the actual text of the books into field 'text'.
-        # Now ls contains a valid list of text records:
-        td = Text_Dataset(ls)
+            from Gutenberg_Dataset import Gutenberg_Dataset
+            gd = Gutenberg_Dataset()
+            gd.load_index()
+            ls = gd.search({'author': 'kant', 'title': 'kritik', 'language': 'german'})  # returns a list of texts
+            ls = gd.insert_texts(ls)  # this inserts the actual text of the books into field 'text'.
+            # Now ls contains a valid list of text records:
+            td = Text_Dataset(ls)
         
         :param text_list: list of text-records of the form: {'author': 'author', 'title': 'title', 'language': 'some-language', 'text': 'the-long-text'}
         """
