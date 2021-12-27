@@ -292,44 +292,62 @@ class MLEnv():
                 return True, root_path
             if not os.path.exists(root_path):
                 self.log.error(f"Something went wrong with Google Drive access. Cannot save model to {root_path}")
-                return False, None
+                return False, '.'
             else:
                 return True, root_path
         else:
             self.log.error("You are not on a Colab instance, so no Google Drive access is possible.")
-            return False, None
+            return False, '.'
 
-    def init_paths(self, project_name, model_name, model_variant=None):
-        self.save_model = True
-        self.model_path=None
-        self.cache_path=None
-        self.weights_file = None
+    def init_paths(self, project_name=None, model_name=None):
+        """ Initializes the paths for the project.
+
+        Depending on if this is a Colab environment or not, persistent data will be stored in either
+        `project_path='/content/drive/My Drive/Colab Notebooks/<project_name>'` or `project_path='.'`.
+
+        If Google drive access is not available, data will be stored in `project_path='.'`. This data
+        is lost, once the Colab session is closed.
+        
+        ```
+        project_path/data  # training data (cache)
+        project_path/model[/<model_name>]  # model state, weights, etc.
+        .logs  # log files
+        ```
+
+        Note that log_path is always local, since Colab Google drive caching prevents useful logs to Google drive.
+
+        :param project_name: name of the project. Only used for Colab environments. Is always current directory for non-Colab environments.
+        :param model_name: name of the model. Optional name for model subdirectory to allow support for multiple models.
+        :return: (root_path, project_path, model_path, data_path, log_path)
+        """
+        self.has_persistence = True
+        self.root_path = None
         self.project_path = None
+        self.model_path=None
+        self.data_path=None
         self.log_path = "./logs"
         if self.is_colab:
-            self.save_model, self.root_path = self.mount_gdrive()
+            self.has_persistence, self.root_path = self.mount_gdrive()
         else:
             self.root_path='.'
 
         self.log.debug(f"Root path: {self.root_path}")
-        if self.save_model:
-            if self.is_colab:
-                self.project_path=os.path.join(self.root_path,f"Colab Notebooks/{project_name}")
-            else:
-                self.project_path=self.root_path
-            if model_variant is None:
-                self.model_path=os.path.join(self.project_path,f"{model_name}")
-                self.weights_file=os.path.join(self.project_path,f"{model_name}_weights.h5")
-            else:
-                self.model_path=os.path.join(self.project_path,f"{model_name}_{model_variant}")
-                self.weights_file=os.path.join(self.project_path,f"{model_name}_{model_variant}_weights.h5")
-            self.cache_path=os.path.join(self.project_path,'data')
-            if not os.path.exists(self.cache_path):
-                os.makedirs(self.cache_path)
-            if self.is_tpu is False:
-                self.log.info(f"Model save-path: {self.model_path}")
-            else:
-                self.log.info(f"Weights save-path: {self.weights_file}")
-            self.log.info(f'Data cache path {self.cache_path}')
-        return self.root_path, self.project_path, self.model_path, self.weights_file, self.cache_path, self.log_path
+        if self.is_colab and self.has_persistence:
+            self.project_path=os.path.join(self.root_path,f"Colab Notebooks/{project_name}")
+        else:
+            self.project_path=self.root_path
+        if model_name is not None:
+            self.model_path=os.path.join(self.project_path,f"model/{model_name}")
+        else:
+            self.model_path=os.path.join(self.project_path, "model")
+        self.data_path=os.path.join(self.project_path,'data')
+        if not os.path.exists(self.data_path):
+            os.makedirs(self.data_path)
+        if not os.path.exists(self.model_path):
+            os.makedirs(self.model_path)
+        if not os.path.exists(self.log_path):
+            os.makedirs(self.log_path)
+        if self.has_persistence is False:
+            self.log.error("No persistent storage available. Cannot save data to Google Drive.")
+        return self.root_path, self.project_path, self.model_path, self.data_path, self.log_path
 
