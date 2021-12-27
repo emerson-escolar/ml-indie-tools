@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.5 documentation</title>
+    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.5 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.6 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>  
@@ -373,6 +373,33 @@ search for a single keyword (e.g. english), or an array of keywords.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-Text_Dataset">
+<span id="text-dataset-object"></span><h2>Text_Dataset object<a class="headerlink" href="#module-Text_Dataset" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Text_Dataset.Text_Dataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Text_Dataset.</span></span><span class="sig-name descname"><span class="pre">Text_Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Text_Dataset.html#Text_Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Text_Dataset.Text_Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Collection of tools to prepare text data for training and testing.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Text_Dataset.Text_Dataset.source_highlight">
+<span class="sig-name descname"><span class="pre">source_highlight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_txt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minQuoteSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_ref_anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Text_Dataset.html#Text_Dataset.source_highlight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Text_Dataset.Text_Dataset.source_highlight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyse which parts of <cite>ref_txt</cite> are cited from the texts in the Text_Dataset.</p>
+<p>Note: this function requires a jupyter notebook in order to display HTML with markup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ref_txt</strong> – the reference text to be analysed for plagiarised parts</p></li>
+<li><p><strong>minQuoteSize</strong> – minimum size of a quote to be considered plagiarised</p></li>
+<li><p><strong>dark_mode</strong> – if True, the background colors will be dark, otherwise white</p></li>
+<li><p><strong>display_ref_anchor</strong> – if True, the reference text will be displayed with a reference anchor</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-ALU_Dataset">
 <span id="alu-dataset-object"></span><h2>ALU_Dataset object<a class="headerlink" href="#module-ALU_Dataset" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
@@ -484,6 +511,7 @@ the twelve supported ops:
 <li><a class="reference internal" href="#">Welcome to ml-indie-tools’s documentation!</a><ul>
 <li><a class="reference internal" href="#module-env_tools">MLEnv object</a></li>
 <li><a class="reference internal" href="#module-Gutenberg_Dataset">Gutenberg_Dataset object</a></li>
+<li><a class="reference internal" href="#module-Text_Dataset">Text_Dataset object</a></li>
 <li><a class="reference internal" href="#module-ALU_Dataset">ALU_Dataset object</a></li>
 </ul>
 </li>
@@ -520,7 +548,7 @@ the twelve supported ops:
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.5 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.6 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>

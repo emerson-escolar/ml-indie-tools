@@ -36,6 +36,19 @@ Gutenberg_Dataset object
    :undoc-members:
    :show-inheritance:
 
+.. currentmodule:: Text_Dataset
+
+===================
+Text_Dataset object
+===================
+
+.. automodule:: Text_Dataset
+
+.. autoclass:: Text_Dataset
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 .. currentmodule:: ALU_Dataset
 
 ==================

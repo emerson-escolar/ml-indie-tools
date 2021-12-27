@@ -1,0 +1,210 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text_Dataset &#8212; ml-indie-tools 0.0.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Text_Dataset</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Text_Dataset</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="k">try</span><span class="p">:</span>
+   <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<div class="viewcode-block" id="Text_Dataset"><a class="viewcode-back" href="../index.html#Text_Dataset.Text_Dataset">[docs]</a><span class="k">class</span> <span class="nc">Text_Dataset</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Collection of tools to prepare text data for training and testing. &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize the Text_Dataset with a list of texts.</span>
+<span class="sd">        The Gutenberg_Dataset can be used to create such a list, by:</span>
+<span class="sd">            ```</span>
+<span class="sd">            from Gutenberg_Dataset import Gutenberg_Dataset</span>
+<span class="sd">            gd = Gutenberg_Dataset()</span>
+<span class="sd">            gd.load_index()</span>
+<span class="sd">            ls = gd.search({&#39;author&#39;: &#39;kant&#39;, &#39;title&#39;: &#39;kritik&#39;, &#39;language&#39;: &#39;german&#39;})  # returns a list of texts</span>
+<span class="sd">            ls = gd.insert_texts(ls)  # this inserts the actual text of the books into field &#39;text&#39;.</span>
+<span class="sd">            # Now ls contains a valid list of text records:</span>
+<span class="sd">            td = Text_Dataset(ls)</span>
+<span class="sd">            ```</span>
+<span class="sd">        :param text_list: list of text-records of the form:</span>
+<span class="sd">            {&#39;author&#39;: &#39;author&#39;, &#39;title&#39;: &#39;title&#39;, &#39;language&#39;: &#39;some-language&#39;, &#39;text&#39;: &#39;the-long-text&#39;}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;Datasets&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">req_attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;language&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">text_list</span><span class="p">)):</span>
+            <span class="n">valid</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">miss</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">req_attrs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">text_list</span><span class="p">[</span><span class="n">ind</span><span class="p">]:</span>
+                    <span class="n">valid</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="n">miss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">valid</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing attribute(s) </span><span class="si">{</span><span class="n">miss</span><span class="si">}</span><span class="s2"> in text[</span><span class="si">{</span><span class="n">ind</span><span class="si">}</span><span class="s2">], skipping&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">text_list</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+            <span class="n">text</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> texts&quot;</span><span class="p">)</span>
+            
+    <span class="k">def</span> <span class="nf">_display_colored_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">textlist</span><span class="p">,</span> <span class="n">dark_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_ref_anchor</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">post</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Internal function to display text and citation references in HTML. &quot;&quot;&quot;</span>
+        <span class="n">bgcolorsWht</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#d4e6e1&#39;</span><span class="p">,</span> <span class="s1">&#39;#d8daef&#39;</span><span class="p">,</span> <span class="s1">&#39;#ebdef0&#39;</span><span class="p">,</span> <span class="s1">&#39;#eadbd8&#39;</span><span class="p">,</span> <span class="s1">&#39;#e2d7d5&#39;</span><span class="p">,</span> <span class="s1">&#39;#edebd0&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;#ecf3cf&#39;</span><span class="p">,</span> <span class="s1">&#39;#d4efdf&#39;</span><span class="p">,</span> <span class="s1">&#39;#d0ece7&#39;</span><span class="p">,</span> <span class="s1">&#39;#d6eaf8&#39;</span><span class="p">,</span> <span class="s1">&#39;#d4e6f1&#39;</span><span class="p">,</span> <span class="s1">&#39;#d6dbdf&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;#f6ddcc&#39;</span><span class="p">,</span> <span class="s1">&#39;#fae5d3&#39;</span><span class="p">,</span> <span class="s1">&#39;#fdebd0&#39;</span><span class="p">,</span> <span class="s1">&#39;#e5e8e8&#39;</span><span class="p">,</span> <span class="s1">&#39;#eaeded&#39;</span><span class="p">,</span> <span class="s1">&#39;#A9CCE3&#39;</span><span class="p">]</span>
+        <span class="n">bgcolorsDrk</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#342621&#39;</span><span class="p">,</span><span class="s1">&#39;#483a2f&#39;</span><span class="p">,</span> <span class="s1">&#39;#3b4e20&#39;</span><span class="p">,</span> <span class="s1">&#39;#2a3b48&#39;</span><span class="p">,</span> <span class="s1">&#39;#324745&#39;</span><span class="p">,</span> <span class="s1">&#39;#3d3b30&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;#3c235f&#39;</span><span class="p">,</span> <span class="s1">&#39;#443f4f&#39;</span><span class="p">,</span> <span class="s1">&#39;#403c37&#39;</span><span class="p">,</span> <span class="s1">&#39;#463a28&#39;</span><span class="p">,</span> <span class="s1">&#39;#443621&#39;</span><span class="p">,</span> <span class="s1">&#39;#364b5f&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;#264d4c&#39;</span><span class="p">,</span> <span class="s1">&#39;#2a3553&#39;</span><span class="p">,</span> <span class="s1">&#39;#3d2b40&#39;</span><span class="p">,</span> <span class="s1">&#39;#354838&#39;</span><span class="p">,</span> <span class="s1">&#39;#3a3d4d&#39;</span><span class="p">,</span> <span class="s1">&#39;#594C23&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">dark_mode</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">bgcolors</span><span class="o">=</span><span class="n">bgcolorsWht</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bgcolors</span><span class="o">=</span><span class="n">bgcolorsDrk</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">txt</span><span class="p">,</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">textlist</span><span class="p">:</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="n">txt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;br&gt;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ind</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">+=</span> <span class="n">txt</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">display_ref_anchor</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;&lt;sup&gt;[&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;]&lt;/sup&gt;&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+                <span class="n">out</span> <span class="o">+=</span> <span class="s2">&quot;&lt;span style=</span><span class="se">\&quot;</span><span class="s2">background-color:&quot;</span><span class="o">+</span><span class="n">bgcolors</span><span class="p">[</span><span class="n">ind</span> <span class="o">%</span> <span class="mi">16</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;;</span><span class="se">\&quot;</span><span class="s2">&gt;&quot;</span> <span class="o">+</span> \
+                       <span class="n">txt</span> <span class="o">+</span> <span class="s2">&quot;&lt;/span&gt;&quot;</span><span class="o">+</span> <span class="n">anchor</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">pre</span><span class="o">+</span><span class="n">out</span><span class="o">+</span><span class="n">post</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Text_Dataset.source_highlight"><a class="viewcode-back" href="../index.html#Text_Dataset.Text_Dataset.source_highlight">[docs]</a>    <span class="k">def</span> <span class="nf">source_highlight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_txt</span><span class="p">,</span> <span class="n">minQuoteSize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">dark_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_ref_anchor</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Analyse which parts of `ref_txt` are cited from the texts in the Text_Dataset.</span>
+<span class="sd">        </span>
+<span class="sd">        Note: this function requires a jupyter notebook in order to display HTML with markup.</span>
+<span class="sd">        </span>
+<span class="sd">        :param ref_txt: the reference text to be analysed for plagiarised parts</span>
+<span class="sd">        :param minQuoteSize: minimum size of a quote to be considered plagiarised</span>
+<span class="sd">        :param dark_mode: if True, the background colors will be dark, otherwise white</span>
+<span class="sd">        :param display_ref_anchor: if True, the reference text will be displayed with a reference anchor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ref_tx</span> <span class="o">=</span> <span class="n">ref_txt</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">qts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">txsrc</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;Sources: &quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">noquote</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref_tx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># search all library files for quote &#39;txt&#39;</span>
+            <span class="n">mxQ</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">mxI</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">mxN</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_list</span><span class="p">:</span>  <span class="c1"># find longest quote in all texts</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">minQuoteSize</span>
+                <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref_tx</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ref_tx</span><span class="p">[:</span><span class="n">p</span><span class="p">]</span> <span class="ow">in</span> <span class="n">text</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">minQuoteSize</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">while</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref_tx</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ref_tx</span><span class="p">[:</span><span class="n">p</span><span class="p">]</span> <span class="ow">in</span> <span class="n">text</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]:</span>
+                        <span class="n">p</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">p</span><span class="o">-</span><span class="mi">1</span> <span class="o">&gt;</span> <span class="n">mxQ</span><span class="p">:</span>
+                        <span class="n">mxQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">-</span><span class="mi">1</span>
+                        <span class="n">mxI</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">]</span>
+                        <span class="n">mxN</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="p">[</span><span class="s1">&#39;author&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">text</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">found</span><span class="p">:</span>  <span class="c1"># save longest quote for colorizing</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">noquote</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">noquote</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+                    <span class="n">noquote</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ref_tx</span><span class="p">[:</span><span class="n">mxQ</span><span class="p">],</span> <span class="n">mxI</span><span class="p">))</span>
+                <span class="n">ref_tx</span> <span class="o">=</span> <span class="n">ref_tx</span><span class="p">[</span><span class="n">mxQ</span><span class="p">:]</span>
+                <span class="k">if</span> <span class="n">mxI</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">qts</span><span class="p">:</span>  <span class="c1"># create a new reference, if first occurence</span>
+                    <span class="n">qts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mxI</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">sc</span><span class="p">:</span>
+                        <span class="n">txsrc</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+                    <span class="n">sc</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">txsrc</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">mxN</span><span class="p">,</span> <span class="n">mxI</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">noquote</span> <span class="o">+=</span> <span class="n">ref_tx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">ref_tx</span> <span class="o">=</span> <span class="n">ref_tx</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">noquote</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">noquote</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">noquote</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_colored_html</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dark_mode</span><span class="o">=</span><span class="n">dark_mode</span><span class="p">,</span> <span class="n">display_ref_anchor</span><span class="o">=</span><span class="n">display_ref_anchor</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">qts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># print references, if there is at least one source</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_display_colored_html</span><span class="p">(</span><span class="n">txsrc</span><span class="p">,</span> <span class="n">dark_mode</span><span class="o">=</span><span class="n">dark_mode</span><span class="p">,</span> <span class="n">display_ref_anchor</span><span class="o">=</span><span class="n">display_ref_anchor</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="s2">&quot;&lt;small&gt;&lt;p style=</span><span class="se">\&quot;</span><span class="s2">text-align:right;</span><span class="se">\&quot;</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                                     <span class="n">post</span><span class="o">=</span><span class="s2">&quot;&lt;/p&gt;&lt;/small&gt;&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Text_Dataset</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, dsc.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    </div>
+  </body>
+</html>
