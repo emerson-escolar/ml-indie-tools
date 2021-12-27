@@ -9,7 +9,8 @@ from urllib.request import urlopen
 class Gutenberg_Dataset():
     """ A fuzzy, lightweight class to access, search and filter Project Gutenberg resources
         
-        GutenbergLib by default uses a mirror's root URL. :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called before any other methods.
+        GutenbergLib by default uses a mirror's root URL. :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` 
+        needs to be called before any other methods.
         
         :param root_url: url of Project Gutenberg or any mirror URL.
         :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts
