@@ -402,6 +402,22 @@ search for a single keyword (e.g. english), or an array of keywords.</p>
 <dt class="sig sig-object py" id="Text_Dataset.Text_Dataset">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Text_Dataset.</span></span><span class="sig-name descname"><span class="pre">Text_Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Text_Dataset.html#Text_Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Text_Dataset.Text_Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Initialize the Text_Dataset with a list of texts.</p>
+<p>The Gutenberg_Dataset can be used to create such a list, by:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Gutenberg_Dataset</span> <span class="kn">import</span> <span class="n">Gutenberg_Dataset</span>
+<span class="n">gd</span> <span class="o">=</span> <span class="n">Gutenberg_Dataset</span><span class="p">()</span>
+<span class="n">gd</span><span class="o">.</span><span class="n">load_index</span><span class="p">()</span>
+<span class="n">ls</span> <span class="o">=</span> <span class="n">gd</span><span class="o">.</span><span class="n">search</span><span class="p">({</span><span class="s1">&#39;author&#39;</span><span class="p">:</span> <span class="s1">&#39;kant&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;kritik&#39;</span><span class="p">,</span> <span class="s1">&#39;language&#39;</span><span class="p">:</span> <span class="s1">&#39;german&#39;</span><span class="p">})</span>  <span class="c1"># returns a list of texts</span>
+<span class="n">ls</span> <span class="o">=</span> <span class="n">gd</span><span class="o">.</span><span class="n">insert_texts</span><span class="p">(</span><span class="n">ls</span><span class="p">)</span>  <span class="c1"># this inserts the actual text of the books into field &#39;text&#39;.</span>
+<span class="c1"># Now ls contains a valid list of text records:</span>
+<span class="n">td</span> <span class="o">=</span> <span class="n">Text_Dataset</span><span class="p">(</span><span class="n">ls</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text_list</strong> – list of text-records of the form: {‘author’: ‘author’, ‘title’: ‘title’, ‘language’: ‘some-language’, ‘text’: ‘the-long-text’}</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="Text_Dataset.Text_Dataset.source_highlight">
 <span class="sig-name descname"><span class="pre">source_highlight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_txt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minQuoteSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_ref_anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Text_Dataset.html#Text_Dataset.source_highlight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Text_Dataset.Text_Dataset.source_highlight" title="Permalink to this definition">¶</a></dt>
