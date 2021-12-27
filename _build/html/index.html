@@ -103,12 +103,11 @@ environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerat
 <cite>project_path=’/content/drive/My Drive/Colab Notebooks/&lt;project_name&gt;’</cite> or <cite>project_path=’.’</cite>.</p>
 <p>If Google drive access is not available, data will be stored in <cite>project_path=’.’</cite>. This data
 is lost, once the Colab session is closed.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project_path</span><span class="o">/</span><span class="n">data</span>  <span class="c1"># training data (cache)</span>
+<span class="n">project_path</span><span class="o">/</span><span class="n">model</span><span class="p">[</span><span class="o">/&lt;</span><span class="n">model_name</span><span class="o">&gt;</span><span class="p">]</span>  <span class="c1"># model state, weights, etc.</span>
+<span class="o">.</span><span class="n">logs</span>  <span class="c1"># log files</span>
 </pre></div>
 </div>
-<p>project_path/data  # training data (cache)
-project_path/model[/&lt;model_name&gt;]  # model state, weights, etc.
-.logs  # log files</p>
 <p>Note that log_path is always local, since Colab Google drive caching prevents useful logs to Google drive.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
