@@ -5,7 +5,22 @@ except:
     pass
 
 class Text_Dataset:
+    """ Collection of tools to prepare text data for training and testing. """
     def __init__(self, text_list):
+        """ Initialize the Text_Dataset with a list of texts.
+        The Gutenberg_Dataset can be used to create such a list, by:
+            ```
+            from Gutenberg_Dataset import Gutenberg_Dataset
+            gd = Gutenberg_Dataset()
+            gd.load_index()
+            ls = gd.search({'author': 'kant', 'title': 'kritik', 'language': 'german'})  # returns a list of texts
+            ls = gd.insert_texts(ls)  # this inserts the actual text of the books into field 'text'.
+            # Now ls contains a valid list of text records:
+            td = Text_Dataset(ls)
+            ```
+        :param text_list: list of text-records of the form:
+            {'author': 'author', 'title': 'title', 'language': 'some-language', 'text': 'the-long-text'}
+        """
         self.log = logging.getLogger("Datasets")
         self.text_list = []
         self.index = 1
@@ -26,7 +41,8 @@ class Text_Dataset:
             self.text_list.append(text)
         self.log.info(f"Loaded {len(self.text_list)} texts")
             
-    def display_colored_html(self, textlist, dark_mode=False, display_ref_anchor=True, pre='', post=''):
+    def _display_colored_html(self, textlist, dark_mode=False, display_ref_anchor=True, pre='', post=''):
+        """ Internal function to display text and citation references in HTML. """
         bgcolorsWht = ['#d4e6e1', '#d8daef', '#ebdef0', '#eadbd8', '#e2d7d5', '#edebd0',
                     '#ecf3cf', '#d4efdf', '#d0ece7', '#d6eaf8', '#d4e6f1', '#d6dbdf',
                     '#f6ddcc', '#fae5d3', '#fdebd0', '#e5e8e8', '#eaeded', '#A9CCE3']
@@ -52,6 +68,15 @@ class Text_Dataset:
         display(HTML(pre+out+post))
 
     def source_highlight(self, ref_txt, minQuoteSize=10, dark_mode=False, display_ref_anchor=True):
+        """ Analyse which parts of `ref_txt` are cited from the texts in the Text_Dataset.
+        
+        Note: this function requires a jupyter notebook in order to display HTML with markup.
+        
+        :param ref_txt: the reference text to be analysed for plagiarised parts
+        :param minQuoteSize: minimum size of a quote to be considered plagiarised
+        :param dark_mode: if True, the background colors will be dark, otherwise white
+        :param display_ref_anchor: if True, the reference text will be displayed with a reference anchor
+        """
         ref_tx = ref_txt
         out = []
         qts = []
@@ -92,7 +117,7 @@ class Text_Dataset:
         if len(noquote) > 0:
             out.append((noquote, 0))
             noquote = ''
-        self.display_colored_html(out, dark_mode=dark_mode, display_ref_anchor=display_ref_anchor)
+        self._display_colored_html(out, dark_mode=dark_mode, display_ref_anchor=display_ref_anchor)
         if len(qts) > 0:  # print references, if there is at least one source
-            self.display_colored_html(txsrc, dark_mode=dark_mode, display_ref_anchor=display_ref_anchor, pre="<small><p style=\"text-align:right;\">",
+            self._display_colored_html(txsrc, dark_mode=dark_mode, display_ref_anchor=display_ref_anchor, pre="<small><p style=\"text-align:right;\">",
                                      post="</p></small>")
