@@ -404,7 +404,7 @@ search for a single keyword (e.g. english), or an array of keywords.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Initialize the Text_Dataset with a list of texts.</p>
 <p>The Gutenberg_Dataset can be used to create such a list, by:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Gutenberg_Dataset</span> <span class="kn">import</span> <span class="n">Gutenberg_Dataset</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ml_indie_tools.Gutenberg_Dataset</span> <span class="kn">import</span> <span class="n">Gutenberg_Dataset</span>
 <span class="n">gd</span> <span class="o">=</span> <span class="n">Gutenberg_Dataset</span><span class="p">()</span>
 <span class="n">gd</span><span class="o">.</span><span class="n">load_index</span><span class="p">()</span>
 <span class="n">ls</span> <span class="o">=</span> <span class="n">gd</span><span class="o">.</span><span class="n">search</span><span class="p">({</span><span class="s1">&#39;author&#39;</span><span class="p">:</span> <span class="s1">&#39;kant&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;kritik&#39;</span><span class="p">,</span> <span class="s1">&#39;language&#39;</span><span class="p">:</span> <span class="s1">&#39;german&#39;</span><span class="p">})</span>  <span class="c1"># returns a list of texts</span>
