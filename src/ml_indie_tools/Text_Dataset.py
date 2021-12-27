@@ -11,7 +11,7 @@ class Text_Dataset:
         
     .. code-block:: python
 
-        from Gutenberg_Dataset import Gutenberg_Dataset
+        from ml_indie_tools.Gutenberg_Dataset import Gutenberg_Dataset
         gd = Gutenberg_Dataset()
         gd.load_index()
         ls = gd.search({'author': 'kant', 'title': 'kritik', 'language': 'german'})  # returns a list of texts
