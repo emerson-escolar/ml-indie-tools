@@ -221,13 +221,16 @@ class Text_Dataset:
         :param encoded: list of encoded tokens
         :return: text """
         if tokenizer == 'word':
-            decoded = [self.i2w[token] if token in self.i2w else self.i2w['<unk>'] for token in encoded]
+            decoded = [self.i2w[token]+' ' if token in self.i2w else self.i2w['<unk>'] for token in encoded]
+            decoded_text = ' '.join(decoded)
+            decoded_text = decoded_text[:-1]
         elif tokenizer == 'char':
             decoded = [self.i2c[token] if token in self.i2c else self.i2c['<unk>'] for token in encoded]
+            decoded_text = ''.join(decoded)
         else:
             self.log.error(f"Unknown tokenizer {tokenizer}")
             raise ValueError(f"Unknown tokenizer {tokenizer}")
-        return ''.join(decoded)
+        return decoded_text
 
     def _display_colored_html(self, textlist, dark_mode=False, display_ref_anchor=True, pre='', post=''):
         """ Internal function to display text and citation references in HTML. """
