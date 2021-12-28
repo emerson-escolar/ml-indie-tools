@@ -1,3 +1,4 @@
+import random
 import logging
 try:
    from IPython.core.display import display, HTML
@@ -19,7 +20,7 @@ class Text_Dataset:
         # Now ls contains a valid list of text records:
         td = Text_Dataset(ls)
     
-    :param text_list: list of text-records of the form: {'author': 'author', 'title': 'title', 'language': 'some-language', 'text': 'the-long-text'}
+    :param text_list: list of text-records of the form: {'author': 'author', 'title': 'title', 'language': 'some-language', 'text': 'the-long-text'}. Optinal parameters: 'weight': 1.0
     """
     def __init__(self, text_list):
         self.log = logging.getLogger("Datasets")
@@ -41,7 +42,59 @@ class Text_Dataset:
             self.index += 1
             self.text_list.append(text)
         self.log.info(f"Loaded {len(self.text_list)} texts")
-            
+        self._calc_probability_weights()
+
+    def _calc_probability_weights(self):
+        prs = 0
+        for text in self.text_list:
+            if 'weight' in text:
+                w=text['weight']
+            else:
+                w=1.0
+            pr = len(text['text']) * w
+            prs = prs + pr
+            text['probability_weight'] = pr
+        for text in self.text_list:
+            text['probability_weight'] = text['probability_weight'] / prs
+        self.tidx = []
+        self.tcum = []
+        tc=0
+        for idx in range(0,len(self.text_list)):
+            self.tidx.append(idx)
+            text = self.text_list[idx]
+            self.tcum.append(text['probability_weight'] + tc)
+            tc = self.tcum[-1]
+
+    def _get_random_text_index(self, weighted=True):
+        """ Return a random text index from the Text_Dataset.
+        
+        :param weighted: If True, the probability of a text is weighted by its calculated 'probability_weight' attribute.
+        :return: a random text index
+        """
+        if weighted is True:
+            return random.choices(self.tidx, self.tcum)[0]
+        else:
+            return random.choice(self.tidx)
+
+    def get_random_sample(self, length, weighted=True, sanitize_white_space=True):
+        """ Return index idx and random sample of `length` chars from text[idx] the Text_Dataset.
+        
+        :param length: number of characters to return
+        :param weighted: If True, the probability of a text is weighted by its calculated 'probability_weight' attribute.
+        :param sanitize_white_space: If True, white space is replaced by a single space.
+        :return: tuple (idx of text used for sampling, string of length `length` sampled from the Text_Dataset)
+        """
+        idx = self._get_random_text_index(weighted)
+        text = self.text_list[idx]['text']
+        if len(text) < length:
+            sample = text
+        else:
+            pos = random.randint(0, len(text) - length)
+            sample = text[pos:pos+length]
+        if sanitize_white_space is True:
+            sample = sample.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('  ', ' ')
+        return (idx, sample)
+
     def _display_colored_html(self, textlist, dark_mode=False, display_ref_anchor=True, pre='', post=''):
         """ Internal function to display text and citation references in HTML. """
         bgcolorsWht = ['#d4e6e1', '#d8daef', '#ebdef0', '#eadbd8', '#e2d7d5', '#edebd0',
