@@ -62,9 +62,11 @@ ALU_Dataset object
    :undoc-members:
    :show-inheritance:
 
------------
+.. currentmodule:: README
+
+===========
 Readme File
------------
+===========
 
 .. mdinclude:: README.md
 

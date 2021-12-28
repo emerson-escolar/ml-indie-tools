@@ -35,7 +35,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'm2r2',
+    'm2r2',   # pip install m2r2  # needed for markdown to rst conversion
 ]
 
 # Add any paths that contain templates here, relative to this directory.
