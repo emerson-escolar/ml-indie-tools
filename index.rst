@@ -62,6 +62,18 @@ ALU_Dataset object
    :undoc-members:
    :show-inheritance:
 
+-----------
+Readme File
+-----------
+
+.. mdinclude:: README.md
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   README.md
+
 Indices and tables
 ==================
 
