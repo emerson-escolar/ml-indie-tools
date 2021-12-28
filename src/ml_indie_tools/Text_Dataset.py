@@ -190,11 +190,11 @@ class Text_Dataset:
         if tokenizer == 'word':
             if self.word_tokenizer_init is False:
                 self._init_tokenizer(tokenizer)
-                tokens = self._word_splitter(text)
+            tokens = self._word_splitter(text)
         elif tokenizer == 'char':
             if self.char_tokenizer_init is False:
                 self._init_tokenizer(tokenizer)
-                tokens = list(self._char_filter(text))
+            tokens = list(self._char_filter(text))
         else:
             self.log.error(f"Unknown tokenizer {tokenizer}")
             raise ValueError(f"Unknown tokenizer {tokenizer}")
