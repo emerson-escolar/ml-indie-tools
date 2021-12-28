@@ -26,6 +26,8 @@ class Text_Dataset:
         self.log = logging.getLogger("Datasets")
         self.text_list = []
         self.index = 1
+        self.word_tokenizer_init = False
+        self.char_tokenizer_init = False
         req_attrs=['title', 'author', 'language', 'text']
         for ind in range(0,len(text_list)):
             valid=True
@@ -76,12 +78,41 @@ class Text_Dataset:
         else:
             return random.choice(self.tidx)
 
-    def get_random_sample(self, length, weighted=True, sanitize_white_space=True):
+    def filter_text(self, text, sanitize_white_space=True, separate_punctuation=False, preserve_case=True):
+        """ Filter a text.
+        
+        :param text: text to filter
+        :param sanitize_white_space: If True, white space is replaced by a single space.
+        :param separate_punctuation: If True, punctuation is separated from words.
+        :param preserve_case: If True, the case of the text is preserved.
+        :return: filtered text
+        """
+        if preserve_case is False:
+            text = text.lower()
+        punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
+        if separate_punctuation is True:
+            for p in punctuation:
+                text = text.replace(p, f' {p} ')
+        if sanitize_white_space is True:
+            text = text.replace('\n', ' ')
+            text = text.replace('\t', ' ')
+            text = text.replace('\r', ' ')
+            text = text.replace('\f', ' ')
+            text = text.replace('\v', ' ')
+            to=""
+            while to != text:
+                to = text
+                text = text.replace('  ', ' ')
+        return text
+
+    def get_random_sample(self, length, weighted=True, sanitize_white_space=True, separate_punctuation=False, preserve_case=True):
         """ Return index idx and random sample of `length` chars from text[idx] the Text_Dataset.
         
         :param length: number of characters to return
         :param weighted: If True, the probability of a text is weighted by its calculated 'probability_weight' attribute.
         :param sanitize_white_space: If True, white space is replaced by a single space.
+        :param separate_punctuation: If True, punctuation is separated from words.
+        :param preserve_case: If True, the case of the text is preserved.
         :return: tuple (idx of text used for sampling, string of length `length` sampled from the Text_Dataset)
         """
         idx = self._get_random_text_index(weighted)
@@ -92,8 +123,111 @@ class Text_Dataset:
             pos = random.randint(0, len(text) - length)
             sample = text[pos:pos+length]
         if sanitize_white_space is True:
-            sample = sample.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('  ', ' ')
+            sample = self.filter_text(sample, sanitize_white_space, separate_punctuation, preserve_case)
         return (idx, sample)
+
+    def _word_splitter(self, text):
+        txt=self.filter_text(text, sanitize_white_space=True, separate_punctuation=True, preserve_case=True)
+        tokens=txt.split()
+        return tokens
+
+    def _char_filter(self, text):
+        txt=self.filter_text(text, sanitize_white_space=True, separate_punctuation=False, preserve_case=True)
+        return txt
+
+    def _init_tokenizer(self, tokenizer='word'):
+        """ Initialize the tokenizer with the text_list.
+        
+        :param tokenizer: 'word' or 'char'
+        """
+        if tokenizer == 'word':
+            self.w2i = {}
+            self.i2w = {}
+            self.w2i['<unk>'] = 0
+            self.i2w[0] = '<unk>'
+            self.w2i['<pad>'] = 1
+            self.i2w[1] = '<pad>'
+            self.w2i['<eos>'] = 2
+            self.i2w[2] = '<eos>'
+            self.w2i['<sos>'] = 3
+            self.i2w[3] = '<sos>'
+            for text in self.text_list:
+                tokens = self._word_splitter(text['text'])
+                for token in tokens:
+                    if token not in self.w2i:
+                        self.w2i[token] = len(self.w2i)
+                        self.i2w[len(self.w2i)-1] = token
+            self.word_tokenizer_init=True
+        elif tokenizer == 'char':
+            self.i2c = {}
+            self.c2i = {}
+            self.i2c['<unk>'] = 0
+            self.c2i[0] = '<unk>'
+            self.i2c['<pad>'] = 1
+            self.c2i[1] = '<pad>'
+            self.i2c['<eos>'] = 2
+            self.c2i[2] = '<eos>'
+            self.i2c['<sos>'] = 3
+            self.c2i[3] = '<sos>'
+            for text in self.text_list:
+                txt = self._char_filter(text['text'])
+                uniq_chars = set(txt)
+                for c in uniq_chars:
+                    if c not in self.c2i:
+                        self.c2i[c] = len(self.c2i)
+                        self.i2c[len(self.i2c)] = c
+            self.char_tokenizer_init=True
+        else:
+            self.log.error(f"Unknown tokenizer {tokenizer}")
+            raise ValueError(f"Unknown tokenizer {tokenizer}")
+
+    def tokenize(self, text, tokenizer='word'):
+        """ Tokenize a text.
+        
+        :param text: text to tokenize
+        :return: list of tokens """
+        tokens = []
+        if tokenizer == 'word':
+            if self.word_tokenizer_init is False:
+                self._init_tokenizer(tokenizer)
+                tokens = self._word_splitter(text)
+        elif tokenizer == 'char':
+            if self.char_tokenizer_init is False:
+                self._init_tokenizer(tokenizer)
+                tokens = list(self._char_filter(text))
+        else:
+            self.log.error(f"Unknown tokenizer {tokenizer}")
+            raise ValueError(f"Unknown tokenizer {tokenizer}")
+        return tokens
+
+    def encode(self, text, tokenizer='word'):
+        """ Encode a text.
+        
+        :param text: text to encode
+        :return: list of encoded tokens """
+        tokens = self.tokenize(text, tokenizer)
+        if tokenizer == 'word':
+            encoded = [self.w2i[token] if token in self.w2i else self.w2i['<unk>'] for token in tokens]
+        elif tokenizer == 'char':
+            encoded = [self.c2i[token] if token in self.c2i else self.c2i['<unk>'] for token in tokens]
+        else:
+            self.log.error(f"Unknown tokenizer {tokenizer}")
+            raise ValueError(f"Unknown tokenizer {tokenizer}")
+        return encoded
+
+    def decode(self, encoded, tokenizer='word'):
+        """ Decode a list of encoded tokens.
+        
+        :param encoded: list of encoded tokens
+        :return: text """
+        if tokenizer == 'word':
+            decoded = [self.i2w[token] if token in self.i2w else self.i2w['<unk>'] for token in encoded]
+        elif tokenizer == 'char':
+            decoded = [self.i2c[token] if token in self.i2c else self.i2c['<unk>'] for token in encoded]
+        else:
+            self.log.error(f"Unknown tokenizer {tokenizer}")
+            raise ValueError(f"Unknown tokenizer {tokenizer}")
+        return ''.join(decoded)
 
     def _display_colored_html(self, textlist, dark_mode=False, display_ref_anchor=True, pre='', post=''):
         """ Internal function to display text and citation references in HTML. """
