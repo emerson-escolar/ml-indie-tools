@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.14 documentation</title>
+    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.15 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="README.html" title="ml_indie_tools, a collection of machine learning tools for low-resource research and experiments"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.14 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.15 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>  
@@ -417,6 +417,7 @@ search for a single keyword (e.g. english), or an array of keywords.</p>
 <p>Initialize the Text_Dataset with a list of texts.</p>
 <p>The Gutenberg_Dataset can be used to create such a list, by:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ml_indie_tools.Gutenberg_Dataset</span> <span class="kn">import</span> <span class="n">Gutenberg_Dataset</span>
+<span class="kn">from</span> <span class="nn">ml_indie_tools.Text_Dataset</span> <span class="kn">import</span> <span class="n">Text_Dataset</span>
 <span class="n">gd</span> <span class="o">=</span> <span class="n">Gutenberg_Dataset</span><span class="p">()</span>
 <span class="n">gd</span><span class="o">.</span><span class="n">load_index</span><span class="p">()</span>
 <span class="n">ls</span> <span class="o">=</span> <span class="n">gd</span><span class="o">.</span><span class="n">search</span><span class="p">({</span><span class="s1">&#39;author&#39;</span><span class="p">:</span> <span class="s1">&#39;kant&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;kritik&#39;</span><span class="p">,</span> <span class="s1">&#39;language&#39;</span><span class="p">:</span> <span class="s1">&#39;german&#39;</span><span class="p">})</span>  <span class="c1"># returns a list of texts</span>
@@ -630,12 +631,111 @@ the twelve supported ops:
 <a class="reference external image-reference" href="https://domschl.github.io/ml-indie-tools/index.html"><img alt="Docs" src="https://img.shields.io/badge/docs-stable-blue.svg" /></a>
 <a class="reference external image-reference" href="https://pypi.python.org/pypi/ml-indie-tools/"><img alt="PyPI version fury.io" src="https://badge.fury.io/py/ml-indie-tools.svg" /></a>
 <p><strong>Note:</strong> THIS LIBRARY IS UNFINISHED WORK-IN-PROGRESS</p>
-<p>A collection of tools that allow moving machine learning projects between local hardware and colab instances.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ml_indie_tools.env_tools</span> <span class="kn">import</span> <span class="n">MLEnv</span>
-
-<span class="n">ml_env</span> <span class="o">=</span> <span class="n">MLEnv</span><span class="p">(</span><span class="n">platform</span><span class="o">=</span><span class="s1">&#39;tf&#39;</span><span class="p">,</span> <span class="n">accelator</span><span class="o">=</span><span class="s1">&#39;fastest&#39;</span><span class="p">)</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install ml-indie-tools
 </pre></div>
 </div>
+<p>This module contains of a collection of tools useable for researchers with limited access to compute-resources and
+who change between laptop, Colab-instances and local workstations with a graphics card.</p>
+<p><code class="docutils literal notranslate"><span class="pre">env_tools</span></code> checks the current environment, and populates a number of flags that allow identification of run-time
+environment and available accelerator hardware. For Colab instances, it provides tools to mount Google Drive for
+persistant data- and model-storage.</p>
+<p>The usage scenarios are:</p>
+<p><code class="docutils literal notranslate"><span class="pre">Gutenberg_Dataset</span></code> and <code class="docutils literal notranslate"><span class="pre">Text_Dataset</span></code> are NLP libraries that provide text data and can be used in conjuction
+with Huggingface <a class="reference external" href="https://huggingface.co/docs/datasets/">Datasets</a> or directly with ML libraries.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ALU_Dataset</span></code> is a toy-dataset that allows training of integer arithmetic and logical (ALU) operations.</p>
+<p>A collection of tools that allow moving machine learning projects between local hardware and colab instances.</p>
+<p>Local laptop:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ml_indie_tools.env_tools</span> <span class="kn">import</span> <span class="n">MLEnv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ml_env</span> <span class="o">=</span> <span class="n">MLEnv</span><span class="p">(</span><span class="n">platform</span><span class="o">=</span><span class="s1">&#39;tf&#39;</span><span class="p">,</span> <span class="n">accelator</span><span class="o">=</span><span class="s1">&#39;fastest&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ml_env</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<span class="go">&#39;OS: Darwin, Python: 3.9.9 (Conda) Tensorflow: 2.7.0, GPU: METAL&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ml_env</span><span class="o">.</span><span class="n">is_gpu</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ml_env</span><span class="o">.</span><span class="n">is_tensorflow</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ml_env</span><span class="o">.</span><span class="n">gpu_type</span>
+<span class="go">&#39;METAL&#39;</span>
+</pre></div>
+</div>
+<p>Colab instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>!pip install -U ml_indie_tools
+from ml_indie_tools.env_tools import MLEnv
+ml_env = MLEnv(platform=&#39;tf&#39;, accelerator=&#39;fastest&#39;)
+print(ml_env.describe())
+print(ml_env.gpu_type)
+
+DEBUG:MLEnv:Tensorflow version: 2.7.0
+DEBUG:MLEnv:GPU available
+DEBUG:MLEnv:You are on a Jupyter instance.
+DEBUG:MLEnv:You are on a Colab instance.
+INFO:MLEnv:OS: Linux, Python: 3.7.12, Colab Jupyter Notebook Tensorflow: 2.7.0, GPU: Tesla K80
+The tensorboard extension is already loaded. To reload it, use:
+  %reload_ext tensorboard
+OS: Linux, Python: 3.7.12, Colab Jupyter Notebook Tensorflow: 2.7.0, GPU: Tesla K80
+Tesla K80
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ml_env.init_paths('my_project',</span> <span class="pre">'my_model')</span></code> will give a list of paths that are adapted for local and colab usage</p>
+<p>Local project:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ml_env</span><span class="o">.</span><span class="n">init_paths</span><span class="p">(</span><span class="s2">&quot;my_project&quot;</span><span class="p">,</span> <span class="s2">&quot;my_model&quot;</span><span class="p">)</span>
+<span class="go">(&#39;.&#39;, &#39;.&#39;, &#39;./model/my_model&#39;, &#39;./data&#39;, &#39;./logs&#39;)</span>
+</pre></div>
+</div>
+<p>The list contains <span class="raw-html-m2r"><root-path></span>, <span class="raw-html-m2r"><project-path></span> (both are current directory for local projects), <span class="raw-html-m2r"><model-path></span> to save model and weights, <span class="raw-html-m2r"><data-path></span> for
+training data and <span class="raw-html-m2r"><log-path></span> for logs.</p>
+<p>Those paths (with exception of <code class="docutils literal notranslate"><span class="pre">./logs</span></code>) are moved to Google Drive for Colab instances:</p>
+<p>On Google Colab:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># INFO:MLEnv:You will now be asked to authenticate Google Drive access in order to store training data (cache) and model state.</span>
+<span class="c1"># INFO:MLEnv:Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/ALU_Net`.</span>
+<span class="c1"># DEBUG:MLEnv:Root path: /content/drive/My Drive</span>
+<span class="c1"># Mounted at /content/drive</span>
+<span class="p">(</span><span class="s1">&#39;/content/drive/My Drive&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;/content/drive/My Drive/Colab Notebooks/my_project&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;/content/drive/My Drive/Colab Notebooks/my_project/model/my_model&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;/content/drive/My Drive/Colab Notebooks/my_project/data&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;./logs&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-env_tools">env_tools API documentation</a> for details.</p>
+<p>Gutenberg_Dataset makes books from <a class="reference external" href="https://www.gutenberg.org">Project Gutenberg</a> available as dataset.</p>
+<p>This module can either work with a local mirror of Project Gutenberg, or download files on demand.
+Files that are downloaded are cached to prevent unnecessary load on Gutenberg’s servers.</p>
+<p>If you plan to use a lot of files (hundreds or more) from Gutenberg, a local mirror might be the best
+solution. Have a look at <a class="reference external" href="https://www.gutenberg.org/help/mirroring.html">Project Gutenberg’s notes on mirrors</a>.</p>
+<p>A mirror image suitable for this project can be made with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rsync -zarv --dry-run --prune-empty-dirs --del --include<span class="o">=</span><span class="s2">&quot;*/&quot;</span> --include<span class="o">=</span><span class="s1">&#39;*.&#39;</span><span class="o">{</span>txt,pdf,ALL<span class="o">}</span> --exclude<span class="o">=</span><span class="s2">&quot;*&quot;</span> aleph.gutenberg.org::gutenberg ./gutenberg_mirror
+</pre></div>
+</div>
+<p>It’s not mandatory to include <code class="docutils literal notranslate"><span class="pre">pdf</span></code>-files, since they are currently not used. Please review the <code class="docutils literal notranslate"><span class="pre">--dry-run</span></code> flag.</p>
+<p>Once a mirror of at least all of Gutenberg’s <code class="docutils literal notranslate"><span class="pre">*.txt</span></code> files and of index-file <code class="docutils literal notranslate"><span class="pre">GUTINDEX.ALL</span></code> has been generated, it can be used via:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ml_indie_tools.Gutenberg_Dataset</span> <span class="kn">import</span> <span class="n">Gutenberg_Dataset</span>
+<span class="n">gd</span> <span class="o">=</span> <span class="n">Gutenberg_Dataset</span><span class="p">(</span><span class="n">root_url</span><span class="o">=</span><span class="s1">&#39;./gutenberg_mirror&#39;</span><span class="p">)</span>  <span class="c1"># Assuming this is the file-path to the mirror image</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ml_indie_tools.Gutenberg_Dataset</span> <span class="kn">import</span> <span class="n">Gutenberg_Dataset</span>
+<span class="n">gd</span> <span class="o">=</span> <span class="n">Gutenberg_Dataset</span><span class="p">()</span>  <span class="c1"># the default Gutenberg site is used. Alternative specify a specific mirror with `root_url=http://...`.</span>
+</pre></div>
+</div>
+<p>After using one of the two methods to instantiate the <code class="docutils literal notranslate"><span class="pre">gd</span></code> object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gd</span><span class="o">.</span><span class="n">load_index</span><span class="p">()</span>  <span class="c1"># load the index of books</span>
+</pre></div>
+</div>
+<p>Then get a list of books (array). Each entry is a dict with meta-data:
+<code class="docutils literal notranslate"><span class="pre">search_result</span></code> is a list of dictionaries containing meta-data and the actual book-text in field <code class="docutils literal notranslate"><span class="pre">text</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">search_result</span> <span class="o">=</span> <span class="n">gd</span><span class="o">.</span><span class="n">search</span><span class="p">({</span><span class="s1">&#39;author&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;kant&#39;</span><span class="p">,</span> <span class="s1">&#39;goethe&#39;</span><span class="p">],</span> <span class="n">language</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;german&#39;</span><span class="p">,</span> <span class="s1">&#39;english&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+<p>Insert the actual book text into the dictionaries. Note that download count is <a class="reference external" href="https://domschl.github.io/ml-indie-tools/_build/html/index.html#Gutenberg_Dataset.Gutenberg_Dataset.insert_book_texts">limited</a> if using a remote server.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gd</span><span class="o">.</span><span class="n">insert_book_texts</span><span class="p">(</span><span class="n">search_result</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">search_result</span><span class="p">)</span>  <span class="c1"># Display results as Pandas DataFrame</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-Gutenberg_Dataset">Gutenberg_Dataset API documentation</a> for details.</p>
+<p>See the <a class="reference external" href="https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-Text_Dataset">Text_Dataset API documentation</a> for details.</p>
+<p>See the <a class="reference external" href="https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-ALU_Dataset">ALU_Dataset API documentation</a> for details.</p>
 <ul class="simple">
 <li><p>(2021-12-26, 0.0.x) First pre-alpha versions published for testing purposes, not ready for use.</p></li>
 </ul>
@@ -716,7 +816,7 @@ the twelve supported ops:
         <li class="right" >
           <a href="README.html" title="ml_indie_tools, a collection of machine learning tools for low-resource research and experiments"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.14 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.15 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>
