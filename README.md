@@ -8,6 +8,25 @@
 
 ## Description
 
+This module contains of a collection of tools useable for researchers with limited access to compute-resources and
+who change between laptop, Colab-instances and local workstations with a graphics card.
+
+`env_tools` checks the current environment, and populates a number of flags that allow identification of run-time
+environment and available accelerator hardware. For Colab instances, it provides tools to mount Google Drive for
+persistant data- and model-storage.
+
+The usage scenarios are:
+
+|                          | Tensorflow TPU | Tensorflow GPU | Pytorch TPU | Pytorch GPU | Jax TPU | Jax GPU |
+| ------------------------ | -------------- | -------------- | ----------- | ----------- | ------- | ------- |
+| Colab                    | x              | x              | (x)         | x           | x       | x       |
+| Workstation with Nvidia  |                | x              |             | x           |         | x       |
+| Apple Silicon            |                | x              |             |             |         |         |
+
+`Gutenberg_Dataset` and `Text_Dataset` are NLP libraries that provide text data and can be used in conjuction
+with Huggingface [Datasets](https://huggingface.co/docs/datasets/) or directly with ML libraries.
+
+`ALU_Dataset` is a toy-dataset that allows training of integer arithmetic and logical (ALU) operations.
 
 ### `env_tools`
 
@@ -15,12 +34,71 @@ A collection of tools that allow moving machine learning projects between local 
 
 #### Examples
 
-```python
-from ml_indie_tools.env_tools import MLEnv
+Local laptop:
 
-ml_env = MLEnv(platform='tf', accelator='fastest')
+```python
+>>> from ml_indie_tools.env_tools import MLEnv
+>>> ml_env = MLEnv(platform='tf', accelator='fastest')
+>>> ml_env.describe()
+'OS: Darwin, Python: 3.9.9 (Conda) Tensorflow: 2.7.0, GPU: METAL'
+>>> ml_env.is_gpu
+True
+>>> ml_env.is_tensorflow
+True
+>>> ml_env.gpu_type
+'METAL'
 ```
 
+Colab instance:
+
+```python
+!pip install -U ml_indie_tools
+from ml_indie_tools.env_tools import MLEnv
+ml_env = MLEnv(platform='tf', accelerator='fastest')
+print(ml_env.describe())
+print(ml_env.gpu_type)
+ 
+DEBUG:MLEnv:Tensorflow version: 2.7.0
+DEBUG:MLEnv:GPU available
+DEBUG:MLEnv:You are on a Jupyter instance.
+DEBUG:MLEnv:You are on a Colab instance.
+INFO:MLEnv:OS: Linux, Python: 3.7.12, Colab Jupyter Notebook Tensorflow: 2.7.0, GPU: Tesla K80
+The tensorboard extension is already loaded. To reload it, use:
+  %reload_ext tensorboard
+OS: Linux, Python: 3.7.12, Colab Jupyter Notebook Tensorflow: 2.7.0, GPU: Tesla K80
+Tesla K80
+```
+
+#### Project paths
+
+`ml_env.init_paths('my_project', 'my_model')` will give a list of paths that are adapted for local and colab usage
+
+Local project:
+
+```python
+>>> ml_env.init_paths("my_project", "my_model")
+('.', '.', './model/my_model', './data', './logs')
+```
+
+The list contains <root-path>, <project-path> (both are current directory for local projects), <model-path> to save model and weights, <data-path> for
+training data and <log-path> for logs.
+  
+Those paths (with exception of `./logs`) are moved to Google Drive for Colab instances: 
+
+On Google Colab:
+
+```python
+# INFO:MLEnv:You will now be asked to authenticate Google Drive access in order to store training data (cache) and model state.
+# INFO:MLEnv:Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/ALU_Net`.
+# DEBUG:MLEnv:Root path: /content/drive/My Drive
+# Mounted at /content/drive
+('/content/drive/My Drive',
+ '/content/drive/My Drive/Colab Notebooks/my_project',
+ '/content/drive/My Drive/Colab Notebooks/my_project/model/my_model',
+ '/content/drive/My Drive/Colab Notebooks/my_project/data',
+ './logs')
+```
+  
 See the [env_tools API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-env_tools) for details.
 
 ### `Gutenberg_Dataset`
