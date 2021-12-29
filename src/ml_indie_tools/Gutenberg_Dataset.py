@@ -366,17 +366,20 @@ class Gutenberg_Dataset():
                     downloaded = True
                     break
                 except Exception as e:
-                    self.log.error(f"Failed to download {file_url}, {e}")
+                    self.log.debug(f"Failed to download {file_url}, {e}")
             else:
                 try:
-                    with open(file_url,'r') as f:
-                        data=f.read()
-                        self.log.info(f"Book read from local mirror at {file_url}")
-                        downloaded = False
-                        break
-                except Exception as e:
-                    self.log.error(f"Failed to read local mirror at {file_url}, {e}")
+                    if encoding != 'bin':
+                        with open(file_url,'r',encoding=encoding) as f:
+                            data = f.read()
+                    else:
+                        with open(file_url,'rb') as f:
+                            data = f.read()
+                    self.log.info(f"Book read from local mirror at {file_url}")
+                    downloaded = False
                     break
+                except Exception as e:
+                    self.log.debug(f"Failed to read local mirror at {file_url}, {e}")
         return data, cache_file, downloaded
 
     def _load_book_ex(self, ebook_id):
