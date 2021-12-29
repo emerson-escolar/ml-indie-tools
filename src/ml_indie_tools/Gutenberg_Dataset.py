@@ -16,7 +16,7 @@ class Gutenberg_Dataset():
 
     A mirror of project Gutenberg can be created by:
     
-    .. codeblock:: console
+    .. code-block:: console
 
         #!/bin/bash
         rsync -zarv --dry-run --prune-empty-dirs --del --include="*/" --include='*.'{txt,pdf,ALL} --exclude="*" aleph.gutenberg.org::gutenberg ./gutenberg_mirror
