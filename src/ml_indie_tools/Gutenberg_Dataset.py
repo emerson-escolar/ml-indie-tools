@@ -52,6 +52,7 @@ class Gutenberg_Dataset():
         if root_url[:4]!='http':
             if not os.path.exists(root_url):
                 self.log.error(f'If root_url points to non-http URL, it must be an existing local directory containing a Gutenberg mirror: {root_url}')
+            else:
                 index_path=os.path.join(root_url, "GUTINDEX.ALL")
                 if not os.path.exists(index_path):
                     self.log.error(f'GUTINDEX.ALL not found in {root_url}, this is not a valid Gutenberg mirror')
