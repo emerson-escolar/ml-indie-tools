@@ -21,6 +21,8 @@ from ml_indie_tools.env_tools import MLEnv
 ml_env = MLEnv(platform='tf', accelator='fastest')
 ```
 
+See the [env_tools API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-env_tools) for details.
+
 ### `Gutenberg_Dataset`
 
 Gutenberg_Dataset makes books from [Project Gutenberg](https://www.gutenberg.org) available as dataset.
@@ -57,26 +59,37 @@ gd = Gutenberg_Dataset()  # the default Gutenberg site is used. Alternative spec
 
 #### Getting Gutenberg books
 
+After using one of the two methods to instantiate the `gd` object:
+
 ```python
-# after using one of the two methods to instantiate the `gd` object:
 gd.load_index()  # load the index of books
-# Get a list of books (array). Each entry is a dict with meta-data:
+```
+
+Then get a list of books (array). Each entry is a dict with meta-data:
+`search_result` is a list of dictionaries containing meta-data and the actual book-text in field `text`.
+
+```python
 search_result = gd.search({'author': ['kant', 'goethe'], language=['german', 'english']})
-# Insert the actual book text into the dictionaries. Note that download count is [limited](https://domschl.github.io/ml-indie-tools/_build/html/index.html#Gutenberg_Dataset.Gutenberg_Dataset.insert_book_texts) if using a remote server.
+```
+
+Insert the actual book text into the dictionaries. Note that download count is [limited](https://domschl.github.io/ml-indie-tools/_build/html/index.html#Gutenberg_Dataset.Gutenberg_Dataset.insert_book_texts) if using a remote server.
+
+```python
 gd.insert_book_texts(search_result)
 
 import pandas as pd
 df = DataFrame(search_result)  # Display results as Pandas DataFrame
 df 
 ```
-
-`search_result` is a list of dictionaries containing meta-data and the actual book-text in field `text`.
-
 See the [Gutenberg_Dataset API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-Gutenberg_Dataset) for details.
 
 ### `Text_Dataset`
 
+See the [Text_Dataset API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-Text_Dataset) for details.
+
 ### `ALU_Dataset`
+
+See the [ALU_Dataset API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-ALU_Dataset) for details.
 
 ## History
 
