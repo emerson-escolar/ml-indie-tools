@@ -27,7 +27,10 @@ class Gutenberg_Dataset():
                                 "Transcriber's note:", "Anmerkungen zur Tanskription", 
                                 "Distributed Proofreading Team", "offensichtliche Schreibfehler",
                                 "Inkonsistenzen in der Rechtschreibung", "Im Original",
-                                "Obvious printer errors", "spelling was kept"] 
+                                "Obvious printer errors", "spelling was kept",
+                                "ERRATA have been applied", "punctuation errors", "have been silently corrected",
+                                "changes to the text", "Transcriber note", "Transcriber Note","_italic_",
+                                "Variable spelling"] 
         self.end_tokens=["End of the Project Gutenberg", "*** END OF THIS PROJECT", 
                          "***END OF THE PROJECT GUTENBER", "Ende dieses Projekt Gutenberg", 
                          "*** END OF THE PROJECT GUTENBERG",
@@ -543,6 +546,7 @@ class Gutenberg_Dataset():
         dlc=len(search_dict)
         dls=0
         for i in range(0, len(search_dict)):
+            self.log.debug(f"Getting id={search_dict[i]['ebook_id']}, {search_dict[i]['title]}")
             bt, dl = self._load_book_ex(search_dict[i]["ebook_id"])
             if bt is None:
                 self.log.error(f"Download of book {search_dict[i]['ebook_id']}, {search_dict[i]['title']} failed!")
@@ -550,8 +554,8 @@ class Gutenberg_Dataset():
             search_dict[i]['text']=self.filter_text(bt)
             if dl is True:
                 dls += 1
-                if dls>dlc:
-                    print(f"Download limit reached ({dlc}), stopping download...")
+                if dls>download_count_limit:
+                    print(f"Download limit reached ({download_count_limit}), stopping download...")
                     break
         return search_dict  
 
