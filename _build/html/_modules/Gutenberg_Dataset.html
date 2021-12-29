@@ -55,24 +55,24 @@
 
 <div class="viewcode-block" id="Gutenberg_Dataset"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset">[docs]</a><span class="k">class</span> <span class="nc">Gutenberg_Dataset</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot; A fuzzy, lightweight class to access, search and filter Project Gutenberg resources</span>
-<span class="sd">        </span>
-<span class="sd">        GutenbergLib by default uses a mirror&#39;s root URL. Alternatively, you can specify a local directory containing a Gutenberg mirror.</span>
-<span class="sd">        That mirror directory needs to contain a GUTINDEX.ALL file and has typically many sub-directories `0`,..`n`.</span>
+<span class="sd">    </span>
+<span class="sd">    GutenbergLib by default uses a mirror&#39;s root URL. Alternatively, you can specify a local directory containing a Gutenberg mirror.</span>
+<span class="sd">    That mirror directory needs to contain a GUTINDEX.ALL file and has typically many sub-directories `0`,..`n`.</span>
 
-<span class="sd">        A mirror of project Gutenberg can be created by:</span>
-<span class="sd">        </span>
-<span class="sd">        ::codeblock: console</span>
+<span class="sd">    A mirror of project Gutenberg can be created by:</span>
+<span class="sd">    </span>
+<span class="sd">    .. codeblock:: console</span>
 
-<span class="sd">            #!/bin/bash</span>
-<span class="sd">            rsync -zarv --dry-run --prune-empty-dirs --del --include=&quot;*/&quot; --include=&#39;*.&#39;{txt,pdf,ALL} --exclude=&quot;*&quot; aleph.gutenberg.org::gutenberg ./gutenberg_mirror</span>
+<span class="sd">        #!/bin/bash</span>
+<span class="sd">        rsync -zarv --dry-run --prune-empty-dirs --del --include=&quot;*/&quot; --include=&#39;*.&#39;{txt,pdf,ALL} --exclude=&quot;*&quot; aleph.gutenberg.org::gutenberg ./gutenberg_mirror</span>
 
-<span class="sd">        You can remove the PDF files, since they are currently not used, and need to review the `--dry-run` option.</span>
+<span class="sd">    You can remove the PDF files, since they are currently not used, and need to review the `--dry-run` option.</span>
 
-<span class="sd">        Note: :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called before any other methods.</span>
-<span class="sd">        </span>
-<span class="sd">        :param root_url: url of Project Gutenberg or any mirror URL, or a local directory containing a Gutenberg mirror.</span>
-<span class="sd">        :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts. The cache directory is only used, if a remote Gutenberg URL and not a local mirror is used.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    Note: :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called before any other methods.</span>
+<span class="sd">    </span>
+<span class="sd">    :param root_url: url of Project Gutenberg or any mirror URL, or a local directory containing a Gutenberg mirror.</span>
+<span class="sd">    :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts. The cache directory is only used, if a remote Gutenberg URL and not a local mirror is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_url</span><span class="o">=</span><span class="s2">&quot;http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg&quot;</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="s2">&quot;gutenberg&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;Datasets&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root_url</span> <span class="o">=</span> <span class="n">root_url</span>
