@@ -8,6 +8,10 @@
 
 ## Description
 
+```bash
+pip install ml-indie-tools
+```
+
 This module contains of a collection of tools useable for researchers with limited access to compute-resources and
 who change between laptop, Colab-instances and local workstations with a graphics card.
 
