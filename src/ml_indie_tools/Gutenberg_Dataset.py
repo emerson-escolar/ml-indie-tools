@@ -10,24 +10,24 @@ from torch.functional import _return_output
 
 class Gutenberg_Dataset():
     """ A fuzzy, lightweight class to access, search and filter Project Gutenberg resources
-        
-        GutenbergLib by default uses a mirror's root URL. Alternatively, you can specify a local directory containing a Gutenberg mirror.
-        That mirror directory needs to contain a GUTINDEX.ALL file and has typically many sub-directories `0`,..`n`.
+    
+    GutenbergLib by default uses a mirror's root URL. Alternatively, you can specify a local directory containing a Gutenberg mirror.
+    That mirror directory needs to contain a GUTINDEX.ALL file and has typically many sub-directories `0`,..`n`.
 
-        A mirror of project Gutenberg can be created by:
-        
-        ::codeblock: console
+    A mirror of project Gutenberg can be created by:
+    
+    .. codeblock:: console
 
-            #!/bin/bash
-            rsync -zarv --dry-run --prune-empty-dirs --del --include="*/" --include='*.'{txt,pdf,ALL} --exclude="*" aleph.gutenberg.org::gutenberg ./gutenberg_mirror
+        #!/bin/bash
+        rsync -zarv --dry-run --prune-empty-dirs --del --include="*/" --include='*.'{txt,pdf,ALL} --exclude="*" aleph.gutenberg.org::gutenberg ./gutenberg_mirror
 
-        You can remove the PDF files, since they are currently not used, and need to review the `--dry-run` option.
+    You can remove the PDF files, since they are currently not used, and need to review the `--dry-run` option.
 
-        Note: :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called before any other methods.
-        
-        :param root_url: url of Project Gutenberg or any mirror URL, or a local directory containing a Gutenberg mirror.
-        :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts. The cache directory is only used, if a remote Gutenberg URL and not a local mirror is used.
-        """
+    Note: :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called before any other methods.
+    
+    :param root_url: url of Project Gutenberg or any mirror URL, or a local directory containing a Gutenberg mirror.
+    :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts. The cache directory is only used, if a remote Gutenberg URL and not a local mirror is used.
+    """
     def __init__(self, root_url="http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg", cache_dir="gutenberg"):
         self.log = logging.getLogger('GutenbergLib')
         self.root_url = root_url
