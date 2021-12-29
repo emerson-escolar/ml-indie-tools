@@ -234,6 +234,10 @@ is lost, once the Colab session is closed.</p>
 <p>GutenbergLib by default uses a mirror’s root URL. Alternatively, you can specify a local directory containing a Gutenberg mirror.
 That mirror directory needs to contain a GUTINDEX.ALL file and has typically many sub-directories <cite>0</cite>,..`n`.</p>
 <p>A mirror of project Gutenberg can be created by:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>!/bin/bash
+<span class="go">rsync -zarv --dry-run --prune-empty-dirs --del --include=&quot;*/&quot; --include=&#39;*.&#39;{txt,pdf,ALL} --exclude=&quot;*&quot; aleph.gutenberg.org::gutenberg ./gutenberg_mirror</span>
+</pre></div>
+</div>
 <p>You can remove the PDF files, since they are currently not used, and need to review the <cite>–dry-run</cite> option.</p>
 <p>Note: <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_index()</span></code></a> needs to be called before any other methods.</p>
 <dl class="field-list simple">
