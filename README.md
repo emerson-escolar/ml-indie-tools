@@ -92,7 +92,7 @@ On Google Colab:
 
 ```
 # INFO:MLEnv:You will now be asked to authenticate Google Drive access in order to store training data (cache) and model state.
-# INFO:MLEnv:Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/ALU_Net`.
+# INFO:MLEnv:Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/<project-name>`.
 # DEBUG:MLEnv:Root path: /content/drive/My Drive
 # Mounted at /content/drive
 ('/content/drive/My Drive',
