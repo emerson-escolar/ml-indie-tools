@@ -286,7 +286,7 @@ class MLEnv():
         if self.is_colab is True:
             from google.colab import drive
             self.log.info("You will now be asked to authenticate Google Drive access in order to store training data (cache) and model state.")
-            self.log.info("Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/ALU_Net`.")
+            self.log.info("Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/<project-name>`.")
             if not os.path.exists(root_path):
                 drive.mount(mount_point)
                 return True, root_path
