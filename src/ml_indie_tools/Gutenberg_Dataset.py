@@ -24,7 +24,10 @@ class Gutenberg_Dataset():
                            "This book was generously provided by the ", "*** START OF THIS PROJECT GUTENBERG",
                            "START OF THE PROJECT GUTENBERG"]    
         self.near_start_tokens=["produced by ", "Produced by ", ", prepared by", "Transcriber's Note", 
-                                "Transcriber's note:", "Anmerkungen zur Tanskription", "Distributed Proofreading Team"] 
+                                "Transcriber's note:", "Anmerkungen zur Tanskription", 
+                                "Distributed Proofreading Team", "offensichtliche Schreibfehler",
+                                "Inkonsistenzen in der Rechtschreibung", "Im Original",
+                                "Obvious printer errors", "spelling was kept"] 
         self.end_tokens=["End of the Project Gutenberg", "*** END OF THIS PROJECT", 
                          "***END OF THE PROJECT GUTENBER", "Ende dieses Projekt Gutenberg", 
                          "*** END OF THE PROJECT GUTENBERG",
