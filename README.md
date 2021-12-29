@@ -21,11 +21,11 @@ persistant data- and model-storage.
 
 The usage scenarios are:
 
-|                          | Tensorflow TPU | Tensorflow GPU | Pytorch TPU | Pytorch GPU | Jax TPU | Jax GPU |
+| Env                      | Tensorflow TPU | Tensorflow GPU | Pytorch TPU | Pytorch GPU | Jax TPU | Jax GPU |
 | ------------------------ | -------------- | -------------- | ----------- | ----------- | ------- | ------- |
-| Colab                    | x              | x              | (x)         | x           | x       | x       |
-| Workstation with Nvidia  |                | x              |             | x           |         | x       |
-| Apple Silicon            |                | x              |             |             |         |         |
+| Colab                    | x              | x              | -           | x           | x       | x       |
+| Workstation with Nvidia  | -              | x              | -           | x           | -       | x       |
+| Apple Silicon            | -              | x              | -           | -           | -       | -       |
 
 `Gutenberg_Dataset` and `Text_Dataset` are NLP libraries that provide text data and can be used in conjuction
 with Huggingface [Datasets](https://huggingface.co/docs/datasets/) or directly with ML libraries.
@@ -41,27 +41,27 @@ A collection of tools that allow moving machine learning projects between local 
 Local laptop:
 
 ```python
->>> from ml_indie_tools.env_tools import MLEnv
->>> ml_env = MLEnv(platform='tf', accelator='fastest')
->>> ml_env.describe()
-'OS: Darwin, Python: 3.9.9 (Conda) Tensorflow: 2.7.0, GPU: METAL'
->>> ml_env.is_gpu
-True
->>> ml_env.is_tensorflow
-True
->>> ml_env.gpu_type
-'METAL'
+from ml_indie_tools.env_tools import MLEnv
+ml_env = MLEnv(platform='tf', accelator='fastest')
+ml_env.describe()  # -> 'OS: Darwin, Python: 3.9.9 (Conda) Tensorflow: 2.7.0, GPU: METAL'
+ml_env.is_gpu   # -> True
+ml_env.is_tensorflow  # -> True
+ml_env.gpu_type  # -> 'METAL'
 ```
 
 Colab instance:
 
 ```python
-!pip install -U ml_indie_tools
+# !pip install -U ml_indie_tools
 from ml_indie_tools.env_tools import MLEnv
 ml_env = MLEnv(platform='tf', accelerator='fastest')
 print(ml_env.describe())
 print(ml_env.gpu_type)
- 
+```
+
+Output: 
+
+```
 DEBUG:MLEnv:Tensorflow version: 2.7.0
 DEBUG:MLEnv:GPU available
 DEBUG:MLEnv:You are on a Jupyter instance.
@@ -80,8 +80,7 @@ Tesla K80
 Local project:
 
 ```python
->>> ml_env.init_paths("my_project", "my_model")
-('.', '.', './model/my_model', './data', './logs')
+ml_env.init_paths("my_project", "my_model")  # -> ('.', '.', './model/my_model', './data', './logs')
 ```
 
 The list contains <root-path>, <project-path> (both are current directory for local projects), <model-path> to save model and weights, <data-path> for
@@ -91,7 +90,7 @@ Those paths (with exception of `./logs`) are moved to Google Drive for Colab ins
 
 On Google Colab:
 
-```python
+```
 # INFO:MLEnv:You will now be asked to authenticate Google Drive access in order to store training data (cache) and model state.
 # INFO:MLEnv:Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/ALU_Net`.
 # DEBUG:MLEnv:Root path: /content/drive/My Drive
@@ -161,7 +160,6 @@ gd.insert_book_texts(search_result)
 
 import pandas as pd
 df = DataFrame(search_result)  # Display results as Pandas DataFrame
-df 
 ```
 See the [Gutenberg_Dataset API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-Gutenberg_Dataset) for details.
 
