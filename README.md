@@ -8,6 +8,29 @@
 
 ## Description
 
+```bash
+pip install ml-indie-tools
+```
+
+This module contains of a collection of tools useable for researchers with limited access to compute-resources and
+who change between laptop, Colab-instances and local workstations with a graphics card.
+
+`env_tools` checks the current environment, and populates a number of flags that allow identification of run-time
+environment and available accelerator hardware. For Colab instances, it provides tools to mount Google Drive for
+persistant data- and model-storage.
+
+The usage scenarios are:
+
+|                          | Tensorflow TPU | Tensorflow GPU | Pytorch TPU | Pytorch GPU | Jax TPU | Jax GPU |
+| ------------------------ | -------------- | -------------- | ----------- | ----------- | ------- | ------- |
+| Colab                    | x              | x              | (x)         | x           | x       | x       |
+| Workstation with Nvidia  |                | x              |             | x           |         | x       |
+| Apple Silicon            |                | x              |             |             |         |         |
+
+`Gutenberg_Dataset` and `Text_Dataset` are NLP libraries that provide text data and can be used in conjuction
+with Huggingface [Datasets](https://huggingface.co/docs/datasets/) or directly with ML libraries.
+
+`ALU_Dataset` is a toy-dataset that allows training of integer arithmetic and logical (ALU) operations.
 
 ### `env_tools`
 
@@ -15,17 +38,140 @@ A collection of tools that allow moving machine learning projects between local 
 
 #### Examples
 
-```python
-from ml_indie_tools.env_tools import MLEnv
+Local laptop:
 
-ml_env = MLEnv(platform='tf', accelator='fastest')
+```python
+>>> from ml_indie_tools.env_tools import MLEnv
+>>> ml_env = MLEnv(platform='tf', accelator='fastest')
+>>> ml_env.describe()
+'OS: Darwin, Python: 3.9.9 (Conda) Tensorflow: 2.7.0, GPU: METAL'
+>>> ml_env.is_gpu
+True
+>>> ml_env.is_tensorflow
+True
+>>> ml_env.gpu_type
+'METAL'
 ```
+
+Colab instance:
+
+```python
+!pip install -U ml_indie_tools
+from ml_indie_tools.env_tools import MLEnv
+ml_env = MLEnv(platform='tf', accelerator='fastest')
+print(ml_env.describe())
+print(ml_env.gpu_type)
+ 
+DEBUG:MLEnv:Tensorflow version: 2.7.0
+DEBUG:MLEnv:GPU available
+DEBUG:MLEnv:You are on a Jupyter instance.
+DEBUG:MLEnv:You are on a Colab instance.
+INFO:MLEnv:OS: Linux, Python: 3.7.12, Colab Jupyter Notebook Tensorflow: 2.7.0, GPU: Tesla K80
+The tensorboard extension is already loaded. To reload it, use:
+  %reload_ext tensorboard
+OS: Linux, Python: 3.7.12, Colab Jupyter Notebook Tensorflow: 2.7.0, GPU: Tesla K80
+Tesla K80
+```
+
+#### Project paths
+
+`ml_env.init_paths('my_project', 'my_model')` will give a list of paths that are adapted for local and colab usage
+
+Local project:
+
+```python
+>>> ml_env.init_paths("my_project", "my_model")
+('.', '.', './model/my_model', './data', './logs')
+```
+
+The list contains <root-path>, <project-path> (both are current directory for local projects), <model-path> to save model and weights, <data-path> for
+training data and <log-path> for logs.
+  
+Those paths (with exception of `./logs`) are moved to Google Drive for Colab instances: 
+
+On Google Colab:
+
+```python
+# INFO:MLEnv:You will now be asked to authenticate Google Drive access in order to store training data (cache) and model state.
+# INFO:MLEnv:Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/ALU_Net`.
+# DEBUG:MLEnv:Root path: /content/drive/My Drive
+# Mounted at /content/drive
+('/content/drive/My Drive',
+ '/content/drive/My Drive/Colab Notebooks/my_project',
+ '/content/drive/My Drive/Colab Notebooks/my_project/model/my_model',
+ '/content/drive/My Drive/Colab Notebooks/my_project/data',
+ './logs')
+```
+  
+See the [env_tools API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-env_tools) for details.
 
 ### `Gutenberg_Dataset`
 
+Gutenberg_Dataset makes books from [Project Gutenberg](https://www.gutenberg.org) available as dataset.
+
+This module can either work with a local mirror of Project Gutenberg, or download files on demand.
+Files that are downloaded are cached to prevent unnecessary load on Gutenberg's servers.
+
+#### Working with a local mirror of Project Gutenberg
+
+If you plan to use a lot of files (hundreds or more) from Gutenberg, a local mirror might be the best
+solution. Have a look at [Project Gutenberg's notes on mirrors](https://www.gutenberg.org/help/mirroring.html).
+
+A mirror image suitable for this project can be made with:
+
+```bash
+rsync -zarv --dry-run --prune-empty-dirs --del --include="*/" --include='*.'{txt,pdf,ALL} --exclude="*" aleph.gutenberg.org::gutenberg ./gutenberg_mirror
+```
+
+It's not mandatory to include `pdf`-files, since they are currently not used. Please review the `--dry-run` flag.
+
+Once a mirror of at least all of Gutenberg's `*.txt` files and of index-file `GUTINDEX.ALL` has been generated, it can be used via:
+
+```python
+from ml_indie_tools.Gutenberg_Dataset import Gutenberg_Dataset
+gd = Gutenberg_Dataset(root_url='./gutenberg_mirror')  # Assuming this is the file-path to the mirror image
+```
+
+#### Working without a remote mirror
+
+```python
+from ml_indie_tools.Gutenberg_Dataset import Gutenberg_Dataset
+gd = Gutenberg_Dataset()  # the default Gutenberg site is used. Alternative specify a specific mirror with `root_url=http://...`.
+```
+
+#### Getting Gutenberg books
+
+After using one of the two methods to instantiate the `gd` object:
+
+```python
+gd.load_index()  # load the index of books
+```
+
+Then get a list of books (array). Each entry is a dict with meta-data:
+`search_result` is a list of dictionaries containing meta-data and the actual book-text in field `text`.
+
+```python
+search_result = gd.search({'author': ['kant', 'goethe'], language=['german', 'english']})
+```
+
+Insert the actual book text into the dictionaries. Note that download count is [limited](https://domschl.github.io/ml-indie-tools/_build/html/index.html#Gutenberg_Dataset.Gutenberg_Dataset.insert_book_texts) if using a remote server.
+
+```python
+gd.insert_book_texts(search_result)
+
+import pandas as pd
+df = DataFrame(search_result)  # Display results as Pandas DataFrame
+df 
+```
+See the [Gutenberg_Dataset API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-Gutenberg_Dataset) for details.
+
 ### `Text_Dataset`
 
+See the [Text_Dataset API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-Text_Dataset) for details.
+
 ### `ALU_Dataset`
+
+See the [ALU_Dataset API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-ALU_Dataset) for details.
 
 ## History
 
