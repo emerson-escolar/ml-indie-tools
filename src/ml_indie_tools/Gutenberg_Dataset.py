@@ -543,10 +543,9 @@ class Gutenberg_Dataset():
         :param download_count_limit: maximum number of books to download_count_limit
         :returns: list of records including filtered book text-based in the `text` field.
         """
-        dlc=len(search_dict)
         dls=0
         for i in range(0, len(search_dict)):
-            self.log.debug(f"Getting id={search_dict[i]['ebook_id']}, {search_dict[i]['title]}")
+            self.log.debug(f"Getting id={search_dict[i]['ebook_id']}, {search_dict[i]['title']}")
             bt, dl = self._load_book_ex(search_dict[i]["ebook_id"])
             if bt is None:
                 self.log.error(f"Download of book {search_dict[i]['ebook_id']}, {search_dict[i]['title']} failed!")
@@ -555,7 +554,7 @@ class Gutenberg_Dataset():
             if dl is True:
                 dls += 1
                 if dls>download_count_limit:
-                    print(f"Download limit reached ({download_count_limit}), stopping download...")
+                    self.log.error(f"Download limit reached ({download_count_limit}), stopping download...")
                     break
         return search_dict  
 
