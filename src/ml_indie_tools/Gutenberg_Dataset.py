@@ -12,7 +12,8 @@ class Gutenberg_Dataset():
     """ A fuzzy, lightweight class to access, search and filter Project Gutenberg resources
     
     GutenbergLib by default uses a mirror's root URL. Alternatively, you can specify a local directory containing a Gutenberg mirror.
-    That mirror directory needs to contain a GUTINDEX.ALL file and has typically many sub-directories `0`,..`n`.
+    That mirror directory needs to contain a GUTINDEX.ALL file and has typically many 
+    sub-directories `0` ,.. `n` .
 
     A mirror of project Gutenberg can be created by:
     
