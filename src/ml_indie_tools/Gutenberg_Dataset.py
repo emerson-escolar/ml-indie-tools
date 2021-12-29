@@ -6,14 +6,27 @@ import time
 from enum import Enum
 from urllib.request import urlopen
 
+from torch.functional import _return_output
+
 class Gutenberg_Dataset():
     """ A fuzzy, lightweight class to access, search and filter Project Gutenberg resources
         
-        GutenbergLib by default uses a mirror's root URL. :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` 
-        needs to be called before any other methods.
+        GutenbergLib by default uses a mirror's root URL. Alternatively, you can specify a local directory containing a Gutenberg mirror.
+        That mirror directory needs to contain a GUTINDEX.ALL file and has typically many sub-directories `0`,..`n`.
+
+        A mirror of project Gutenberg can be created by:
         
-        :param root_url: url of Project Gutenberg or any mirror URL.
-        :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts
+        ::codeblock: console
+
+            #!/bin/bash
+            rsync -zarv --dry-run --prune-empty-dirs --del --include="*/" --include='*.'{txt,pdf,ALL} --exclude="*" aleph.gutenberg.org::gutenberg ./gutenberg_mirror
+
+        You can remove the PDF files, since they are currently not used, and need to review the `--dry-run` option.
+
+        Note: :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called before any other methods.
+        
+        :param root_url: url of Project Gutenberg or any mirror URL, or a local directory containing a Gutenberg mirror.
+        :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts. The cache directory is only used, if a remote Gutenberg URL and not a local mirror is used.
         """
     def __init__(self, root_url="http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg", cache_dir="gutenberg"):
         self.log = logging.getLogger('Datasets')
@@ -35,13 +48,26 @@ class Gutenberg_Dataset():
                          "***END OF THE PROJECT GUTENBER", "Ende dieses Projekt Gutenberg", 
                          "*** END OF THE PROJECT GUTENBERG",
                          "End of Project Gutenberg", "Transcriber's Note"]
-        try:
-            if not os.path.exists(cache_dir):
-                os.makedirs(cache_dir)
-            self.cache_dir=cache_dir
-        except Exception as e:
-            self.cache_dir=None
-            self.log.error(f"Failed to create cache directory {cache_dir}, {e}")
+        self.local_mirror=False
+        if root_url[:4]!='http':
+            if not os.path.exists(root_url):
+                self.log.error(f'If root_url points to non-http URL, it must be an existing local directory containing a Gutenberg mirror: {root_url}')
+            else:
+                index_path=os.path.join(root_url, "GUTINDEX.ALL")
+                if not os.path.exists(index_path):
+                    self.log.error(f'GUTINDEX.ALL not found in {root_url}, this is not a valid Gutenberg mirror')
+                else:
+                    self.local_mirror=True
+                    self.cache_dir=None
+            return
+        if self.local_mirror is False:
+            try:
+                if not os.path.exists(cache_dir):
+                    os.makedirs(cache_dir)
+                self.cache_dir=cache_dir
+            except Exception as e:
+                self.cache_dir=None
+                self.log.error(f"Failed to create cache directory {cache_dir}, {e}")
 
     def _parse_record(self,record):
         """ internal function to recreate some consistent record information from near-freestyle text """
@@ -212,57 +238,70 @@ class Gutenberg_Dataset():
         :param cache_expire_days: Number of days after which the index is re-downloaded.
         """
         raw_index=None
-        if self.cache_dir is None:
-            self.log.error("Cannot cache library index, no valid cache directory.")
-            return False
-        ts_file=os.path.join(self.cache_dir,"timestamp")
-        cache_file=os.path.join(self.cache_dir,"gutenberg_index")
-        expired=True
-        read_from_cache=False
-        if os.path.isfile(ts_file) and os.path.isfile(cache_file):
-            try:
-                with open(ts_file,'r') as f:
-                    ts=float(f.read())
-                if time.time()-ts<cache_expire_days*24*3600:
-                    expired=False
-                    read_from_cache = True
-                    self.log.debug("Cache timestamp read.")
-                else:
-                    self.log.info("Cache for Gutenberg-index is expired, reloading from web.")
-            except:
-                self.log.warning("Failed to read cache timestamp, reloading from web.")
-        if expired is False and os.path.isfile(cache_file):
-            try:
-                with open(cache_file,'r') as f:
-                    raw_index=f.read()
-                    self.log.info(f"Gutenberg index read from local cache: {cache_file}")
-            except:
-                expired=True
-                self.log.warning("Failed to read cached index, reloading from web.")
-        if expired is True:
-            index_url=self.root_url+"/GUTINDEX.ALL"
-            try:
-                raw_index = urlopen(index_url).read().decode('utf-8')
-                if raw_index[0]=='\ufeff':  # Ignore BOM
-                    raw_index=raw_index[1:]
-                raw_index=raw_index.replace('\r','')
-                self.log.info(f"Gutenberg index read from {index_url}")
-            except Exception as e:
-                self.log.error(f"Failed to download Gutenberg index from {index_url}, {e}")
+        if self.local_mirror is False:
+            if self.cache_dir is None:
+                self.log.error("Cannot cache library index, no valid cache directory.")
                 return False
-        if cache is True and read_from_cache is False:
+            ts_file=os.path.join(self.cache_dir,"timestamp")
+            cache_file=os.path.join(self.cache_dir,"gutenberg_index")
+            expired=True
+            read_from_cache=False
+            if os.path.isfile(ts_file) and os.path.isfile(cache_file):
+                try:
+                    with open(ts_file,'r') as f:
+                        ts=float(f.read())
+                    if time.time()-ts<cache_expire_days*24*3600:
+                        expired=False
+                        read_from_cache = True
+                        self.log.debug("Cache timestamp read.")
+                    else:
+                        self.log.info("Cache for Gutenberg-index is expired, reloading from web.")
+                except:
+                    self.log.warning("Failed to read cache timestamp, reloading from web.")
+            if expired is False and os.path.isfile(cache_file):
+                try:
+                    with open(cache_file,'r') as f:
+                        raw_index=f.read()
+                        self.log.info(f"Gutenberg index read from local cache: {cache_file}")
+                except:
+                    expired=True
+                    self.log.warning("Failed to read cached index, reloading from web.")
+            if expired is True:
+                index_url=self.root_url+"/GUTINDEX.ALL"
+                try:
+                    raw_index = urlopen(index_url).read().decode('utf-8')
+                    if raw_index[0]=='\ufeff':  # Ignore BOM
+                        raw_index=raw_index[1:]
+                    raw_index=raw_index.replace('\r','')
+                    self.log.info(f"Gutenberg index read from {index_url}")
+                except Exception as e:
+                    self.log.error(f"Failed to download Gutenberg index from {index_url}, {e}")
+                    return False
+            if cache is True and read_from_cache is False:
+                try:
+                    with open(ts_file,'w') as f:
+                        f.write(str(time.time()))
+                        self.log.debug("Wrote read cache timestamp.")
+                except Exception as e:
+                    self.log.error(f"Failed to write cache timestamp to {ts_file}, {e}")
+                try:
+                    with open(cache_file,'w') as f:
+                        f.write(raw_index)
+                        self.log.debug("Wrote read cached index.")
+                except Exception as e:
+                    self.log.error(f"Failed to write cached index to {cache_file}, {e}")
+        else:
+            index_file=os.path.join(self.root_url, "GUTINDEX.ALL")
             try:
-                with open(ts_file,'w') as f:
-                    f.write(str(time.time()))
-                    self.log.debug("Wrote read cache timestamp.")
+                with open(index_file,'r') as f:
+                    raw_index=f.read()
+                    if raw_index[0]=='\ufeff':  # Ignore BOM
+                        raw_index=raw_index[1:]
+                    raw_index=raw_index.replace('\r','')
+                    self.log.info(f"Gutenberg index read from local mirror: {index_file}")
             except Exception as e:
-                self.log.error(f"Failed to write cache timestamp to {ts_file}, {e}")
-            try:
-                with open(cache_file,'w') as f:
-                    f.write(raw_index)
-                    self.log.debug("Wrote read cached index.")
-            except Exception as e:
-                self.log.error(f"Failed to write cached index to {cache_file}, {e}")
+                self.log.error(f"Failed to read Gutenberg index from local mirror: {index_file}, {e}")
+                return
         lines=raw_index.split('\n')
         self.records=self._parse_index(lines)
 
@@ -300,16 +339,27 @@ class Gutenberg_Dataset():
         file_url=None
         for filename, encoding in filenames:
             file_url=self.root_url+path_stub+filename
-            try:
-                if encoding != 'bin':
-                    data = urlopen(file_url).read().decode(encoding)
-                else:
-                    data = urlopen(file_url).read()
-                self.log.info(f"Book downloaded from {file_url}")
-                downloaded = True
-                break
-            except Exception as e:
-                self.log.debug(f"URL-Download failed: {file_url}, {e}")
+            if self.local_mirror is False:
+                try:
+                    if encoding != 'bin':
+                        data = urlopen(file_url).read().decode(encoding)
+                    else:
+                        data = urlopen(file_url).read()
+                    self.log.info(f"Book read from {file_url}")
+                    downloaded = True
+                    break
+                except Exception as e:
+                    self.log.error(f"Failed to download {file_url}, {e}")
+            else:
+                try:
+                    with open(file_url,'r') as f:
+                        data=f.read()
+                        self.log.info(f"Book read from local mirror at {file_url}")
+                        downloaded = False
+                        break
+                except Exception as e:
+                    self.log.error(f"Failed to read local mirror at {file_url}, {e}")
+                    break
         return data, cache_file, downloaded
 
     def _load_book_ex(self, ebook_id):
@@ -530,7 +580,7 @@ class Gutenberg_Dataset():
         into the dictionary with the key `text`.
         
         :param search_dict: search array of dictionaries that at least contain the key `ebook_id`.
-        :param download_count_limit: maximum number of books to download_count_limit
+        :param download_count_limit: maximum number of books to download, if no local mirror is used. No limits apply for local mirrors.
         :returns: list of records including filtered book text-based in the `text` field.
         """
         dls=0
@@ -544,7 +594,7 @@ class Gutenberg_Dataset():
                     self.log.error(f"Download of book {search_dict[i]['ebook_id']}, {search_dict[i]['title']} failed!")
                 continue
             search_dict[i]['text']=self.filter_text(bt)
-            if dl is True:
+            if dl is True and self.local_mirror is False:
                 dls += 1
                 if dls>download_count_limit:
                     self.log.error(f"Download limit reached ({download_count_limit}), stopping download...")
