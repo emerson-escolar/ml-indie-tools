@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gutenberg_Dataset &#8212; ml-indie-tools 0.0.11 documentation</title>
+    <title>Gutenberg_Dataset &#8212; ml-indie-tools 0.0.13 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.11 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.13 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Gutenberg_Dataset</a></li> 
       </ul>
@@ -51,14 +51,27 @@
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span>
 
+<span class="kn">from</span> <span class="nn">torch.functional</span> <span class="kn">import</span> <span class="n">_return_output</span>
+
 <div class="viewcode-block" id="Gutenberg_Dataset"><a class="viewcode-back" href="../index.html#Gutenberg_Dataset.Gutenberg_Dataset">[docs]</a><span class="k">class</span> <span class="nc">Gutenberg_Dataset</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot; A fuzzy, lightweight class to access, search and filter Project Gutenberg resources</span>
 <span class="sd">        </span>
-<span class="sd">        GutenbergLib by default uses a mirror&#39;s root URL. :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` </span>
-<span class="sd">        needs to be called before any other methods.</span>
+<span class="sd">        GutenbergLib by default uses a mirror&#39;s root URL. Alternatively, you can specify a local directory containing a Gutenberg mirror.</span>
+<span class="sd">        That mirror directory needs to contain a GUTINDEX.ALL file and has typically many sub-directories `0`,..`n`.</span>
+
+<span class="sd">        A mirror of project Gutenberg can be created by:</span>
 <span class="sd">        </span>
-<span class="sd">        :param root_url: url of Project Gutenberg or any mirror URL.</span>
-<span class="sd">        :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts</span>
+<span class="sd">        ::codeblock: console</span>
+
+<span class="sd">            #!/bin/bash</span>
+<span class="sd">            rsync -zarv --dry-run --prune-empty-dirs --del --include=&quot;*/&quot; --include=&#39;*.&#39;{txt,pdf,ALL} --exclude=&quot;*&quot; aleph.gutenberg.org::gutenberg ./gutenberg_mirror</span>
+
+<span class="sd">        You can remove the PDF files, since they are currently not used, and need to review the `--dry-run` option.</span>
+
+<span class="sd">        Note: :func:`~Gutenberg_Dataset.Gutenberg_Dataset.load_index` needs to be called before any other methods.</span>
+<span class="sd">        </span>
+<span class="sd">        :param root_url: url of Project Gutenberg or any mirror URL, or a local directory containing a Gutenberg mirror.</span>
+<span class="sd">        :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts. The cache directory is only used, if a remote Gutenberg URL and not a local mirror is used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_url</span><span class="o">=</span><span class="s2">&quot;http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg&quot;</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="s2">&quot;gutenberg&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;Datasets&#39;</span><span class="p">)</span>
@@ -80,13 +93,26 @@
                          <span class="s2">&quot;***END OF THE PROJECT GUTENBER&quot;</span><span class="p">,</span> <span class="s2">&quot;Ende dieses Projekt Gutenberg&quot;</span><span class="p">,</span> 
                          <span class="s2">&quot;*** END OF THE PROJECT GUTENBERG&quot;</span><span class="p">,</span>
                          <span class="s2">&quot;End of Project Gutenberg&quot;</span><span class="p">,</span> <span class="s2">&quot;Transcriber&#39;s Note&quot;</span><span class="p">]</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create cache directory </span><span class="si">{</span><span class="n">cache_dir</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_mirror</span><span class="o">=</span><span class="kc">False</span>
+        <span class="k">if</span> <span class="n">root_url</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;http&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">root_url</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;If root_url points to non-http URL, it must be an existing local directory containing a Gutenberg mirror: </span><span class="si">{</span><span class="n">root_url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">index_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_url</span><span class="p">,</span> <span class="s2">&quot;GUTINDEX.ALL&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">index_path</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;GUTINDEX.ALL not found in </span><span class="si">{</span><span class="n">root_url</span><span class="si">}</span><span class="s1">, this is not a valid Gutenberg mirror&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">local_mirror</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_mirror</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create cache directory </span><span class="si">{</span><span class="n">cache_dir</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_parse_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">record</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; internal function to recreate some consistent record information from near-freestyle text &quot;&quot;&quot;</span>
@@ -257,57 +283,70 @@
 <span class="sd">        :param cache_expire_days: Number of days after which the index is re-downloaded.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">raw_index</span><span class="o">=</span><span class="kc">None</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot cache library index, no valid cache directory.&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="n">ts_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span><span class="s2">&quot;timestamp&quot;</span><span class="p">)</span>
-        <span class="n">cache_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span><span class="s2">&quot;gutenberg_index&quot;</span><span class="p">)</span>
-        <span class="n">expired</span><span class="o">=</span><span class="kc">True</span>
-        <span class="n">read_from_cache</span><span class="o">=</span><span class="kc">False</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ts_file</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cache_file</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ts_file</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">ts</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-                <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">ts</span><span class="o">&lt;</span><span class="n">cache_expire_days</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">3600</span><span class="p">:</span>
-                    <span class="n">expired</span><span class="o">=</span><span class="kc">False</span>
-                    <span class="n">read_from_cache</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cache timestamp read.&quot;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Cache for Gutenberg-index is expired, reloading from web.&quot;</span><span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to read cache timestamp, reloading from web.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">expired</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cache_file</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cache_file</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">raw_index</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gutenberg index read from local cache: </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="n">expired</span><span class="o">=</span><span class="kc">True</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to read cached index, reloading from web.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">expired</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">index_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root_url</span><span class="o">+</span><span class="s2">&quot;/GUTINDEX.ALL&quot;</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">raw_index</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">index_url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">raw_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;</span><span class="se">\ufeff</span><span class="s1">&#39;</span><span class="p">:</span>  <span class="c1"># Ignore BOM</span>
-                    <span class="n">raw_index</span><span class="o">=</span><span class="n">raw_index</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-                <span class="n">raw_index</span><span class="o">=</span><span class="n">raw_index</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gutenberg index read from </span><span class="si">{</span><span class="n">index_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to download Gutenberg index from </span><span class="si">{</span><span class="n">index_url</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_mirror</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot cache library index, no valid cache directory.&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">read_from_cache</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">ts_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span><span class="s2">&quot;timestamp&quot;</span><span class="p">)</span>
+            <span class="n">cache_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span><span class="s2">&quot;gutenberg_index&quot;</span><span class="p">)</span>
+            <span class="n">expired</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">read_from_cache</span><span class="o">=</span><span class="kc">False</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ts_file</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cache_file</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ts_file</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">ts</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">ts</span><span class="o">&lt;</span><span class="n">cache_expire_days</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">3600</span><span class="p">:</span>
+                        <span class="n">expired</span><span class="o">=</span><span class="kc">False</span>
+                        <span class="n">read_from_cache</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cache timestamp read.&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Cache for Gutenberg-index is expired, reloading from web.&quot;</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to read cache timestamp, reloading from web.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">expired</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cache_file</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cache_file</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">raw_index</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gutenberg index read from local cache: </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">expired</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to read cached index, reloading from web.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">expired</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">index_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root_url</span><span class="o">+</span><span class="s2">&quot;/GUTINDEX.ALL&quot;</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">raw_index</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">index_url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">raw_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;</span><span class="se">\ufeff</span><span class="s1">&#39;</span><span class="p">:</span>  <span class="c1"># Ignore BOM</span>
+                        <span class="n">raw_index</span><span class="o">=</span><span class="n">raw_index</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="n">raw_index</span><span class="o">=</span><span class="n">raw_index</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gutenberg index read from </span><span class="si">{</span><span class="n">index_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to download Gutenberg index from </span><span class="si">{</span><span class="n">index_url</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">read_from_cache</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ts_file</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Wrote read cache timestamp.&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write cache timestamp to </span><span class="si">{</span><span class="n">ts_file</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cache_file</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">raw_index</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Wrote read cached index.&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write cached index to </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_url</span><span class="p">,</span> <span class="s2">&quot;GUTINDEX.ALL&quot;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ts_file</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()))</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Wrote read cache timestamp.&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">index_file</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">raw_index</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">raw_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;</span><span class="se">\ufeff</span><span class="s1">&#39;</span><span class="p">:</span>  <span class="c1"># Ignore BOM</span>
+                        <span class="n">raw_index</span><span class="o">=</span><span class="n">raw_index</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="n">raw_index</span><span class="o">=</span><span class="n">raw_index</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gutenberg index read from local mirror: </span><span class="si">{</span><span class="n">index_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write cache timestamp to </span><span class="si">{</span><span class="n">ts_file</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cache_file</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">raw_index</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Wrote read cached index.&quot;</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write cached index to </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to read Gutenberg index from local mirror: </span><span class="si">{</span><span class="n">index_file</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
         <span class="n">lines</span><span class="o">=</span><span class="n">raw_index</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_index</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
 
@@ -345,16 +384,27 @@
         <span class="n">file_url</span><span class="o">=</span><span class="kc">None</span>
         <span class="k">for</span> <span class="n">filename</span><span class="p">,</span> <span class="n">encoding</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
             <span class="n">file_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root_url</span><span class="o">+</span><span class="n">path_stub</span><span class="o">+</span><span class="n">filename</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">encoding</span> <span class="o">!=</span> <span class="s1">&#39;bin&#39;</span><span class="p">:</span>
-                    <span class="n">data</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">file_url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">data</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">file_url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Book downloaded from </span><span class="si">{</span><span class="n">file_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">downloaded</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">break</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;URL-Download failed: </span><span class="si">{</span><span class="n">file_url</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_mirror</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">encoding</span> <span class="o">!=</span> <span class="s1">&#39;bin&#39;</span><span class="p">:</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">file_url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">file_url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Book read from </span><span class="si">{</span><span class="n">file_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">downloaded</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to download </span><span class="si">{</span><span class="n">file_url</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_url</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Book read from local mirror at </span><span class="si">{</span><span class="n">file_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">downloaded</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">break</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to read local mirror at </span><span class="si">{</span><span class="n">file_url</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
         <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">cache_file</span><span class="p">,</span> <span class="n">downloaded</span>
 
     <span class="k">def</span> <span class="nf">_load_book_ex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebook_id</span><span class="p">):</span>
@@ -575,7 +625,7 @@
 <span class="sd">        into the dictionary with the key `text`.</span>
 <span class="sd">        </span>
 <span class="sd">        :param search_dict: search array of dictionaries that at least contain the key `ebook_id`.</span>
-<span class="sd">        :param download_count_limit: maximum number of books to download_count_limit</span>
+<span class="sd">        :param download_count_limit: maximum number of books to download, if no local mirror is used. No limits apply for local mirrors.</span>
 <span class="sd">        :returns: list of records including filtered book text-based in the `text` field.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dls</span><span class="o">=</span><span class="mi">0</span>
@@ -589,7 +639,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Download of book </span><span class="si">{</span><span class="n">search_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;ebook_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">search_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> failed!&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
             <span class="n">search_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_text</span><span class="p">(</span><span class="n">bt</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">dl</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dl</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_mirror</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="n">dls</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">if</span> <span class="n">dls</span><span class="o">&gt;</span><span class="n">download_count_limit</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Download limit reached (</span><span class="si">{</span><span class="n">download_count_limit</span><span class="si">}</span><span class="s2">), stopping download...&quot;</span><span class="p">)</span>
@@ -675,7 +725,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.11 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.13 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Gutenberg_Dataset</a></li> 
       </ul>

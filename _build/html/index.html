@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.11 documentation</title>
+    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.13 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="README.html" title="ml_indie_tools, a collection of machine learning tools for low-resource research and experiments"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.11 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.13 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>  
@@ -231,13 +231,21 @@ is lost, once the Colab session is closed.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Gutenberg_Dataset.</span></span><span class="sig-name descname"><span class="pre">Gutenberg_Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gutenberg'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Gutenberg_Dataset.html#Gutenberg_Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gutenberg_Dataset.Gutenberg_Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A fuzzy, lightweight class to access, search and filter Project Gutenberg resources</p>
-<p>GutenbergLib by default uses a mirror’s root URL. <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_index()</span></code></a> 
-needs to be called before any other methods.</p>
+<p>GutenbergLib by default uses a mirror’s root URL. Alternatively, you can specify a local directory containing a Gutenberg mirror.
+That mirror directory needs to contain a GUTINDEX.ALL file and has typically many sub-directories <cite>0</cite>,..`n`.</p>
+<p>A mirror of project Gutenberg can be created by:</p>
+<p>::codeblock: console</p>
+<blockquote>
+<div><p>#!/bin/bash
+rsync -zarv –dry-run –prune-empty-dirs –del –include=”<em>/” –include=’</em>.’{txt,pdf,ALL} –exclude=”*” aleph.gutenberg.org::gutenberg ./gutenberg_mirror</p>
+</div></blockquote>
+<p>You can remove the PDF files, since they are currently not used, and need to review the <cite>–dry-run</cite> option.</p>
+<p>Note: <a class="reference internal" href="#Gutenberg_Dataset.Gutenberg_Dataset.load_index" title="Gutenberg_Dataset.Gutenberg_Dataset.load_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_index()</span></code></a> needs to be called before any other methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>root_url</strong> – url of Project Gutenberg or any mirror URL.</p></li>
-<li><p><strong>cache_dir</strong> – path to a directory that will be used to cache the Gutenberg index and already downloaded texts</p></li>
+<li><p><strong>root_url</strong> – url of Project Gutenberg or any mirror URL, or a local directory containing a Gutenberg mirror.</p></li>
+<li><p><strong>cache_dir</strong> – path to a directory that will be used to cache the Gutenberg index and already downloaded texts. The cache directory is only used, if a remote Gutenberg URL and not a local mirror is used.</p></li>
 </ul>
 </dd>
 </dl>
@@ -340,7 +348,7 @@ into the dictionary with the key <cite>text</cite>.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>search_dict</strong> – search array of dictionaries that at least contain the key <cite>ebook_id</cite>.</p></li>
-<li><p><strong>download_count_limit</strong> – maximum number of books to download_count_limit</p></li>
+<li><p><strong>download_count_limit</strong> – maximum number of books to download, if no local mirror is used. No limits apply for local mirrors.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -708,7 +716,7 @@ the twelve supported ops:
         <li class="right" >
           <a href="README.html" title="ml_indie_tools, a collection of machine learning tools for low-resource research and experiments"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.11 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.13 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>
