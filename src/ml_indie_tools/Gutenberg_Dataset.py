@@ -291,7 +291,11 @@ class Gutenberg_Dataset():
         :param ebook_id: Gutenberg id (Note: string, since this sometimes contains a character!)
         :returns: book text as string, unfiltered. Can be filtered with :func:`~Gutenberg_Dataset.Gutenberg_Dataset.filter_text`
         """
-        return self._load_book_ex(ebook_id)[0]
+        txt, dl, val = self._load_book_ex(ebook_id)[0]
+        if val is True:
+            return txt, dl
+        else:
+            return None, dl
 
     def _read_download(self, filenames, path_stub, cache_name):
         """ Internal function to read ebook from cache or download it. """
@@ -336,7 +340,7 @@ class Gutenberg_Dataset():
         Use :func:`~Gutenberg_Dataset.Gutenberg_Dataset.get_book` to retrieve a dictionary with metadata and filtered text.
 
         :param ebook_id: Gutenberg id (Note: string, since this sometimes contains a character!)
-        :returns: tuple: book text as string, unfiltered, and a flag indicating with 'True' if book was downloaded from remote. 
+        :returns: tuple: book text as string, unfiltered, and a flag indicating with 'True' if book was downloaded from remote, validity flag, 'True' indicates valid text. 
         """
         if ebook_id is None or len(ebook_id)==0:
             return None
@@ -344,6 +348,7 @@ class Gutenberg_Dataset():
             ebook_id=ebook_id[:-1]
         path_stub=""
         downloaded = False
+        valid = False
         
         for i in range(len(ebook_id)-1):
             path_stub+="/"+ebook_id[i]
@@ -355,6 +360,7 @@ class Gutenberg_Dataset():
             if data[0]=='\ufeff':  # Ignore BOM
                 data=data[1:]
             data=data.replace('\r','')
+            valid = True
         else:
             filenames = [(ebook_id+"-pdf.pdf","bin")]
             cache_name=ebook_id+".pdf"
@@ -363,14 +369,14 @@ class Gutenberg_Dataset():
                 self.log.error(f"Ebook {cache_name} is only available in PDF format, this is not supported.")
             else:
                 self.log.warning(f"Failed to download {filenames}, skipping book.")
-            return None, downloaded
+                return None, downloaded, False
         if cache_file is not None:
             try:
                 with open(cache_file,'w') as f:
                     f.write(data)
             except:
                 self.log.error(f"Failed to cache file {cache_file}")
-        return data, downloaded
+        return data, downloaded, valid
     
     def filter_text(self, book_text, add_start_tokens=None, add_near_start_tokens=None, add_end_tokens=None):
         """ Heuristically remove header and trailer texts not part of the actual books
@@ -546,9 +552,12 @@ class Gutenberg_Dataset():
         dls=0
         for i in range(0, len(search_dict)):
             self.log.debug(f"Getting id={search_dict[i]['ebook_id']}, {search_dict[i]['title']}")
-            bt, dl = self._load_book_ex(search_dict[i]["ebook_id"])
-            if bt is None:
-                self.log.error(f"Download of book {search_dict[i]['ebook_id']}, {search_dict[i]['title']} failed!")
+            bt, dl, val = self._load_book_ex(search_dict[i]["ebook_id"])
+            if bt is None or val is False:
+                if val is False:
+                    self.log.warning(f"Download of book {search_dict[i]['ebook_id']}, {search_dict[i]['title']}: invalid format!")
+                else:
+                    self.log.error(f"Download of book {search_dict[i]['ebook_id']}, {search_dict[i]['title']} failed!")
                 continue
             search_dict[i]['text']=self.filter_text(bt)
             if dl is True:
