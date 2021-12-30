@@ -6,8 +6,6 @@ import time
 from enum import Enum
 from urllib.request import urlopen
 
-from torch.functional import _return_output
-
 class Gutenberg_Dataset():
     """ A fuzzy, lightweight class to access, search and filter Project Gutenberg resources
     
