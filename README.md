@@ -22,10 +22,10 @@ persistant data- and model-storage.
 The usage scenarios are:
 
 | Env                      | Tensorflow TPU | Tensorflow GPU | Pytorch TPU | Pytorch GPU | Jax TPU | Jax GPU |
-| ------------------------ | -------------- | -------------- | ----------- | ----------- | ------- | ------- |
-| Colab                    | x              | x              | -           | x           | x       | x       |
-| Workstation with Nvidia  | -              | x              | -           | x           | -       | x       |
-| Apple Silicon            | -              | x              | -           | -           | -       | -       |
+| ------------------------ | :------------: | :------------: | :---------: | :---------: | :-----: | :-----: |
+| Colab                    | x              | x              | /           | x           | x       | x       |
+| Workstation with Nvidia  | /              | x              | /           | x           | /       | x       |
+| Apple Silicon            | /              | x              | /           | /           | /       | /       |
 
 `Gutenberg_Dataset` and `Text_Dataset` are NLP libraries that provide text data and can be used in conjuction
 with Huggingface [Datasets](https://huggingface.co/docs/datasets/) or directly with ML libraries.
@@ -147,7 +147,7 @@ gd.load_index()  # load the index of books
 ```
 
 Then get a list of books (array). Each entry is a dict with meta-data:
-`search_result` is a list of dictionaries containing meta-data and the actual book-text in field `text`.
+`search_result` is a list of dictionaries containing meta-data without the actual book-text.
 
 ```python
 search_result = gd.search({'author': ['kant', 'goethe'], language=['german', 'english']})
@@ -156,11 +156,12 @@ search_result = gd.search({'author': ['kant', 'goethe'], language=['german', 'en
 Insert the actual book text into the dictionaries. Note that download count is [limited](https://domschl.github.io/ml-indie-tools/_build/html/index.html#Gutenberg_Dataset.Gutenberg_Dataset.insert_book_texts) if using a remote server.
 
 ```python
-gd.insert_book_texts(search_result)
-
+search_result = gd.insert_book_texts(search_result)
+# search_result entries now contain an additional field `text` with the filtered text of the book.
 import pandas as pd
 df = DataFrame(search_result)  # Display results as Pandas DataFrame
 ```
+  
 See the [Gutenberg_Dataset API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-Gutenberg_Dataset) for details.
 
 ### `Text_Dataset`
