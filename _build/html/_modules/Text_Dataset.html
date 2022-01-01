@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Text_Dataset &#8212; ml-indie-tools 0.0.16 documentation</title>
+    <title>Text_Dataset &#8212; ml-indie-tools 0.0.18 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.16 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.18 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Text_Dataset</a></li> 
       </ul>
@@ -303,13 +303,13 @@
                        <span class="n">txt</span> <span class="o">+</span> <span class="s2">&quot;&lt;/span&gt;&quot;</span><span class="o">+</span> <span class="n">anchor</span>
         <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">pre</span><span class="o">+</span><span class="n">out</span><span class="o">+</span><span class="n">post</span><span class="p">))</span>
 
-<div class="viewcode-block" id="Text_Dataset.source_highlight"><a class="viewcode-back" href="../index.html#Text_Dataset.Text_Dataset.source_highlight">[docs]</a>    <span class="k">def</span> <span class="nf">source_highlight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_txt</span><span class="p">,</span> <span class="n">minQuoteSize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">dark_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_ref_anchor</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Text_Dataset.source_highlight"><a class="viewcode-back" href="../index.html#Text_Dataset.Text_Dataset.source_highlight">[docs]</a>    <span class="k">def</span> <span class="nf">source_highlight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_txt</span><span class="p">,</span> <span class="n">min_quote_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">dark_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_ref_anchor</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Analyse which parts of `ref_txt` are cited from the texts in the Text_Dataset.</span>
 <span class="sd">        </span>
 <span class="sd">        Note: this function requires a jupyter notebook in order to display HTML with markup.</span>
 <span class="sd">        </span>
 <span class="sd">        :param ref_txt: the reference text to be analysed for plagiarised parts</span>
-<span class="sd">        :param minQuoteSize: minimum size of a quote to be considered plagiarised</span>
+<span class="sd">        :param min_quote_size: minimum size of a quote to be considered plagiarised</span>
 <span class="sd">        :param dark_mode: if True, the background colors will be dark, otherwise white</span>
 <span class="sd">        :param display_ref_anchor: if True, the reference text will be displayed with a reference anchor</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -325,9 +325,9 @@
             <span class="n">mxN</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
             <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_list</span><span class="p">:</span>  <span class="c1"># find longest quote in all texts</span>
-                <span class="n">p</span> <span class="o">=</span> <span class="n">minQuoteSize</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">min_quote_size</span>
                 <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref_tx</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ref_tx</span><span class="p">[:</span><span class="n">p</span><span class="p">]</span> <span class="ow">in</span> <span class="n">text</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]:</span>
-                    <span class="n">p</span> <span class="o">=</span> <span class="n">minQuoteSize</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">min_quote_size</span> <span class="o">+</span> <span class="mi">1</span>
                     <span class="k">while</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref_tx</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ref_tx</span><span class="p">[:</span><span class="n">p</span><span class="p">]</span> <span class="ow">in</span> <span class="n">text</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]:</span>
                         <span class="n">p</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="k">if</span> <span class="n">p</span><span class="o">-</span><span class="mi">1</span> <span class="o">&gt;</span> <span class="n">mxQ</span><span class="p">:</span>
@@ -388,7 +388,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.16 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.18 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Text_Dataset</a></li> 
       </ul>
