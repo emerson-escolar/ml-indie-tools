@@ -99,6 +99,13 @@ class MLEnv():
                             self.gpu_type=tf.config.experimental.get_device_details(tf.config.list_physical_devices('GPU')[0])['device_name']
                         except Exception as e:
                             self.log.warning(f"Could not get GPU type: {e}")
+                        card = !nvidia-smi
+                        if len(card)>=8:
+                            try:  # Full speed ahead, captain!
+                                self.gpu_type=card[7][6:25]
+                                self.gpu_memory=card[8][33:54]
+                            except Exception as e:
+                                pass
                         self.log.debug("GPU available")
             if self.is_gpu is False: 
                 self.log.info("No GPU or TPU available, this is going to be very slow!")
@@ -134,6 +141,14 @@ class MLEnv():
                                 break
                         if self.is_gpu is False:
                             self.log.debug("JAX GPU not available.")
+                        else:
+                            card = !nvidia-smi
+                            if len(card)>=8:
+                                try:  # Full speed ahead, captain!
+                                    self.gpu_type=card[7][6:25]
+                                    self.gpu_memory=card[8][33:54]
+                                except Exception as e:
+                                    pass
                     except:
                         if accelerator != 'fastest':
                             self.log.debug("JAX GPU not available.")
@@ -189,6 +204,13 @@ class MLEnv():
                             self.is_gpu = True
                             self.gpu_type = torch.cuda.get_device_name(0)
                             self.log.debug(f"Pytorch GPU {self.gpu_type} detected.")
+                            card = !nvidia-smi
+                            if len(card)>=8:
+                                try:  # Full speed ahead, captain!
+                                    self.gpu_type=card[7][6:25]
+                                    self.gpu_memory=card[8][33:54]
+                                except Exception as e:
+                                    pass
                         else:
                             self.log.debug("Pytorch GPU not available.")
                     except:
@@ -286,7 +308,7 @@ class MLEnv():
         if self.is_colab is True:
             from google.colab import drive
             self.log.info("You will now be asked to authenticate Google Drive access in order to store training data (cache) and model state.")
-            self.log.info("Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/ALU_Net`.")
+            self.log.info("Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/<project-name>`.")
             if not os.path.exists(root_path):
                 drive.mount(mount_point)
                 return True, root_path

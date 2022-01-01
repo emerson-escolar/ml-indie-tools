@@ -136,7 +136,7 @@ class Text_Dataset:
         txt=self.filter_text(text, sanitize_white_space=True, separate_punctuation=False, preserve_case=True)
         return txt
 
-    def _init_tokenizer(self, tokenizer='word'):
+    def init_tokenizer(self, tokenizer='word'):
         """ Initialize the tokenizer with the text_list.
         
         :param tokenizer: 'word' or 'char'
@@ -190,11 +190,11 @@ class Text_Dataset:
         tokens = []
         if tokenizer == 'word':
             if self.word_tokenizer_init is False:
-                self._init_tokenizer(tokenizer)
+                self.init_tokenizer(tokenizer)
             tokens = self._word_splitter(text)
         elif tokenizer == 'char':
             if self.char_tokenizer_init is False:
-                self._init_tokenizer(tokenizer)
+                self.init_tokenizer(tokenizer)
             tokens = list(self._char_filter(text))
         else:
             self.log.error(f"Unknown tokenizer {tokenizer}")
