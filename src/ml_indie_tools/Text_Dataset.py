@@ -238,9 +238,10 @@ class Text_Dataset:
         :param length: length of the sample
         :return: tuple (X, y) encoded sample
         """
-        _, sample = self.encode(self.get_random_sample(length+1, sanitize_white_space=False), tokenizer='char')
-        X = sample[:-1]
-        y = sample[1:]
+        _, sample = self.get_random_sample(length+1, sanitize_white_space=False)
+        t_sample = self.tokenize(sample, tokenizer='char')
+        X = t_sample[:-1]
+        y = t_sample[1:]
         return X, y
         
     def _display_colored_html(self, textlist, dark_mode=False, display_ref_anchor=True, pre='', post=''):
