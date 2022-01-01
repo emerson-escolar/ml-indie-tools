@@ -485,6 +485,20 @@ search for a single keyword (e.g. english), or an array of keywords.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="Text_Dataset.Text_Dataset.get_random_char_tokenized_sample_pair">
+<span class="sig-name descname"><span class="pre">get_random_char_tokenized_sample_pair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Text_Dataset.html#Text_Dataset.get_random_char_tokenized_sample_pair"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Text_Dataset.Text_Dataset.get_random_char_tokenized_sample_pair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a random tokenized sample of the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>length</strong> – length of the sample</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tuple (X, y) encoded sample</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="Text_Dataset.Text_Dataset.get_random_sample">
 <span class="sig-name descname"><span class="pre">get_random_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weighted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sanitize_white_space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separate_punctuation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preserve_case</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Text_Dataset.html#Text_Dataset.get_random_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Text_Dataset.Text_Dataset.get_random_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return index idx and random sample of <cite>length</cite> chars from text[idx] the Text_Dataset.</p>
