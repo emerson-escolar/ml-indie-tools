@@ -236,11 +236,12 @@ class Text_Dataset:
         """ Get a random tokenized sample of the dataset.
         
         :param length: length of the sample
+        :return: tuple (X, y) encoded sample
         """
         _, sample = self.get_random_sample(length+1)
         X = sample[:-1].encode('char')
-        Y = sample[1:].encode('char')
-        return X, Y
+        y = sample[1:].encode('char')
+        return X, y
         
     def _display_colored_html(self, textlist, dark_mode=False, display_ref_anchor=True, pre='', post=''):
         """ Internal function to display text and citation references in HTML. """
