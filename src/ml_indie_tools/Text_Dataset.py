@@ -238,7 +238,7 @@ class Text_Dataset:
         :param length: length of the sample
         :return: tuple (X, y) encoded sample
         """
-        _, sample = self.encode(self.get_random_sample(length+1), tokenizer='char', sanitize_white_space=False)
+        _, sample = self.encode(self.get_random_sample(length+1, sanitize_white_space=False), tokenizer='char')
         X = sample[:-1]
         y = sample[1:]
         return X, y
