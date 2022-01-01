@@ -232,6 +232,16 @@ class Text_Dataset:
             raise ValueError(f"Unknown tokenizer {tokenizer}")
         return decoded_text
 
+    def get_random_char_tokenized_sample_pair(self, length):
+        """ Get a random tokenized sample of the dataset.
+        
+        :param length: length of the sample
+        """
+        _, sample = self.get_random_sample(length+1)
+        X = sample[:-1].encode('char')
+        Y = sample[1:].encode('char')
+        return X, Y
+        
     def _display_colored_html(self, textlist, dark_mode=False, display_ref_anchor=True, pre='', post=''):
         """ Internal function to display text and citation references in HTML. """
         bgcolorsWht = ['#d4e6e1', '#d8daef', '#ebdef0', '#eadbd8', '#e2d7d5', '#edebd0',
