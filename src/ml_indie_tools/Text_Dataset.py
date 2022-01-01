@@ -124,7 +124,7 @@ class Text_Dataset:
             pos = random.randint(0, len(text) - length)
             sample = text[pos:pos+length]
         if sanitize_white_space is True:
-            sample = self.filter_text(sample, sanitize_white_space, separate_punctuation, preserve_case)
+            sample = self.filter_text(sample, sanitize_white_space=sanitize_white_space, separate_punctuation=separate_punctuation, preserve_case=preserve_case)
         return (idx, sample)
 
     def _word_splitter(self, text):
