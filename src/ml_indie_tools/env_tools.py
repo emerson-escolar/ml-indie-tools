@@ -102,9 +102,11 @@ class MLEnv():
                         except Exception as e:
                             self.log.warning(f"Could not get GPU type: {e}")
                         try: 
-                            card = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE).stdout.decode('utf-8').split('/n')
+                            card = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')
                             if len(card)>=8:
                                 self.gpu_memory=card[9][33:54].strip()
+                            else:
+                                self.log.warning(f"Could not get GPU type, unexpected output from nvidia-smi, lines={len(card)}, content={card}")
                         except Exception as e:
                             self.log.warning(f"Failed to determine GPU memory {e}")
                         self.log.debug("GPU available")
@@ -144,9 +146,11 @@ class MLEnv():
                             self.log.debug("JAX GPU not available.")
                         else:
                             try:  # Full speed ahead, captain!
-                                card = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE).stdout.decode('utf-8').split('/n')
+                                card = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')
                                 if len(card)>=8:
                                     self.gpu_memory=card[9][33:54].strip()
+                                else:
+                                    self.log.warning(f"Could not get GPU type, unexpected output from nvidia-smi, lines={len(card)}, content={card}")
                             except Exception as e:
                                 self.log.warning(f"Failed to determine GPU memory {e}")
                     except:
