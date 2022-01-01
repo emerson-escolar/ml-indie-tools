@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ml_indie_tools, a collection of machine learning tools for low-resource research and experiments &#8212; ml-indie-tools 0.0.15 documentation</title>
+    <title>ml_indie_tools, a collection of machine learning tools for low-resource research and experiments &#8212; ml-indie-tools 0.0.16 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="index.html" title="Welcome to ml-indie-tools’s documentation!"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">ml-indie-tools 0.0.15 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ml-indie-tools 0.0.16 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">ml_indie_tools</span></code>, a collection of machine learning tools for low-resource research and experiments</a></li> 
       </ul>
     </div>  
@@ -86,53 +86,26 @@ persistant data- and model-storage.</p>
 <tr class="row-even"><td><p>Colab</p></td>
 <td><p>x</p></td>
 <td><p>x</p></td>
-<td><ul class="simple">
-<li></li>
-</ul>
-</td>
+<td><p>/</p></td>
 <td><p>x</p></td>
 <td><p>x</p></td>
 <td><p>x</p></td>
 </tr>
 <tr class="row-odd"><td><p>Workstation with Nvidia</p></td>
-<td><ul class="simple">
-<li></li>
-</ul>
-</td>
+<td><p>/</p></td>
 <td><p>x</p></td>
-<td><ul class="simple">
-<li></li>
-</ul>
-</td>
+<td><p>/</p></td>
 <td><p>x</p></td>
-<td><ul class="simple">
-<li></li>
-</ul>
-</td>
+<td><p>/</p></td>
 <td><p>x</p></td>
 </tr>
 <tr class="row-even"><td><p>Apple Silicon</p></td>
-<td><ul class="simple">
-<li></li>
-</ul>
-</td>
+<td><p>/</p></td>
 <td><p>x</p></td>
-<td><ul class="simple">
-<li></li>
-</ul>
-</td>
-<td><ul class="simple">
-<li></li>
-</ul>
-</td>
-<td><ul class="simple">
-<li></li>
-</ul>
-</td>
-<td><ul class="simple">
-<li></li>
-</ul>
-</td>
+<td><p>/</p></td>
+<td><p>/</p></td>
+<td><p>/</p></td>
+<td><p>/</p></td>
 </tr>
 </tbody>
 </table>
@@ -186,7 +159,7 @@ training data and <span class="raw-html-m2r"><log-path></span> for logs.</p>
 <p>Those paths (with exception of <code class="docutils literal notranslate"><span class="pre">./logs</span></code>) are moved to Google Drive for Colab instances:</p>
 <p>On Google Colab:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># INFO:MLEnv:You will now be asked to authenticate Google Drive access in order to store training data (cache) and model state.</span>
-<span class="c1"># INFO:MLEnv:Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/ALU_Net`.</span>
+<span class="c1"># INFO:MLEnv:Changes will only happen within Google Drive directory `My Drive/Colab Notebooks/&lt;project-name&gt;`.</span>
 <span class="c1"># DEBUG:MLEnv:Root path: /content/drive/My Drive</span>
 <span class="c1"># Mounted at /content/drive</span>
 <span class="p">(</span><span class="s1">&#39;/content/drive/My Drive&#39;</span><span class="p">,</span>
@@ -233,13 +206,13 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
 </pre></div>
 </div>
 <p>Then get a list of books (array). Each entry is a dict with meta-data:
-<code class="docutils literal notranslate"><span class="pre">search_result</span></code> is a list of dictionaries containing meta-data and the actual book-text in field <code class="docutils literal notranslate"><span class="pre">text</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">search_result</span></code> is a list of dictionaries containing meta-data without the actual book-text.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">search_result</span> <span class="o">=</span> <span class="n">gd</span><span class="o">.</span><span class="n">search</span><span class="p">({</span><span class="s1">&#39;author&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;kant&#39;</span><span class="p">,</span> <span class="s1">&#39;goethe&#39;</span><span class="p">],</span> <span class="n">language</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;german&#39;</span><span class="p">,</span> <span class="s1">&#39;english&#39;</span><span class="p">]})</span>
 </pre></div>
 </div>
 <p>Insert the actual book text into the dictionaries. Note that download count is <a class="reference external" href="https://domschl.github.io/ml-indie-tools/_build/html/index.html#Gutenberg_Dataset.Gutenberg_Dataset.insert_book_texts">limited</a> if using a remote server.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gd</span><span class="o">.</span><span class="n">insert_book_texts</span><span class="p">(</span><span class="n">search_result</span><span class="p">)</span>
-
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">search_result</span> <span class="o">=</span> <span class="n">gd</span><span class="o">.</span><span class="n">insert_book_texts</span><span class="p">(</span><span class="n">search_result</span><span class="p">)</span>
+<span class="c1"># search_result entries now contain an additional field `text` with the filtered text of the book.</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">search_result</span><span class="p">)</span>  <span class="c1"># Display results as Pandas DataFrame</span>
 </pre></div>
@@ -331,7 +304,7 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
         <li class="right" >
           <a href="index.html" title="Welcome to ml-indie-tools’s documentation!"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">ml-indie-tools 0.0.15 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ml-indie-tools 0.0.16 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">ml_indie_tools</span></code>, a collection of machine learning tools for low-resource research and experiments</a></li> 
       </ul>
     </div>
