@@ -22,8 +22,11 @@ class Text_Dataset:
         td = Text_Dataset(ls)
     
     :param text_list: list of text-records of the form: {'author': 'author', 'title': 'title', 'language': 'some-language', 'text': 'the-long-text'}. Optinal parameters: 'weight': 1.0
+    :param sanitize_white_space: If True, white space is replaced by a single space.
+    :param separate_punctuation: If True, punctuation is separated from words.
+    :param preserve_case: If True, the case of the text is preserved.
     """
-    def __init__(self, text_list):
+    def __init__(self, text_list, sanitize_white_space=False, separate_punctuation=False, preserve_case=True):
         self.log = logging.getLogger("Datasets")
         self.text_list = []
         self.index = 1
@@ -42,6 +45,7 @@ class Text_Dataset:
                 continue
             text=text_list[ind]
             text['index']=self.index
+            text['text']=self.filter_text(text['text'], sanitize_white_space=sanitize_white_space, separate_punctuation=separate_punctuation, preserve_case=preserve_case)
             self.index += 1
             self.text_list.append(text)
         self.log.info(f"Loaded {len(self.text_list)} texts")
@@ -79,7 +83,7 @@ class Text_Dataset:
         else:
             return random.choice(self.tidx)
 
-    def filter_text(self, text, sanitize_white_space=True, separate_punctuation=False, preserve_case=True):
+    def filter_text(self, text, sanitize_white_space=False, separate_punctuation=False, preserve_case=True):
         """ Filter a text.
         
         :param text: text to filter
@@ -106,35 +110,30 @@ class Text_Dataset:
                 text = text.replace('  ', ' ')
         return text
 
-    def get_random_sample(self, length, weighted=True, sanitize_white_space=True, separate_punctuation=False, preserve_case=True):
+    def get_random_sample(self, length, weighted=True):
         """ Return index idx and random sample of `length` chars from text[idx] the Text_Dataset.
         
         :param length: number of characters to return
-        :param weighted: If True, the probability of a text is weighted by its calculated 'probability_weight' attribute.
         :param sanitize_white_space: If True, white space is replaced by a single space.
         :param separate_punctuation: If True, punctuation is separated from words.
         :param preserve_case: If True, the case of the text is preserved.
+        :param weighted: If True, the probability of a text is weighted by its calculated 'probability_weight' attribute.
         :return: tuple (idx of text used for sampling, string of length `length` sampled from the Text_Dataset)
         """
         idx = self._get_random_text_index(weighted)
         text = self.text_list[idx]['text']
         if len(text) < length:
             sample = text
+            while len(sample) < length:
+                sample += ' '
         else:
             pos = random.randint(0, len(text) - length)
             sample = text[pos:pos+length]
-        if sanitize_white_space is True:
-            sample = self.filter_text(sample, sanitize_white_space=sanitize_white_space, separate_punctuation=separate_punctuation, preserve_case=preserve_case)
         return (idx, sample)
 
     def _word_splitter(self, text):
-        txt=self.filter_text(text, sanitize_white_space=True, separate_punctuation=True, preserve_case=True)
-        tokens=txt.split()
+        tokens=text.split()
         return tokens
-
-    def _char_filter(self, text):
-        txt=self.filter_text(text, sanitize_white_space=True, separate_punctuation=False, preserve_case=True)
-        return txt
 
     def init_tokenizer(self, tokenizer='word'):
         """ Initialize the tokenizer with the text_list.
@@ -162,21 +161,22 @@ class Text_Dataset:
         elif tokenizer == 'char':
             self.i2c = {}
             self.c2i = {}
-            self.i2c['<unk>'] = 0
-            self.c2i[0] = '<unk>'
-            self.i2c['<pad>'] = 1
-            self.c2i[1] = '<pad>'
-            self.i2c['<eos>'] = 2
-            self.c2i[2] = '<eos>'
-            self.i2c['<sos>'] = 3
-            self.c2i[3] = '<sos>'
+            self.c2i['<unk>'] = 0
+            self.i2c[0] = '<unk>'
+            self.c2i['<pad>'] = 1
+            self.i2c[1] = '<pad>'
+            self.c2i['<eos>'] = 2
+            self.i2c[2] = '<eos>'
+            self.c2i['<sos>'] = 3
+            self.i2c[3] = '<sos>'
             for text in self.text_list:
-                txt = self._char_filter(text['text'])
-                uniq_chars = set(txt)
-                for c in uniq_chars:
+                tokens = list(text['text'])
+                unique_chars = set(tokens)
+                for c in unique_chars:
                     if c not in self.c2i:
-                        self.c2i[c] = len(self.c2i)
-                        self.i2c[len(self.i2c)] = c
+                        ind = len(self.i2c)
+                        self.c2i[c] = ind
+                        self.i2c[ind] = c
             self.char_tokenizer_init=True
         else:
             self.log.error(f"Unknown tokenizer {tokenizer}")
@@ -195,7 +195,7 @@ class Text_Dataset:
         elif tokenizer == 'char':
             if self.char_tokenizer_init is False:
                 self.init_tokenizer(tokenizer)
-            tokens = list(self._char_filter(text))
+            tokens = list(text)
         else:
             self.log.error(f"Unknown tokenizer {tokenizer}")
             raise ValueError(f"Unknown tokenizer {tokenizer}")
@@ -206,7 +206,7 @@ class Text_Dataset:
         
         :param text: text to encode
         :return: list of encoded tokens """
-        tokens = self.tokenize(text, tokenizer)
+        tokens = self.tokenize(text, tokenizer=tokenizer)
         if tokenizer == 'word':
             encoded = [self.w2i[token] if token in self.w2i else self.w2i['<unk>'] for token in tokens]
         elif tokenizer == 'char':
@@ -238,7 +238,7 @@ class Text_Dataset:
         :param length: length of the sample
         :return: tuple (X, y) encoded sample
         """
-        _, sample = self.get_random_sample(length+1, sanitize_white_space=False)
+        _, sample = self.get_random_sample(length+1)
         e_sample = self.encode(sample, tokenizer='char')
         X = e_sample[:-1]
         y = e_sample[1:]
