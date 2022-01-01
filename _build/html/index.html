@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.16 documentation</title>
+    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.17 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="README.html" title="ml_indie_tools, a collection of machine learning tools for low-resource research and experiments"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.16 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.17 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>  
@@ -49,8 +49,186 @@
 <h1>Welcome to ml-indie-tools’s documentation!<a class="headerlink" href="#welcome-to-ml-indie-tools-s-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<div class="section" id="mlenv-object">
-<h2>MLEnv object<a class="headerlink" href="#mlenv-object" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-env_tools">
+<span id="mlenv-object"></span><h2>MLEnv object<a class="headerlink" href="#module-env_tools" title="Permalink to this headline">¶</a></h2>
+<p>Tools to configure ML environment for Tensorflow, Pytorch or JAX and 
+optional notebook/colab environment</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="env_tools.MLEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">env_tools.</span></span><span class="sig-name descname"><span class="pre">MLEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fastest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Initialize platform and accelerator.</p>
+<p>This checks initialization and available accelerator hardware for different ml platforms.
+At return, the following variables are set: <cite>self.is_tensorflow</cite>, <cite>self.is_pytorch</cite>, <cite>self.is_jax</cite>,
+indicating that the ml environment is available for Tensorflow, Pytorch or JAX respectively if <cite>True</cite>.
+<cite>self.is_notebook</cite> and <cite>self.is_colab</cite> indicate if the environment is a notebook or colab environment.
+<cite>self.is_gpu</cite> indicates if the environment is a GPU environment, <cite>self.is_tpu</cite> indicates if the 
+environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerator is available.</p>
+<p>The logger <cite>MLEnv</cite> provdides details about the hardware and ml environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>platform</strong> – Known platforms are: <cite>‘tf’</cite> (tensorflow), <cite>‘pt’</cite> (pytorch), and <cite>‘jax’</cite></p></li>
+<li><p><strong>accelerator</strong> – known accelerators are: <cite>‘fastest’</cite> (pick best available hardware), <cite>‘cpu’</cite>, <cite>‘gpu’</cite>, <cite>‘tpu’</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="env_tools.MLEnv.describe">
+<span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.describe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a description of the machine environment.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>str: description of the machine environment.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="env_tools.MLEnv.describe_mlenv">
+<span class="sig-name descname"><span class="pre">describe_mlenv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.describe_mlenv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.describe_mlenv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="env_tools.MLEnv.describe_osenv">
+<span class="sig-name descname"><span class="pre">describe_osenv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.describe_osenv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.describe_osenv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.gpu_memory">
+<span class="sig-name descname"><span class="pre">gpu_memory</span></span><a class="headerlink" href="#env_tools.MLEnv.gpu_memory" title="Permalink to this definition">¶</a></dt>
+<dd><p>GPU memory for NVidia cards as provided by <cite>nvidia-smi</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.gpu_type">
+<span class="sig-name descname"><span class="pre">gpu_type</span></span><a class="headerlink" href="#env_tools.MLEnv.gpu_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>GPU type, e.g. <cite>‘Tesla V100’</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="env_tools.MLEnv.init_paths">
+<span class="sig-name descname"><span class="pre">init_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.init_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.init_paths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the paths for the project.</p>
+<p>Depending on if this is a Colab environment or not, persistent data will be stored in either
+<cite>project_path=’/content/drive/My Drive/Colab Notebooks/&lt;project_name&gt;’</cite> or <cite>project_path=’.’</cite>.</p>
+<p>If Google drive access is not available, data will be stored in <cite>project_path=’.’</cite>. This data
+is lost, once the Colab session is closed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project_path</span><span class="o">/</span><span class="n">data</span>  <span class="c1"># training data (cache)</span>
+<span class="n">project_path</span><span class="o">/</span><span class="n">model</span><span class="p">[</span><span class="o">/&lt;</span><span class="n">model_name</span><span class="o">&gt;</span><span class="p">]</span>  <span class="c1"># model state, weights, etc.</span>
+<span class="o">.</span><span class="n">logs</span>  <span class="c1"># log files</span>
+</pre></div>
+</div>
+<p>Note that log_path is always local, since Colab Google drive caching prevents useful logs to Google drive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_name</strong> – name of the project. Only used for Colab environments. Is always current directory for non-Colab environments.</p></li>
+<li><p><strong>model_name</strong> – name of the model. Optional name for model subdirectory to allow support for multiple models.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(root_path, project_path, model_path, data_path, log_path)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.is_colab">
+<span class="sig-name descname"><span class="pre">is_colab</span></span><a class="headerlink" href="#env_tools.MLEnv.is_colab" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>True</cite> if running in a colab notebook</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.is_conda">
+<span class="sig-name descname"><span class="pre">is_conda</span></span><a class="headerlink" href="#env_tools.MLEnv.is_conda" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>True</cite> if running in a conda environment</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.is_cpu">
+<span class="sig-name descname"><span class="pre">is_cpu</span></span><a class="headerlink" href="#env_tools.MLEnv.is_cpu" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>True</cite> if no accelerator is available</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.is_gpu">
+<span class="sig-name descname"><span class="pre">is_gpu</span></span><a class="headerlink" href="#env_tools.MLEnv.is_gpu" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>True</cite> if a GPU is is available</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.is_jax">
+<span class="sig-name descname"><span class="pre">is_jax</span></span><a class="headerlink" href="#env_tools.MLEnv.is_jax" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>True</cite> if running on Jax</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.is_notebook">
+<span class="sig-name descname"><span class="pre">is_notebook</span></span><a class="headerlink" href="#env_tools.MLEnv.is_notebook" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>True</cite> if running in a notebook</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.is_pytorch">
+<span class="sig-name descname"><span class="pre">is_pytorch</span></span><a class="headerlink" href="#env_tools.MLEnv.is_pytorch" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>True</cite> if running on Pytorch</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.is_tensorflow">
+<span class="sig-name descname"><span class="pre">is_tensorflow</span></span><a class="headerlink" href="#env_tools.MLEnv.is_tensorflow" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>True</cite> if running on Tensorflow</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.is_tpu">
+<span class="sig-name descname"><span class="pre">is_tpu</span></span><a class="headerlink" href="#env_tools.MLEnv.is_tpu" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>True</cite> if a TPU is is available</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.jax_version">
+<span class="sig-name descname"><span class="pre">jax_version</span></span><a class="headerlink" href="#env_tools.MLEnv.jax_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Jax version, e.g. <cite>‘0.1.0’</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="env_tools.MLEnv.mount_gdrive">
+<span class="sig-name descname"><span class="pre">mount_gdrive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mount_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/content/drive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/content/drive/My</span> <span class="pre">Drive'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv.mount_gdrive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv.mount_gdrive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.os_type">
+<span class="sig-name descname"><span class="pre">os_type</span></span><a class="headerlink" href="#env_tools.MLEnv.os_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Operating system type, e.g. <cite>‘Linux’</cite>, <cite>‘Darwin’</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.pt_version">
+<span class="sig-name descname"><span class="pre">pt_version</span></span><a class="headerlink" href="#env_tools.MLEnv.pt_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pytorch version, e.g. <cite>‘1.6.0’</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.py_version">
+<span class="sig-name descname"><span class="pre">py_version</span></span><a class="headerlink" href="#env_tools.MLEnv.py_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Python version, e.g. <cite>‘3.7.3’</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.tf_version">
+<span class="sig-name descname"><span class="pre">tf_version</span></span><a class="headerlink" href="#env_tools.MLEnv.tf_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tensorflow version, e.g. <cite>‘2.7.0’</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="env_tools.MLEnv.tpu_type">
+<span class="sig-name descname"><span class="pre">tpu_type</span></span><a class="headerlink" href="#env_tools.MLEnv.tpu_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>TPU type, e.g. <cite>‘TPU v2’</cite></p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-Gutenberg_Dataset">
 <span id="gutenberg-dataset-object"></span><h2>Gutenberg_Dataset object<a class="headerlink" href="#module-Gutenberg_Dataset" title="Permalink to this headline">¶</a></h2>
@@ -651,7 +829,7 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
   <h3><a href="#">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Welcome to ml-indie-tools’s documentation!</a><ul>
-<li><a class="reference internal" href="#mlenv-object">MLEnv object</a></li>
+<li><a class="reference internal" href="#module-env_tools">MLEnv object</a></li>
 <li><a class="reference internal" href="#module-Gutenberg_Dataset">Gutenberg_Dataset object</a></li>
 <li><a class="reference internal" href="#module-Text_Dataset">Text_Dataset object</a></li>
 <li><a class="reference internal" href="#module-ALU_Dataset">ALU_Dataset object</a></li>
@@ -698,7 +876,7 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
         <li class="right" >
           <a href="README.html" title="ml_indie_tools, a collection of machine learning tools for low-resource research and experiments"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.16 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.17 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>
