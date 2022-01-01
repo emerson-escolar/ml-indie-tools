@@ -108,7 +108,7 @@ class MLEnv():
                             else:
                                 self.log.warning(f"Could not get GPU type, unexpected output from nvidia-smi, lines={len(card)}, content={card}")
                         except Exception as e:
-                            self.log.warning(f"Failed to determine GPU memory {e}")
+                            self.log.debug(f"Failed to determine GPU memory {e}")
                         self.log.debug("GPU available")
             if self.is_gpu is False: 
                 self.log.info("No GPU or TPU available, this is going to be very slow!")
@@ -152,7 +152,7 @@ class MLEnv():
                                 else:
                                     self.log.warning(f"Could not get GPU type, unexpected output from nvidia-smi, lines={len(card)}, content={card}")
                             except Exception as e:
-                                self.log.warning(f"Failed to determine GPU memory {e}")
+                                self.log.debug(f"Failed to determine GPU memory {e}")
                     except:
                         if accelerator != 'fastest':
                             self.log.debug("JAX GPU not available.")
@@ -215,7 +215,7 @@ class MLEnv():
                                 else:
                                     self.log.warning(f"Could not get GPU type, unexpected output from nvidia-smi, lines={len(card)}, content={card}")
                             except Exception as e:
-                                self.log.warning(f"Failed to determine GPU memory {e}")
+                                self.log.debug(f"Failed to determine GPU memory {e}")
                         else:
                             self.log.debug("Pytorch GPU not available.")
                     except:
