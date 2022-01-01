@@ -258,13 +258,13 @@ class Text_Dataset:
                        txt + "</span>"+ anchor
         display(HTML(pre+out+post))
 
-    def source_highlight(self, ref_txt, minQuoteSize=10, dark_mode=False, display_ref_anchor=True):
+    def source_highlight(self, ref_txt, min_quote_size=10, dark_mode=False, display_ref_anchor=True):
         """ Analyse which parts of `ref_txt` are cited from the texts in the Text_Dataset.
         
         Note: this function requires a jupyter notebook in order to display HTML with markup.
         
         :param ref_txt: the reference text to be analysed for plagiarised parts
-        :param minQuoteSize: minimum size of a quote to be considered plagiarised
+        :param min_quote_size: minimum size of a quote to be considered plagiarised
         :param dark_mode: if True, the background colors will be dark, otherwise white
         :param display_ref_anchor: if True, the reference text will be displayed with a reference anchor
         """
@@ -280,9 +280,9 @@ class Text_Dataset:
             mxN = ''
             found = False
             for text in self.text_list:  # find longest quote in all texts
-                p = minQuoteSize
+                p = min_quote_size
                 if p <= len(ref_tx) and ref_tx[:p] in text['text']:
-                    p = minQuoteSize + 1
+                    p = min_quote_size + 1
                     while p <= len(ref_tx) and ref_tx[:p] in text['text']:
                         p += 1
                     if p-1 > mxQ:
