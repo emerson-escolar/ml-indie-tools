@@ -4,6 +4,7 @@ optional notebook/colab environment'''
 import os
 import sys
 import logging
+import subprocess
 
 class MLEnv():
     """ Initialize platform and accelerator. 
@@ -45,6 +46,7 @@ class MLEnv():
         self.is_tpu = False  #: `True` if a TPU is is available
         self.tpu_type = None  #: TPU type, e.g. `'TPU v2'`
         self.gpu_type = None  #: GPU type, e.g. `'Tesla V100'`
+        self.gpu_memory = None  #: GPU memory for NVidia cards as provided by `nvidia-smi`
         self.is_notebook = False  #: `True` if running in a notebook
         self.is_colab = False  #: `True` if running in a colab notebook
         if platform == 'tf':
@@ -99,13 +101,14 @@ class MLEnv():
                             self.gpu_type=tf.config.experimental.get_device_details(tf.config.list_physical_devices('GPU')[0])['device_name']
                         except Exception as e:
                             self.log.warning(f"Could not get GPU type: {e}")
-                        card = !nvidia-smi
-                        if len(card)>=8:
-                            try:  # Full speed ahead, captain!
-                                self.gpu_type=card[7][6:25]
-                                self.gpu_memory=card[8][33:54]
-                            except Exception as e:
-                                pass
+                        try: 
+                            card = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')
+                            if len(card)>=8:
+                                self.gpu_memory=card[9][33:54].strip()
+                            else:
+                                self.log.warning(f"Could not get GPU type, unexpected output from nvidia-smi, lines={len(card)}, content={card}")
+                        except Exception as e:
+                            self.log.warning(f"Failed to determine GPU memory {e}")
                         self.log.debug("GPU available")
             if self.is_gpu is False: 
                 self.log.info("No GPU or TPU available, this is going to be very slow!")
@@ -142,13 +145,14 @@ class MLEnv():
                         if self.is_gpu is False:
                             self.log.debug("JAX GPU not available.")
                         else:
-                            card = !nvidia-smi
-                            if len(card)>=8:
-                                try:  # Full speed ahead, captain!
-                                    self.gpu_type=card[7][6:25]
-                                    self.gpu_memory=card[8][33:54]
-                                except Exception as e:
-                                    pass
+                            try:  # Full speed ahead, captain!
+                                card = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')
+                                if len(card)>=8:
+                                    self.gpu_memory=card[9][33:54].strip()
+                                else:
+                                    self.log.warning(f"Could not get GPU type, unexpected output from nvidia-smi, lines={len(card)}, content={card}")
+                            except Exception as e:
+                                self.log.warning(f"Failed to determine GPU memory {e}")
                     except:
                         if accelerator != 'fastest':
                             self.log.debug("JAX GPU not available.")
@@ -204,13 +208,14 @@ class MLEnv():
                             self.is_gpu = True
                             self.gpu_type = torch.cuda.get_device_name(0)
                             self.log.debug(f"Pytorch GPU {self.gpu_type} detected.")
-                            card = !nvidia-smi
-                            if len(card)>=8:
-                                try:  # Full speed ahead, captain!
-                                    self.gpu_type=card[7][6:25]
-                                    self.gpu_memory=card[8][33:54]
-                                except Exception as e:
-                                    pass
+                            try:  # Full speed ahead, captain!
+                                card = subprocess.run(['nvidia-smi'], stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')
+                                if len(card)>=8:
+                                    self.gpu_memory=card[9][33:54].strip()
+                                else:
+                                    self.log.warning(f"Could not get GPU type, unexpected output from nvidia-smi, lines={len(card)}, content={card}")
+                            except Exception as e:
+                                self.log.warning(f"Failed to determine GPU memory {e}")
                         else:
                             self.log.debug("Pytorch GPU not available.")
                     except:
@@ -292,6 +297,8 @@ class MLEnv():
             desc += f", TPU: {self.tpu_type}"
         if self.is_gpu is True:
             desc += f", GPU: {self.gpu_type}"
+            if self.gpu_memory is not None:
+                desc += f" ({self.gpu_memory})"
         if self.is_cpu is True:
             desc += f", CPU"
         return desc
