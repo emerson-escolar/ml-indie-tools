@@ -249,10 +249,10 @@ class Text_Dataset:
     def init_getitem(self, sample_type='chargen', sample_length=80, content_stepping=10):
         """ Initialize the __getitem__ and __len__ methods.
 
-        :param sample_type: 'chargen': generate a pair of text or length sample_length, shifted by one letter.
+        :param sample_type: 'chargen': generate a pair of text or length sample_length, shifted by one letter, or 'chargen_encoded', same but encoded.
         :param sample_length: length of a sample
         :param content_stepping: number of characters to skip between each sample
-        :return: on 'chargen': X, y strings of sample_length, y shifted by one letter.
+        :return: on 'chargen[_encoded]': X, y [encoded] strings of sample_length, y shifted by one letter.
         """
 
         self.getitem_sample_type = sample_type
@@ -260,7 +260,7 @@ class Text_Dataset:
         self.getitem_content_stepping = content_stepping
         leng=0
         rec=0
-        if sample_type=='chargen':
+        if sample_type=='chargen' or sample_type=='chargen_encoded':
             for ind in range(0, len(self.text_list)):
                 len_text = len(self.text_list[ind]['text'])
                 rec_text = (len_text-content_stepping+1)//content_stepping + 1
@@ -281,6 +281,30 @@ class Text_Dataset:
             return None
         return self.getitem_records
 
+    def _getitem_chargen(self, index):
+        if index<0:
+            if index<(-self.getitem_records):
+                raise IndexError(f"index {index} out of range")
+            else:
+                index += self.getitem_records
+        if index >= self.getitem_records:
+            raise IndexError(f"index {index} out of range")
+        cur_rec = 0
+        for text in self.text_list:
+            rec = text['records']
+            if cur_rec+rec > index:
+                rel_rec = index - cur_rec
+                pos = rel_rec*self.getitem_content_stepping
+                sample = text['text'][pos:pos+self.getitem_sample_length+1]
+                while len(sample) < self.getitem_sample_length+1:
+                    sample += ' '
+                X_text = sample[:-1]
+                y_text = sample[1:]
+                return X_text, y_text
+            cur_rec += rec
+        print("Internal error in __getitem__")
+        raise ValueError("Internal error in __getitem__")
+
     def __getitem__(self, index):
         """ Get a sample from the dataset.
         
@@ -292,28 +316,12 @@ class Text_Dataset:
             print("init_getitem must be called before __getitem__")
             raise ValueError("init_getitem must be called before __getitem__")
         if self.getitem_sample_type == 'chargen':
-            if index<0:
-                if index<(-self.getitem_records):
-                    raise IndexError(f"index {index} out of range")
-                else:
-                    index += self.getitem_records
-            if index >= self.getitem_records:
-                raise IndexError(f"index {index} out of range")
-            cur_rec = 0
-            for text in self.text_list:
-                rec = text['records']
-                if cur_rec+rec > index:
-                    rel_rec = index - cur_rec
-                    pos = rel_rec*self.getitem_content_stepping
-                    sample = text['text'][pos:pos+self.getitem_sample_length+1]
-                    while len(sample) < self.getitem_sample_length+1:
-                        sample += ' '
-                    X_text = sample[:-1]
-                    y_text = sample[1:]
-                    return X_text, y_text
-                cur_rec += rec
-            print("Internal error in __getitem__")
-            raise ValueError("Internal error in __getitem__")
+            return self._getitem_chargen(index)
+        elif self.getitem_sample_type == 'chargen_encoded':
+            X, y = self._getitem_chargen(index)
+            X = self.encode(X, tokenizer='char')
+            y = self.encode(y, tokenizer='char')
+            return X, y
         else:
             self.log.error(f"Unknown getitem sample_type {self.getitem_sample_type}")
             raise ValueError(f"Unknown getitem sample_type {self.getitem_sample_type}")
