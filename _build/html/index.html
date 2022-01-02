@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.25 documentation</title>
+    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.26 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="README.html" title="ml_indie_tools, a collection of machine learning tools for low-resource research and experiments"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.25 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.26 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>  
@@ -524,6 +524,37 @@ search for a single keyword (e.g. english), or an array of keywords.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="Text_Dataset.Text_Dataset.init_getitem">
+<span class="sig-name descname"><span class="pre">init_getitem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chargen'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_stepping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Text_Dataset.html#Text_Dataset.init_getitem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Text_Dataset.Text_Dataset.init_getitem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the __getitem__ and __len__ methods.</p>
+<p>This method needs to be called before using len() or index-access of the dataset.</p>
+<p>This method determines how the dataset is partitioned into records, and what kind
+of encoding is returned on index-access.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ml_indie_tools.Text_Dataset</span> <span class="kn">import</span> <span class="n">TextDataset</span>
+<span class="n">tl</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;author&#39;</span><span class="p">:</span><span class="s1">&#39;nobody&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span><span class="s1">&#39;some title&#39;</span><span class="p">,</span> <span class="s1">&#39;language&#39;</span><span class="p">:</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="s1">&#39;some text&#39;</span><span class="p">},</span>
+      <span class="p">{</span><span class="s1">&#39;author&#39;</span><span class="p">:</span><span class="s1">&#39;nobody&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span><span class="s1">&#39;some title 2&#39;</span><span class="p">,</span> <span class="s1">&#39;language&#39;</span><span class="p">:</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="s1">&#39;some more text&#39;</span><span class="p">}]</span>
+<span class="n">td</span> <span class="o">=</span> <span class="n">Text_Dataset</span><span class="p">(</span><span class="n">tl</span><span class="p">)</span>
+<span class="n">td</span><span class="o">.</span><span class="n">init_getitem</span><span class="p">(</span><span class="n">sample_type</span><span class="o">=</span><span class="s1">&#39;chargen&#39;</span><span class="p">,</span> <span class="n">sample_length</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">content_stepping</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">td</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">td</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1"># Output: 12 and (&#39;some&#39;, &#39;ome &#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_type</strong> – ‘chargen’: generate a pair of text or length sample_length, shifted by one letter, or ‘chargen_encoded’, same but encoded.</p></li>
+<li><p><strong>sample_length</strong> – length of a sample</p></li>
+<li><p><strong>content_stepping</strong> – number of characters to skip between each sample</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>on ‘chargen[_encoded]’: X, y [encoded] strings of sample_length, y shifted by one letter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="Text_Dataset.Text_Dataset.init_tokenizer">
 <span class="sig-name descname"><span class="pre">init_tokenizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'word'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Text_Dataset.html#Text_Dataset.init_tokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Text_Dataset.Text_Dataset.init_tokenizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the tokenizer with the text_list.</p>
@@ -895,7 +926,7 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
         <li class="right" >
           <a href="README.html" title="ml_indie_tools, a collection of machine learning tools for low-resource research and experiments"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.25 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.26 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>
