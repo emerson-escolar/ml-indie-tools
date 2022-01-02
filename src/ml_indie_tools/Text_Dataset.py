@@ -249,6 +249,22 @@ class Text_Dataset:
     def init_getitem(self, sample_type='chargen', sample_length=80, content_stepping=10):
         """ Initialize the __getitem__ and __len__ methods.
 
+        This method needs to be called before using len() or index-access of the dataset.
+
+        This method determines how the dataset is partitioned into records, and what kind
+        of encoding is returned on index-access.
+
+        .. code-block:: python
+
+            from ml_indie_tools.Text_Dataset import TextDataset
+            tl = [{'author':'nobody', 'title':'some title', 'language':'english', 'text':'some text'},
+                  {'author':'nobody', 'title':'some title 2', 'language':'english', 'text':'some more text'}]
+            td = Text_Dataset(tl)
+            td.init_getitem(sample_type='chargen', sample_length=4, content_stepping=2)
+            print(len(td))
+            print(td[0])
+            # Output: 12 and ('some', 'ome ')
+
         :param sample_type: 'chargen': generate a pair of text or length sample_length, shifted by one letter, or 'chargen_encoded', same but encoded.
         :param sample_length: length of a sample
         :param content_stepping: number of characters to skip between each sample
@@ -276,6 +292,12 @@ class Text_Dataset:
             print(f"init_getitem: unknown sample_type {sample_type}")
 
     def __len__(self):
+        """ Get the length of the dataset.
+
+        Note that this length depends on the initialization via :ref:`~Text_Dataset.Text_Dataset.init_getitem`.
+
+        :return: length of the dataset (mode dependent) 
+        """
         if self.getitem_init is False:
             print("init_getitem must be called before __len__")
             return None
@@ -307,9 +329,10 @@ class Text_Dataset:
 
     def __getitem__(self, index):
         """ Get a sample from the dataset.
-        
-        :param index: index of the sample
 
+        Format of the returned sample depends on :ref:`~Text_Dataset.Text_Dataset.init_getitem`.
+
+        :param index: index of the sample
         :return:
         """
         if self.getitem_init is False:
