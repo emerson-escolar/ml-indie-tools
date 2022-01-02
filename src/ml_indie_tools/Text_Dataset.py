@@ -32,6 +32,8 @@ class Text_Dataset:
         self.index = 1
         self.word_tokenizer_init = False
         self.char_tokenizer_init = False
+        self.getitem_init = False
+        
         req_attrs=['title', 'author', 'language', 'text']
         for ind in range(0,len(text_list)):
             valid=True
@@ -243,7 +245,79 @@ class Text_Dataset:
         X = e_sample[:-1]
         y = e_sample[1:]
         return X, y
+
+    def init_getitem(self, sample_type='chargen', sample_length=80, content_stepping=10):
+        """ Initialize the __getitem__ and __len__ methods.
+
+        :param sample_type: 'chargen': generate a pair of text or length sample_length, shifted by one letter.
+        :param sample_length: length of a sample
+        :param content_stepping: number of characters to skip between each sample
+        :return: on 'chargen': X, y strings of sample_length, y shifted by one letter.
+        """
+
+        self.getitem_sample_type = sample_type
+        self.getitem_sample_length = sample_length
+        self.getitem_content_stepping = content_stepping
+        leng=0
+        rec=0
+        if sample_type=='chargen':
+            for ind in range(0, len(self.text_list)):
+                len_text = len(self.text_list[ind]['text'])
+                rec_text = (len_text-content_stepping+1)//content_stepping + 1
+                self.text_list[ind]['records']=rec_text
+                leng += len_text
+                rec += rec_text
+            self.getitem_length = leng
+            self.getitem_records = rec
+            self.getitem_init = True
+        else:
+            self.getitem_length = 0
+            self.getitem_records = 0
+            print(f"init_getitem: unknown sample_type {sample_type}")
+
+    def __len__(self):
+        if self.getitem_init is False:
+            print("init_getitem must be called before __len__")
+            return None
+        return self.getitem_records
+
+    def __getitem__(self, index):
+        """ Get a sample from the dataset.
         
+        :param index: index of the sample
+
+        :return:
+        """
+        if self.getitem_init is False:
+            print("init_getitem must be called before __getitem__")
+            raise ValueError("init_getitem must be called before __getitem__")
+        if self.getitem_sample_type == 'chargen':
+            if index<0:
+                if index<(-self.getitem_records):
+                    raise IndexError(f"index {index} out of range")
+                else:
+                    index += self.getitem_records
+            if index >= self.getitem_records:
+                raise IndexError(f"index {index} out of range")
+            cur_rec = 0
+            for text in self.text_list:
+                rec = text['records']
+                if cur_rec+rec > index:
+                    rel_rec = index - cur_rec
+                    pos = rel_rec*self.getitem_content_stepping
+                    sample = text['text'][pos:pos+self.getitem_sample_length+1]
+                    while len(sample) < self.getitem_sample_length+1:
+                        sample += ' '
+                    X_text = sample[:-1]
+                    y_text = sample[1:]
+                    return X_text, y_text
+                cur_rec += rec
+            print("Internal error in __getitem__")
+            raise ValueError("Internal error in __getitem__")
+        else:
+            self.log.error(f"Unknown getitem sample_type {self.getitem_sample_type}")
+            raise ValueError(f"Unknown getitem sample_type {self.getitem_sample_type}")
+
     def _display_colored_html(self, textlist, dark_mode=False, display_ref_anchor=True, pre='', post=''):
         """ Internal function to display text and citation references in HTML. """
         bgcolorsWht = ['#d4e6e1', '#d8daef', '#ebdef0', '#eadbd8', '#e2d7d5', '#edebd0',
