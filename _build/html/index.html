@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.28 documentation</title>
+    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.29 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="README.html" title="A collection of machine learning tools for low-resource research and experiments"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.28 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.29 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>  
@@ -824,21 +824,21 @@ layers. The output of all parallel stacks is concatenated and scaled down to <ci
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">SelfAttention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#SelfAttention"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.SelfAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
 <p>Self-attention layer for Keras</p>
-<p>The self-attention layer learns three matrices (key Wk, query Wq, value Wv)
+<p>The self-attention layer learns three matrices (key <cite>Wk</cite>, query <cite>Wq</cite>, value <cite>Wv</cite>)
 that provide context-information for the input.
 Input is mutiplied with all three matrices, then Wk and Wq are multiplied,
-scaled down by sqrt(input_dim or last index) and normalized, either by
-BatchNorm or Softmax. The result is then multiplied with Wv, and, if hidden
-dimension of Wx is different from input units, rescaled by a final Dense
+scaled down by <cite>sqrt(input_dim of last index)</cite> and normalized, either by LayerNorm,
+BatchNorm or Softmax. The result is then multiplied with <cite>Wv</cite>, and, if hidden
+dimension of the <cite>Wx</cite> is different from input units, rescaled by a final Dense
 matrix multiply.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#                   
 #     ┌──┐   
 #  ┌► │Wk│───┐   ┌─────┐
 #  │  └──┘   │   │Scale│
-#  │  ┌──┐   ⨷ ─►│Norm │─┐   (opt.)
+#  │  ┌──┐   × ─►│Norm │─┐   (opt.)
 # ─┼─►│Wq│───┘   └─────┘ │   ┌─────┐
 #  │  └──┘               │   │Scale│──►
-#  │  ┌──┐               ⨷ ─►│Dense│
+#  │  ┌──┐               × ─►│Dense│
 #  └► │Wv│───────────────┘   └─────┘
 #     └──┘
 #
@@ -1144,7 +1144,7 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
         <li class="right" >
           <a href="README.html" title="A collection of machine learning tools for low-resource research and experiments"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.28 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.29 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>
