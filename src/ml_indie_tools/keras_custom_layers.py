@@ -6,17 +6,22 @@ import math
 class ResidualBlock(layers.Layer):
     """ Residual Block layer for Keras
         
-        The residual block consists of two fully connected layers with units neurons followed by two BatchNorms and ReLUs:
-          ┌──────────────────────────────────────────────────┐
-          │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼
-        ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True
-             └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘    
+        The residual block consists of two fully connected layers with units neurons 
+        followed by two BatchNorms and ReLUs:
 
-          ┌──────────────────────────────────────────┐
-          │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐  
-        ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False
-             └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘    
-        The additive residual connection either bridges all layers (highway), or connects just before the last ReLU.
+        .. codeblock:: console
+              ┌──────────────────────────────────────────────────┐
+              │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼
+            ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True
+                 └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘    
+
+              ┌──────────────────────────────────────────┐
+              │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐  
+            ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False
+                 └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘    
+
+        The additive residual connection either bridges all layers (highway), or 
+        connects just before the last ReLU.
 
         :param units: Positive integer, number of hidden units.
         :param highway: Boolean, whether to use highway connection or not.
