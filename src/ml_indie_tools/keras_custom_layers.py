@@ -10,6 +10,7 @@ class ResidualBlock(layers.Layer):
         followed by two BatchNorms and ReLUs:
 
         .. code-block:: console
+
               ┌──────────────────────────────────────────────────┐
               │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼
             ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True
