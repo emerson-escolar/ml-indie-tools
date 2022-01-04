@@ -240,8 +240,8 @@ class SelfAttention(layers.Layer):
     that provide context-information for the input.
     Input is mutiplied with all three matrices, then :math:`W_k` and :math:`W_q` are multiplied,
     scaled down by :math:`\\sqrt{\\dim{input[::-1]}}` and normalized, either by LayerNorm,
-    BatchNorm or Softmax. The result is then multiplied with `Wv`, and, if hidden
-    dimension of the :math:`W_x_i` is different from input units, rescaled by a final Dense
+    BatchNorm or Softmax. The result is then multiplied with :math:`W_v`, and, if hidden
+    dimension of the :math:`W_{x_i}` matrices is different from input units, rescaled by a final Dense
     matrix multiply.
 
     .. code-block:: none
