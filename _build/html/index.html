@@ -861,6 +861,38 @@ matrix multiply.</p>
 <dt class="sig sig-object py" id="keras_custom_layers.MultiHeadSelfAttention">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">MultiHeadSelfAttention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#MultiHeadSelfAttention"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.MultiHeadSelfAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
+<p>Multi-head self-attention layer for Keras</p>
+<p>The multi-head self-attention layer concatenates the output of <cite>heads</cite> <a class="reference internal" href="#keras_custom_layers.SelfAttention" title="keras_custom_layers.SelfAttention"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelfAttention</span></code></a>
+layers. Each of the self-attention layers has an additive residual connection.
+If <cite>mh_normalize</cite> is True, the concatenated output is normalized.
+After scaling down to the number of units, the output is then passed through a
+ReLU and Dense layer again with residual connection.
+Finally, optional normalization and a final optional ReLU is applied.</p>
+<p>#    ┌──────────────┐
+#    │  ┌────────┐  ▼   ┌──────┐  ┌────┐
+#  ┌─┴─►│SelfAtt.│─ + ─►│      │  │    │
+#  │    └────────┘      │      │  │    │
+#  │ ┌──────────────┐   │      │  │    │          ┌───────────────────┐   ┌────┐  ┌────┐
+# ─┤ │  ┌────────┐  ▼   │      │  │Opt.│  ┌─────┐ │  ┌────┐  ┌─────┐  ▼   │Opt │  │Opt │
+#  ├─┴─►│SelfAtt.│─ + ─►│      │─►│Norm│─►│Scale│─┴─►│ReLU│─►│Dense│─ + ─►│Norm│─►│ReLU│─►
+#  │    └────────┘      │concat│  │    │  └─────┘    └────┘  └─────┘      └────┘  └────┘
+#  │        .           │      │  │    │
+#  │        . head      │      │  │    │
+#  │        . reps      │      │  │    │
+#  │ ┌──────────────┐   │      │  │    │
+#  │ │  ┌────────┐  ▼   │      │  │    │
+#  └─┴─►│SelfAtt.│─ + ─►│      │  │    │
+#       └────────┘      └──────┘  └────┘</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>units</strong> – Positive integer, number of hidden units.</p></li>
+<li><p><strong>heads</strong> – Positive integer, number of self-attention heads.</p></li>
+<li><p><strong>mh_normalize</strong> – Boolean, whether to normalize the output of the multi-head self-attention.</p></li>
+<li><p><strong>norm</strong> – either ‘batchnorm’, ‘layernorm, or ‘softmax’, the normalization used within each self-attention head.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
