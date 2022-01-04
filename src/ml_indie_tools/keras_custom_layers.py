@@ -153,7 +153,7 @@ class ParallelResidualDenseStacks(layers.Layer):
     """ Parallel Residual Dense Stacks layer for Keras
 
     The parallel residual dense layer stacks consist of `stacks` count parallel
-    :class:`ResidualDenseStacks`, each of which consists of  `layer_count` :class:`ResidualDense` 
+    :class:`ResidualDenseStack`, each of which consists of  `layer_count` :class:`ResidualDense` 
     layers. The output of all parallel stacks is concatenated and scaled down to `units` units.
 
     .. code-block:: none
@@ -234,15 +234,46 @@ class ParallelResidualDenseStacks(layers.Layer):
         return x
 
 class SelfAttention(layers.Layer):
+    """ Self-attention layer for Keras
+
+    The self-attention layer learns three matrices (key Wk, query Wq, value Wv)
+    that provide context-information for the input.
+    Input is mutiplied with all three matrices, then Wk and Wq are multiplied,
+    scaled down by sqrt(input_dim or last index) and normalized, either by
+    BatchNorm or Softmax. The result is then multiplied with Wv, and, if hidden
+    dimension of Wx is different from input units, rescaled by a final Dense
+    matrix multiply.
+
+    .. code-block:: none
+
+        #                   
+        #     ┌──┐   
+        #  ┌► │Wk│───┐   ┌─────┐
+        #  │  └──┘   │   │Scale│
+        #  │  ┌──┐   ⨷ ─►│Norm │─┐   (opt.)
+        # ─┼─►│Wq│───┘   └─────┘ │   ┌─────┐
+        #  │  └──┘               │   │Scale│──►
+        #  │  ┌──┐               ⨷ ─►│Dense│
+        #  └► │Wv│───────────────┘   └─────┘
+        #     └──┘
+        #
+
+    :param units: Positive integer, number of hidden units.
+    :param norm: either 'batchnorm', 'layernorm, or 'softmax'
+    """
     def __init__(self, units=None, norm=None, **kwargs):
         super(SelfAttention, self).__init__(**kwargs)
         self.pm = layers.Permute((2,1))
         self.units = units
         self.norm = norm
         if self.norm=="layernorm":
+            self.norm = layers.LayerNormalization(axis=-1)
+        elif self.norm=="batchnorm":
             self.norm = layers.BatchNormalization()
-        else:
+        elif self.norm=="softmax":
             self.norm = layers.Softmax()
+        else:
+            raise ValueError("Unknown normalization method: {}".format(self.norm))
 
     def build(self, input_shape):
         # super(SelfAttention, self).build(input_shape)
