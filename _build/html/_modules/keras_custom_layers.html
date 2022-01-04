@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>keras_custom_layers &#8212; ml-indie-tools 0.0.27 documentation</title>
+    <title>keras_custom_layers &#8212; ml-indie-tools 0.0.28 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.27 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.28 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">keras_custom_layers</a></li> 
       </ul>
@@ -49,9 +49,12 @@
 <span class="kn">import</span> <span class="nn">math</span>
 
 
+<span class="c1"># sphinx-doc hickup: a member named `call` seems to cause all kinds of sphinx-hickup</span>
+<span class="c1"># error starting with non-existing line-12 docstrings, if automatic :member: doc</span>
+<span class="c1"># is activated in index.rst.</span>
+
 <div class="viewcode-block" id="ResidualBlock"><a class="viewcode-back" href="../index.html#keras_custom_layers.ResidualBlock">[docs]</a><span class="k">class</span> <span class="nc">ResidualBlock</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Residual Block layer for Keras</span>
+    <span class="sd">&quot;&quot;&quot; Residual Block layer for Keras</span>
 
 <span class="sd">    The residual block consists of two fully connected layers with units neurons </span>
 <span class="sd">    followed by two BatchNorms and ReLUs:</span>
@@ -93,7 +96,7 @@
         <span class="p">})</span>
         <span class="k">return</span> <span class="n">config</span>
 
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>   <span class="c1"># This member name kills sphinx&#39;s autodoc! Beware!</span>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>   <span class="c1"># This member name kills sphinx&#39;s autodoc for members! Beware!</span>
         <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dense1</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
         <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -108,6 +111,20 @@
         <span class="k">return</span> <span class="n">x</span></div>
 
 <div class="viewcode-block" id="ResidualDense"><a class="viewcode-back" href="../index.html#keras_custom_layers.ResidualDense">[docs]</a><span class="k">class</span> <span class="nc">ResidualDense</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Residual Dense layer for Keras</span>
+
+<span class="sd">    The residual dense layer consists of a fully connected layer followed by BatchNorm and ReLU:</span>
+
+<span class="sd">    .. code-block:: none</span>
+
+<span class="sd">        #   ┌─────────────────────────┐</span>
+<span class="sd">        #   │  ┌─────┐  ┌──┐  ┌────┐  ▼</span>
+<span class="sd">        # ──┴─►│Dense│─►│BN│─►│ReLU│─ + ─►</span>
+<span class="sd">        #      └─────┘  └──┘  └────┘</span>
+
+<span class="sd">    :param units: Positive integer, number of hidden units.</span>
+<span class="sd">    :param regularizer: Positive float, regularization strength for the Dense layer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">regularizer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="o">=</span><span class="n">units</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">regularizer</span><span class="o">=</span><span class="n">regularizer</span>
@@ -136,6 +153,22 @@
         <span class="k">return</span> <span class="n">x</span></div>
 
 <div class="viewcode-block" id="ResidualDenseStack"><a class="viewcode-back" href="../index.html#keras_custom_layers.ResidualDenseStack">[docs]</a><span class="k">class</span> <span class="nc">ResidualDenseStack</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Residual Dense layer for Keras</span>
+
+<span class="sd">    The residual dense layer stack consists of `layer_count` :class:`ResidualDense` layers.</span>
+
+<span class="sd">    .. code-block:: none</span>
+
+<span class="sd">        #  ┌─────────── n ─────────────┐   n = layer_count repetitions</span>
+<span class="sd">        #   ┌─────────────────────────┐</span>
+<span class="sd">        #   │  ┌─────┐  ┌──┐  ┌────┐  ▼</span>
+<span class="sd">        # ──┴─►│Dense│─►│BN│─►│ReLU│─ + ─►</span>
+<span class="sd">        #      └─────┘  └──┘  └────┘</span>
+
+<span class="sd">    :param units: Positive integer, number of hidden units.</span>
+<span class="sd">    :param layer_count: Positive integer, number of layer-blocks, each a `ResidualDense` block.</span>
+<span class="sd">    :param regularizer: Positive float, regularization strength for the Dense layer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">layer_count</span><span class="p">,</span> <span class="n">regularizer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="o">=</span><span class="n">units</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layer_count</span><span class="o">=</span><span class="n">layer_count</span>
@@ -347,7 +380,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.27 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.28 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">keras_custom_layers</a></li> 
       </ul>

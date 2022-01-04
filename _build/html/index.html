@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.27 documentation</title>
+    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.28 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="README.html" title="ml_indie_tools, a collection of machine learning tools for low-resource research and experiments"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.27 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.28 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>  
@@ -727,6 +727,22 @@ connects just before the last ReLU.</p>
 <dt class="sig sig-object py" id="keras_custom_layers.ResidualDense">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">ResidualDense</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ResidualDense"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ResidualDense" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
+<p>Residual Dense layer for Keras</p>
+<p>The residual dense layer consists of a fully connected layer followed by BatchNorm and ReLU:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#   ┌─────────────────────────┐
+#   │  ┌─────┐  ┌──┐  ┌────┐  ▼
+# ──┴─►│Dense│─►│BN│─►│ReLU│─ + ─►
+#      └─────┘  └──┘  └────┘
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>units</strong> – Positive integer, number of hidden units.</p></li>
+<li><p><strong>regularizer</strong> – Positive float, regularization strength for the Dense layer.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -736,6 +752,24 @@ connects just before the last ReLU.</p>
 <dt class="sig sig-object py" id="keras_custom_layers.ResidualDenseStack">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">ResidualDenseStack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ResidualDenseStack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ResidualDenseStack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
+<p>Residual Dense layer for Keras</p>
+<p>The residual dense layer stack consists of <cite>layer_count</cite> <a class="reference internal" href="#keras_custom_layers.ResidualDense" title="keras_custom_layers.ResidualDense"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResidualDense</span></code></a> layers.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#  ┌─────────── n ─────────────┐   n = layer_count repetitions
+#   ┌─────────────────────────┐
+#   │  ┌─────┐  ┌──┐  ┌────┐  ▼
+# ──┴─►│Dense│─►│BN│─►│ReLU│─ + ─►
+#      └─────┘  └──┘  └────┘
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>units</strong> – Positive integer, number of hidden units.</p></li>
+<li><p><strong>layer_count</strong> – Positive integer, number of layer-blocks, each a <cite>ResidualDense</cite> block.</p></li>
+<li><p><strong>regularizer</strong> – Positive float, regularization strength for the Dense layer.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1010,7 +1044,7 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
         <li class="right" >
           <a href="README.html" title="ml_indie_tools, a collection of machine learning tools for low-resource research and experiments"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.27 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.28 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>
