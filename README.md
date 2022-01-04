@@ -1,4 +1,4 @@
-# `ml_indie_tools`, a collection of machine learning tools for low-resource research and experiments
+# A collection of machine learning tools for low-resource research and experiments
 
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://domschl.github.io/ml-indie-tools/index.html)
@@ -32,7 +32,7 @@ with Huggingface [Datasets](https://huggingface.co/docs/datasets/) or directly w
 
 `ALU_Dataset` is a toy-dataset that allows training of integer arithmetic and logical (ALU) operations.
 
-### `env_tools`
+### env_tools
 
 A collection of tools that allow moving machine learning projects between local hardware and colab instances.
 
@@ -104,7 +104,7 @@ On Google Colab:
   
 See the [env_tools API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-env_tools) for details.
 
-### `Gutenberg_Dataset`
+### Gutenberg_Dataset
 
 Gutenberg_Dataset makes books from [Project Gutenberg](https://www.gutenberg.org) available as dataset.
 
@@ -164,13 +164,19 @@ df = DataFrame(search_result)  # Display results as Pandas DataFrame
   
 See the [Gutenberg_Dataset API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-Gutenberg_Dataset) for details.
 
-### `Text_Dataset`
+### Text_Dataset
 
 See the [Text_Dataset API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-Text_Dataset) for details.
 
-### `ALU_Dataset`
+### ALU_Dataset
 
 See the [ALU_Dataset API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-ALU_Dataset) for details.
+
+### keras_custom_layers
+
+A collection of Keras residual- and self-attention layers
+
+See the [keras_custom_layers API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-keras_custom_layers) for details.
 
 ## History
 
