@@ -688,23 +688,472 @@ the twelve supported ops:
 </dd></dl>
 
 </div>
-<div class="section" id="module-0">
-<span id="residualblock-object"></span><h2>ResidualBlock object<a class="headerlink" href="#module-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-keras_custom_layers">
+<span id="residualblock-object"></span><h2>ResidualBlock object<a class="headerlink" href="#module-keras_custom_layers" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="keras_custom_layers.ResidualBlock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">ResidualBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ResidualBlock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ResidualBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
+<p>Residual Block layer for Keras</p>
+<p>The residual block consists of two fully connected layers with units neurons 
+followed by two BatchNorms and ReLUs:</p>
+<p>The additive residual connection either bridges all layers (highway), or 
+connects just before the last ReLU.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>units</strong> – Positive integer, number of hidden units.</p></li>
+<li><p><strong>highway</strong> – Boolean, whether to use highway connection or not.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.ResidualBlock.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ResidualBlock.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ResidualBlock.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is where the layer’s logic lives.</p>
+<p>Note here that <cite>call()</cite> method in <cite>tf.keras</cite> is little bit different
+from <cite>keras</cite> API. In <cite>keras</cite> API, you can pass support masking for
+layers as additional arguments. Whereas <cite>tf.keras</cite> has <cite>compute_mask()</cite>
+method to support masking.</p>
+<dl>
+<dt>Args:</dt><dd><dl>
+<dt>inputs: Input tensor, or dict/list/tuple of input tensors.</dt><dd><p>The first positional <cite>inputs</cite> argument is subject to special rules:
+- <cite>inputs</cite> must be explicitly passed. A layer cannot have zero</p>
+<blockquote>
+<div><p>arguments, and <cite>inputs</cite> cannot be provided via the default value
+of a keyword argument.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>NumPy array or Python scalar values in <cite>inputs</cite> get cast as tensors.</p></li>
+<li><p>Keras mask metadata is only collected from <cite>inputs</cite>.</p></li>
+<li><p>Layers are built (<cite>build(input_shape)</cite> method)
+using shape info from <cite>inputs</cite> only.</p></li>
+<li><p><cite>input_spec</cite> compatibility is only checked against <cite>inputs</cite>.</p></li>
+<li><p>Mixed precision input casting is only applied to <cite>inputs</cite>.
+If a layer has tensor arguments in <cite>*args</cite> or <cite>**kwargs</cite>, their
+casting behavior in mixed precision should be handled manually.</p></li>
+<li><p>The SavedModel input specification is generated using <cite>inputs</cite> only.</p></li>
+<li><p>Integration with various ecosystem packages like TFMOT, TFLite,
+TF.js, etc is only supported for <cite>inputs</cite> and not for tensors in
+positional and keyword arguments.</p></li>
+</ul>
+</dd>
+<dt><a href="#id1"><span class="problematic" id="id2">*</span></a>args: Additional positional arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.</p>
+</dd>
+<dt><a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: Additional keyword arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.
+The following optional keyword arguments are reserved:
+- <cite>training</cite>: Boolean scalar tensor of Python boolean indicating</p>
+<blockquote>
+<div><p>whether the <cite>call</cite> is meant for training or inference.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><cite>mask</cite>: Boolean input mask. If the layer’s <cite>call()</cite> method takes a
+<cite>mask</cite> argument, its default value will be set to the mask generated
+for <cite>inputs</cite> by the previous layer (if <cite>input</cite> did come from a layer
+that generated a corresponding mask, i.e. if it came from a Keras
+layer with masking support).</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>A tensor or list/tuple of tensors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.ResidualBlock.get_config">
+<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ResidualBlock.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ResidualBlock.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the config of the layer.</p>
+<p>A layer config is a Python dictionary (serializable)
+containing the configuration of a layer.
+The same layer can be reinstantiated later
+(without its trained weights) from this configuration.</p>
+<p>The config of a layer does not include connectivity
+information, nor the layer class name. These are handled
+by <cite>Network</cite> (one layer of abstraction above).</p>
+<p>Note that <cite>get_config()</cite> does not guarantee to return a fresh copy of dict
+every time it is called. The callers should make a copy of the returned dict
+if they want to modify it.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Python dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="residualdense-object">
 <h2>ResidualDense object<a class="headerlink" href="#residualdense-object" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="keras_custom_layers.ResidualDense">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">ResidualDense</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ResidualDense"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ResidualDense" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.ResidualDense.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ResidualDense.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ResidualDense.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is where the layer’s logic lives.</p>
+<p>Note here that <cite>call()</cite> method in <cite>tf.keras</cite> is little bit different
+from <cite>keras</cite> API. In <cite>keras</cite> API, you can pass support masking for
+layers as additional arguments. Whereas <cite>tf.keras</cite> has <cite>compute_mask()</cite>
+method to support masking.</p>
+<dl>
+<dt>Args:</dt><dd><dl>
+<dt>inputs: Input tensor, or dict/list/tuple of input tensors.</dt><dd><p>The first positional <cite>inputs</cite> argument is subject to special rules:
+- <cite>inputs</cite> must be explicitly passed. A layer cannot have zero</p>
+<blockquote>
+<div><p>arguments, and <cite>inputs</cite> cannot be provided via the default value
+of a keyword argument.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>NumPy array or Python scalar values in <cite>inputs</cite> get cast as tensors.</p></li>
+<li><p>Keras mask metadata is only collected from <cite>inputs</cite>.</p></li>
+<li><p>Layers are built (<cite>build(input_shape)</cite> method)
+using shape info from <cite>inputs</cite> only.</p></li>
+<li><p><cite>input_spec</cite> compatibility is only checked against <cite>inputs</cite>.</p></li>
+<li><p>Mixed precision input casting is only applied to <cite>inputs</cite>.
+If a layer has tensor arguments in <cite>*args</cite> or <cite>**kwargs</cite>, their
+casting behavior in mixed precision should be handled manually.</p></li>
+<li><p>The SavedModel input specification is generated using <cite>inputs</cite> only.</p></li>
+<li><p>Integration with various ecosystem packages like TFMOT, TFLite,
+TF.js, etc is only supported for <cite>inputs</cite> and not for tensors in
+positional and keyword arguments.</p></li>
+</ul>
+</dd>
+<dt><a href="#id5"><span class="problematic" id="id6">*</span></a>args: Additional positional arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.</p>
+</dd>
+<dt><a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs: Additional keyword arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.
+The following optional keyword arguments are reserved:
+- <cite>training</cite>: Boolean scalar tensor of Python boolean indicating</p>
+<blockquote>
+<div><p>whether the <cite>call</cite> is meant for training or inference.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><cite>mask</cite>: Boolean input mask. If the layer’s <cite>call()</cite> method takes a
+<cite>mask</cite> argument, its default value will be set to the mask generated
+for <cite>inputs</cite> by the previous layer (if <cite>input</cite> did come from a layer
+that generated a corresponding mask, i.e. if it came from a Keras
+layer with masking support).</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>A tensor or list/tuple of tensors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.ResidualDense.get_config">
+<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ResidualDense.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ResidualDense.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the config of the layer.</p>
+<p>A layer config is a Python dictionary (serializable)
+containing the configuration of a layer.
+The same layer can be reinstantiated later
+(without its trained weights) from this configuration.</p>
+<p>The config of a layer does not include connectivity
+information, nor the layer class name. These are handled
+by <cite>Network</cite> (one layer of abstraction above).</p>
+<p>Note that <cite>get_config()</cite> does not guarantee to return a fresh copy of dict
+every time it is called. The callers should make a copy of the returned dict
+if they want to modify it.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Python dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="residualdensestack-object">
 <h2>ResidualDenseStack object<a class="headerlink" href="#residualdensestack-object" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="keras_custom_layers.ResidualDenseStack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">ResidualDenseStack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ResidualDenseStack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ResidualDenseStack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.ResidualDenseStack.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ResidualDenseStack.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ResidualDenseStack.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is where the layer’s logic lives.</p>
+<p>Note here that <cite>call()</cite> method in <cite>tf.keras</cite> is little bit different
+from <cite>keras</cite> API. In <cite>keras</cite> API, you can pass support masking for
+layers as additional arguments. Whereas <cite>tf.keras</cite> has <cite>compute_mask()</cite>
+method to support masking.</p>
+<dl>
+<dt>Args:</dt><dd><dl>
+<dt>inputs: Input tensor, or dict/list/tuple of input tensors.</dt><dd><p>The first positional <cite>inputs</cite> argument is subject to special rules:
+- <cite>inputs</cite> must be explicitly passed. A layer cannot have zero</p>
+<blockquote>
+<div><p>arguments, and <cite>inputs</cite> cannot be provided via the default value
+of a keyword argument.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>NumPy array or Python scalar values in <cite>inputs</cite> get cast as tensors.</p></li>
+<li><p>Keras mask metadata is only collected from <cite>inputs</cite>.</p></li>
+<li><p>Layers are built (<cite>build(input_shape)</cite> method)
+using shape info from <cite>inputs</cite> only.</p></li>
+<li><p><cite>input_spec</cite> compatibility is only checked against <cite>inputs</cite>.</p></li>
+<li><p>Mixed precision input casting is only applied to <cite>inputs</cite>.
+If a layer has tensor arguments in <cite>*args</cite> or <cite>**kwargs</cite>, their
+casting behavior in mixed precision should be handled manually.</p></li>
+<li><p>The SavedModel input specification is generated using <cite>inputs</cite> only.</p></li>
+<li><p>Integration with various ecosystem packages like TFMOT, TFLite,
+TF.js, etc is only supported for <cite>inputs</cite> and not for tensors in
+positional and keyword arguments.</p></li>
+</ul>
+</dd>
+<dt><a href="#id9"><span class="problematic" id="id10">*</span></a>args: Additional positional arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.</p>
+</dd>
+<dt><a href="#id11"><span class="problematic" id="id12">**</span></a>kwargs: Additional keyword arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.
+The following optional keyword arguments are reserved:
+- <cite>training</cite>: Boolean scalar tensor of Python boolean indicating</p>
+<blockquote>
+<div><p>whether the <cite>call</cite> is meant for training or inference.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><cite>mask</cite>: Boolean input mask. If the layer’s <cite>call()</cite> method takes a
+<cite>mask</cite> argument, its default value will be set to the mask generated
+for <cite>inputs</cite> by the previous layer (if <cite>input</cite> did come from a layer
+that generated a corresponding mask, i.e. if it came from a Keras
+layer with masking support).</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>A tensor or list/tuple of tensors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.ResidualDenseStack.get_config">
+<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ResidualDenseStack.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ResidualDenseStack.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the config of the layer.</p>
+<p>A layer config is a Python dictionary (serializable)
+containing the configuration of a layer.
+The same layer can be reinstantiated later
+(without its trained weights) from this configuration.</p>
+<p>The config of a layer does not include connectivity
+information, nor the layer class name. These are handled
+by <cite>Network</cite> (one layer of abstraction above).</p>
+<p>Note that <cite>get_config()</cite> does not guarantee to return a fresh copy of dict
+every time it is called. The callers should make a copy of the returned dict
+if they want to modify it.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Python dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="parallelresidualdensestack-object">
 <h2>ParallelResidualDenseStack object<a class="headerlink" href="#parallelresidualdensestack-object" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="selfattention-object">
 <h2>SelfAttention object<a class="headerlink" href="#selfattention-object" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="keras_custom_layers.SelfAttention">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">SelfAttention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#SelfAttention"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.SelfAttention" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.SelfAttention.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#SelfAttention.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.SelfAttention.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the variables of the layer (optional, for subclass implementers).</p>
+<p>This is a method that implementers of subclasses of <cite>Layer</cite> or <cite>Model</cite>
+can override if they need a state-creation step in-between
+layer instantiation and layer call.</p>
+<p>This is typically used to create the weights of <cite>Layer</cite> subclasses.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>input_shape: Instance of <cite>TensorShape</cite>, or list of instances of</dt><dd><p><cite>TensorShape</cite> if the layer expects a list of inputs
+(one instance per input).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.SelfAttention.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#SelfAttention.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.SelfAttention.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is where the layer’s logic lives.</p>
+<p>Note here that <cite>call()</cite> method in <cite>tf.keras</cite> is little bit different
+from <cite>keras</cite> API. In <cite>keras</cite> API, you can pass support masking for
+layers as additional arguments. Whereas <cite>tf.keras</cite> has <cite>compute_mask()</cite>
+method to support masking.</p>
+<dl>
+<dt>Args:</dt><dd><dl>
+<dt>inputs: Input tensor, or dict/list/tuple of input tensors.</dt><dd><p>The first positional <cite>inputs</cite> argument is subject to special rules:
+- <cite>inputs</cite> must be explicitly passed. A layer cannot have zero</p>
+<blockquote>
+<div><p>arguments, and <cite>inputs</cite> cannot be provided via the default value
+of a keyword argument.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>NumPy array or Python scalar values in <cite>inputs</cite> get cast as tensors.</p></li>
+<li><p>Keras mask metadata is only collected from <cite>inputs</cite>.</p></li>
+<li><p>Layers are built (<cite>build(input_shape)</cite> method)
+using shape info from <cite>inputs</cite> only.</p></li>
+<li><p><cite>input_spec</cite> compatibility is only checked against <cite>inputs</cite>.</p></li>
+<li><p>Mixed precision input casting is only applied to <cite>inputs</cite>.
+If a layer has tensor arguments in <cite>*args</cite> or <cite>**kwargs</cite>, their
+casting behavior in mixed precision should be handled manually.</p></li>
+<li><p>The SavedModel input specification is generated using <cite>inputs</cite> only.</p></li>
+<li><p>Integration with various ecosystem packages like TFMOT, TFLite,
+TF.js, etc is only supported for <cite>inputs</cite> and not for tensors in
+positional and keyword arguments.</p></li>
+</ul>
+</dd>
+<dt><a href="#id13"><span class="problematic" id="id14">*</span></a>args: Additional positional arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.</p>
+</dd>
+<dt><a href="#id15"><span class="problematic" id="id16">**</span></a>kwargs: Additional keyword arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.
+The following optional keyword arguments are reserved:
+- <cite>training</cite>: Boolean scalar tensor of Python boolean indicating</p>
+<blockquote>
+<div><p>whether the <cite>call</cite> is meant for training or inference.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><cite>mask</cite>: Boolean input mask. If the layer’s <cite>call()</cite> method takes a
+<cite>mask</cite> argument, its default value will be set to the mask generated
+for <cite>inputs</cite> by the previous layer (if <cite>input</cite> did come from a layer
+that generated a corresponding mask, i.e. if it came from a Keras
+layer with masking support).</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>A tensor or list/tuple of tensors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.SelfAttention.get_config">
+<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#SelfAttention.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.SelfAttention.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the config of the layer.</p>
+<p>A layer config is a Python dictionary (serializable)
+containing the configuration of a layer.
+The same layer can be reinstantiated later
+(without its trained weights) from this configuration.</p>
+<p>The config of a layer does not include connectivity
+information, nor the layer class name. These are handled
+by <cite>Network</cite> (one layer of abstraction above).</p>
+<p>Note that <cite>get_config()</cite> does not guarantee to return a fresh copy of dict
+every time it is called. The callers should make a copy of the returned dict
+if they want to modify it.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Python dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="multiheadselfattention-object">
 <h2>MultiHeadSelfAttention object<a class="headerlink" href="#multiheadselfattention-object" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="keras_custom_layers.MultiHeadSelfAttention">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">MultiHeadSelfAttention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#MultiHeadSelfAttention"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.MultiHeadSelfAttention" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.MultiHeadSelfAttention.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#MultiHeadSelfAttention.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.MultiHeadSelfAttention.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the variables of the layer (optional, for subclass implementers).</p>
+<p>This is a method that implementers of subclasses of <cite>Layer</cite> or <cite>Model</cite>
+can override if they need a state-creation step in-between
+layer instantiation and layer call.</p>
+<p>This is typically used to create the weights of <cite>Layer</cite> subclasses.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>input_shape: Instance of <cite>TensorShape</cite>, or list of instances of</dt><dd><p><cite>TensorShape</cite> if the layer expects a list of inputs
+(one instance per input).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.MultiHeadSelfAttention.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#MultiHeadSelfAttention.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.MultiHeadSelfAttention.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is where the layer’s logic lives.</p>
+<p>Note here that <cite>call()</cite> method in <cite>tf.keras</cite> is little bit different
+from <cite>keras</cite> API. In <cite>keras</cite> API, you can pass support masking for
+layers as additional arguments. Whereas <cite>tf.keras</cite> has <cite>compute_mask()</cite>
+method to support masking.</p>
+<dl>
+<dt>Args:</dt><dd><dl>
+<dt>inputs: Input tensor, or dict/list/tuple of input tensors.</dt><dd><p>The first positional <cite>inputs</cite> argument is subject to special rules:
+- <cite>inputs</cite> must be explicitly passed. A layer cannot have zero</p>
+<blockquote>
+<div><p>arguments, and <cite>inputs</cite> cannot be provided via the default value
+of a keyword argument.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>NumPy array or Python scalar values in <cite>inputs</cite> get cast as tensors.</p></li>
+<li><p>Keras mask metadata is only collected from <cite>inputs</cite>.</p></li>
+<li><p>Layers are built (<cite>build(input_shape)</cite> method)
+using shape info from <cite>inputs</cite> only.</p></li>
+<li><p><cite>input_spec</cite> compatibility is only checked against <cite>inputs</cite>.</p></li>
+<li><p>Mixed precision input casting is only applied to <cite>inputs</cite>.
+If a layer has tensor arguments in <cite>*args</cite> or <cite>**kwargs</cite>, their
+casting behavior in mixed precision should be handled manually.</p></li>
+<li><p>The SavedModel input specification is generated using <cite>inputs</cite> only.</p></li>
+<li><p>Integration with various ecosystem packages like TFMOT, TFLite,
+TF.js, etc is only supported for <cite>inputs</cite> and not for tensors in
+positional and keyword arguments.</p></li>
+</ul>
+</dd>
+<dt><a href="#id17"><span class="problematic" id="id18">*</span></a>args: Additional positional arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.</p>
+</dd>
+<dt><a href="#id19"><span class="problematic" id="id20">**</span></a>kwargs: Additional keyword arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.
+The following optional keyword arguments are reserved:
+- <cite>training</cite>: Boolean scalar tensor of Python boolean indicating</p>
+<blockquote>
+<div><p>whether the <cite>call</cite> is meant for training or inference.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><cite>mask</cite>: Boolean input mask. If the layer’s <cite>call()</cite> method takes a
+<cite>mask</cite> argument, its default value will be set to the mask generated
+for <cite>inputs</cite> by the previous layer (if <cite>input</cite> did come from a layer
+that generated a corresponding mask, i.e. if it came from a Keras
+layer with masking support).</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>A tensor or list/tuple of tensors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.MultiHeadSelfAttention.get_config">
+<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#MultiHeadSelfAttention.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.MultiHeadSelfAttention.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the config of the layer.</p>
+<p>A layer config is a Python dictionary (serializable)
+containing the configuration of a layer.
+The same layer can be reinstantiated later
+(without its trained weights) from this configuration.</p>
+<p>The config of a layer does not include connectivity
+information, nor the layer class name. These are handled
+by <cite>Network</cite> (one layer of abstraction above).</p>
+<p>Note that <cite>get_config()</cite> does not guarantee to return a fresh copy of dict
+every time it is called. The callers should make a copy of the returned dict
+if they want to modify it.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Python dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="readme-file">
 <h2>Readme File<a class="headerlink" href="#readme-file" title="Permalink to this headline">¶</a></h2>
@@ -901,7 +1350,7 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
 <li><a class="reference internal" href="#module-Gutenberg_Dataset">Gutenberg_Dataset object</a></li>
 <li><a class="reference internal" href="#module-Text_Dataset">Text_Dataset object</a></li>
 <li><a class="reference internal" href="#module-ALU_Dataset">ALU_Dataset object</a></li>
-<li><a class="reference internal" href="#module-0">ResidualBlock object</a></li>
+<li><a class="reference internal" href="#module-keras_custom_layers">ResidualBlock object</a></li>
 <li><a class="reference internal" href="#residualdense-object">ResidualDense object</a></li>
 <li><a class="reference internal" href="#residualdensestack-object">ResidualDenseStack object</a></li>
 <li><a class="reference internal" href="#parallelresidualdensestack-object">ParallelResidualDenseStack object</a></li>

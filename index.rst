@@ -68,7 +68,7 @@ ALU_Dataset object
 ResidualBlock object
 ====================
 
-.. automodule:: ALU_Dataset
+.. automodule:: keras_custom_layers
 
 .. autoclass:: ResidualBlock
    :members:
