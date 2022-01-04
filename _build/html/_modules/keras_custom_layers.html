@@ -195,6 +195,39 @@
         <span class="k">return</span> <span class="n">x</span></div>
 
 <div class="viewcode-block" id="ParallelResidualDenseStacks"><a class="viewcode-back" href="../index.html#keras_custom_layers.ParallelResidualDenseStacks">[docs]</a><span class="k">class</span> <span class="nc">ParallelResidualDenseStacks</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Parallel Residual Dense Stacks layer for Keras</span>
+
+<span class="sd">    The parallel residual dense layer stacks consist of `stacks` count parallel</span>
+<span class="sd">    :class:`ResidualDenseStacks`, each of which consists of  `layer_count` :class:`ResidualDense` </span>
+<span class="sd">    layers. The output of all parallel stacks is concatenated and scaled down to `units` units.</span>
+
+<span class="sd">    .. code-block:: none</span>
+
+<span class="sd">        #        ┌─────────── n ─────────────┐   n = layer_count repetitions</span>
+<span class="sd">        #         ┌─────────────────────────┐                               </span>
+<span class="sd">        #         │  ┌─────┐  ┌──┐  ┌────┐  ▼    ┌──────┐                   </span>
+<span class="sd">        #   ┌─────┴─►│Dense│─►│BN│─►│ReLU│─ + ─► │      │                   </span>
+<span class="sd">        #   │        └─────┘  └──┘  └────┘       │      │                   </span>
+<span class="sd">        #   │                                    │      │</span>
+<span class="sd">        #   │    ┌─────────── n ─────────────┐   │      │</span>
+<span class="sd">        #   │     ┌─────────────────────────┐    │      │                   </span>
+<span class="sd">        #   │     │  ┌─────┐  ┌──┐  ┌────┐  ▼    │concat│   ┌─────┐  ┌────┐                   </span>
+<span class="sd">        #   ├─────┴─►│Dense│─►│BN│─►│ReLU│─ + ─► │      │ ─►│Dense│─►│ReLU│─►                 </span>
+<span class="sd">        # ──┤        └─────┘  └──┘  └────┘       │      │   └─────┘  └────┘                   </span>
+<span class="sd">        #   │                .                   │      │    scale down to</span>
+<span class="sd">        #   │                . `stacks` reps     │      │    `units`.</span>
+<span class="sd">        #   │                .                   │      │</span>
+<span class="sd">        #   │    ┌─────────── n ─────────────┐   │      │</span>
+<span class="sd">        #   │     ┌─────────────────────────┐    │      │                   </span>
+<span class="sd">        #   │     │  ┌─────┐  ┌──┐  ┌────┐  ▼    │      │                   </span>
+<span class="sd">        #   └─────┴─►│Dense│─►│BN│─►│ReLU│─ + ─► │      │                   </span>
+<span class="sd">        #            └─────┘  └──┘  └────┘       └──────┘                   </span>
+
+<span class="sd">    :param units: Positive integer, number of hidden units.</span>
+<span class="sd">    :param layer_count: Positive integer, number of layer-blocks, each a `ResidualDense` block.</span>
+<span class="sd">    :param stacks: Positive integer, number of parallel stacks.</span>
+<span class="sd">    :param regularizer: Positive float, regularization strength for the Dense layer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">layer_count</span><span class="p">,</span> <span class="n">stacks</span><span class="p">,</span> <span class="n">dispatch</span><span class="p">,</span> <span class="n">regularizer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ParallelResidualDenseStacks</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="o">=</span><span class="n">units</span>

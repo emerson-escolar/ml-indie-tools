@@ -779,6 +779,41 @@ connects just before the last ReLU.</p>
 <dt class="sig sig-object py" id="keras_custom_layers.ParallelResidualDenseStacks">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">ParallelResidualDenseStacks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ParallelResidualDenseStacks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ParallelResidualDenseStacks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
+<p>Parallel Residual Dense Stacks layer for Keras</p>
+<p>The parallel residual dense layer stacks consist of <cite>stacks</cite> count parallel
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ResidualDenseStacks</span></code>, each of which consists of  <cite>layer_count</cite> <a class="reference internal" href="#keras_custom_layers.ResidualDense" title="keras_custom_layers.ResidualDense"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResidualDense</span></code></a> 
+layers. The output of all parallel stacks is concatenated and scaled down to <cite>units</cite> units.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#        ┌─────────── n ─────────────┐   n = layer_count repetitions
+#         ┌─────────────────────────┐                               
+#         │  ┌─────┐  ┌──┐  ┌────┐  ▼    ┌──────┐                   
+#   ┌─────┴─►│Dense│─►│BN│─►│ReLU│─ + ─► │      │                   
+#   │        └─────┘  └──┘  └────┘       │      │                   
+#   │                                    │      │
+#   │    ┌─────────── n ─────────────┐   │      │
+#   │     ┌─────────────────────────┐    │      │                   
+#   │     │  ┌─────┐  ┌──┐  ┌────┐  ▼    │concat│   ┌─────┐  ┌────┐                   
+#   ├─────┴─►│Dense│─►│BN│─►│ReLU│─ + ─► │      │ ─►│Dense│─►│ReLU│─►                 
+# ──┤        └─────┘  └──┘  └────┘       │      │   └─────┘  └────┘                   
+#   │                .                   │      │    scale down to
+#   │                . `stacks` reps     │      │    `units`.
+#   │                .                   │      │
+#   │    ┌─────────── n ─────────────┐   │      │
+#   │     ┌─────────────────────────┐    │      │                   
+#   │     │  ┌─────┐  ┌──┐  ┌────┐  ▼    │      │                   
+#   └─────┴─►│Dense│─►│BN│─►│ReLU│─ + ─► │      │                   
+#            └─────┘  └──┘  └────┘       └──────┘                   
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>units</strong> – Positive integer, number of hidden units.</p></li>
+<li><p><strong>layer_count</strong> – Positive integer, number of layer-blocks, each a <cite>ResidualDense</cite> block.</p></li>
+<li><p><strong>stacks</strong> – Positive integer, number of parallel stacks.</p></li>
+<li><p><strong>regularizer</strong> – Positive float, regularization strength for the Dense layer.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
