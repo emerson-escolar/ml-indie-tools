@@ -8,14 +8,20 @@ class ResidualBlock(layers.Layer):
     """
     Residual Block layer for Keras
 
-
     The residual block consists of two fully connected layers with units neurons 
-    followed by two BatchNorms and ReLUs
+    followed by two BatchNorms and ReLUs:
 
+    .. code-block:: none
 
-    .. code-block:: python
-
-        print("Stupid")
+        #   ┌──────────────────────────────────────────────────┐
+        #   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼
+        # ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True
+        #      └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘
+        #
+        #   ┌──────────────────────────────────────────┐
+        #   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐
+        # ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False
+        #      └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘
 
     The additive residual connection either bridges all layers (highway), or 
     connects just before the last ReLU.
@@ -42,7 +48,7 @@ class ResidualBlock(layers.Layer):
         })
         return config
 
-    def call(self, inputs):
+    def call(self, inputs):   # This member name kills sphinx's autodoc! Beware!
         x=self.dense1(inputs)
         x=self.bn1(x)
         x=self.relu(x)
