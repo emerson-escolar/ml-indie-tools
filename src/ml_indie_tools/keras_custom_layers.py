@@ -3,17 +3,6 @@ import tensorflow.keras as keras
 from tensorflow.keras import layers
 import math
 
-#   ┌──────────────────────────────────────────────────┐
-#   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼
-# ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True
-#      └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘
-#
-#   ┌──────────────────────────────────────────┐
-#   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐
-# ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False
-#      └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘
-
-
 class ResidualBlock(layers.Layer):
     """ Residual Block layer for Keras
 
