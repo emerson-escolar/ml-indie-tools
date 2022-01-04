@@ -315,6 +315,25 @@ class SelfAttention(layers.Layer):
         return out
 
 class MultiHeadSelfAttention(layers.Layer):
+    """ Multi-head self-attention layer for Keras
+
+    #    ┌──────────────┐
+    #    │  ┌────────┐  ▼   ┌──────┐  ┌────┐
+    #  ┌─┴─►│SelfAtt.│─ + ─►│      │  │    │
+    #  │    └────────┘      │      │  │    │
+    #  │ ┌──────────────┐   │      │  │    │          ┌───────────────────┐   ┌────┐  ┌────┐
+    # ─┤ │  ┌────────┐  ▼   │      │  │Opt.│  ┌─────┐ │  ┌────┐  ┌─────┐  ▼   │Opt │  │Opt │
+    #  ├─┴─►│SelfAtt.│─ + ─►│      │─►│Norm│─►│Scale│─┴─►│ReLU│─►│Dense│─ + ─►│Norm│─►│ReLU│─►
+    #  │    └────────┘      │concat│  │    │  └─────┘    └────┘  └─────┘      └────┘  └────┘
+    #  │        .           │      │  │    │
+    #  │        . head      │      │  │    │
+    #  │        . reps      │      │  │    │
+    #  │ ┌──────────────┐   │      │  │    │
+    #  │ │  ┌────────┐  ▼   │      │  │    │
+    #  └─┴─►│SelfAtt.│─ + ─►│      │  │    │
+    #       └────────┘      └──────┘  └────┘
+
+    """
     def __init__(self, heads, units=None, norm=None, mh_normalize=True,
             final_relu=False, **kwargs):
         super(MultiHeadSelfAttention, self).__init__(**kwargs)
