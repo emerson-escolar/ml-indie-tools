@@ -281,12 +281,12 @@
 <div class="viewcode-block" id="SelfAttention"><a class="viewcode-back" href="../index.html#keras_custom_layers.SelfAttention">[docs]</a><span class="k">class</span> <span class="nc">SelfAttention</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Self-attention layer for Keras</span>
 
-<span class="sd">    The self-attention layer learns three matrices (key `Wk`, query `Wq`, value `Wv`)</span>
+<span class="sd">    The self-attention layer learns three matrices (key :math:`W_k`, query :math:`W_q`, value :math:`W_v`)</span>
 <span class="sd">    that provide context-information for the input.</span>
-<span class="sd">    Input is mutiplied with all three matrices, then Wk and Wq are multiplied,</span>
-<span class="sd">    scaled down by `sqrt(input_dim of last index)` and normalized, either by LayerNorm,</span>
+<span class="sd">    Input is mutiplied with all three matrices, then :math:`W_k` and :math:`W_q` are multiplied,</span>
+<span class="sd">    scaled down by :math:`\\sqrt{\\dim{input[::-1]}}` and normalized, either by LayerNorm,</span>
 <span class="sd">    BatchNorm or Softmax. The result is then multiplied with `Wv`, and, if hidden</span>
-<span class="sd">    dimension of the `Wx` is different from input units, rescaled by a final Dense</span>
+<span class="sd">    dimension of the :math:`W_x_i` is different from input units, rescaled by a final Dense</span>
 <span class="sd">    matrix multiply.</span>
 
 <span class="sd">    .. code-block:: none</span>

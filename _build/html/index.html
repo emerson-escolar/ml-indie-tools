@@ -14,6 +14,7 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -824,12 +825,12 @@ layers. The output of all parallel stacks is concatenated and scaled down to <ci
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">SelfAttention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#SelfAttention"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.SelfAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
 <p>Self-attention layer for Keras</p>
-<p>The self-attention layer learns three matrices (key <cite>Wk</cite>, query <cite>Wq</cite>, value <cite>Wv</cite>)
+<p>The self-attention layer learns three matrices (key <span class="math notranslate nohighlight">\(W_k\)</span>, query <span class="math notranslate nohighlight">\(W_q\)</span>, value <span class="math notranslate nohighlight">\(W_v\)</span>)
 that provide context-information for the input.
-Input is mutiplied with all three matrices, then Wk and Wq are multiplied,
-scaled down by <cite>sqrt(input_dim of last index)</cite> and normalized, either by LayerNorm,
+Input is mutiplied with all three matrices, then <span class="math notranslate nohighlight">\(W_k\)</span> and <span class="math notranslate nohighlight">\(W_q\)</span> are multiplied,
+scaled down by <span class="math notranslate nohighlight">\(\sqrt{\dim{input[::-1]}}\)</span> and normalized, either by LayerNorm,
 BatchNorm or Softmax. The result is then multiplied with <cite>Wv</cite>, and, if hidden
-dimension of the <cite>Wx</cite> is different from input units, rescaled by a final Dense
+dimension of the <span class="math notranslate nohighlight">\(W_x_i\)</span> is different from input units, rescaled by a final Dense
 matrix multiply.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#                   
 #     ┌──┐   
