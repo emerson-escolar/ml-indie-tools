@@ -6,27 +6,27 @@ import math
 class ResidualBlock(layers.Layer):
     """ Residual Block layer for Keras
         
-        The residual block consists of two fully connected layers with units neurons 
-        followed by two BatchNorms and ReLUs:
+    The residual block consists of two fully connected layers with units neurons 
+    followed by two BatchNorms and ReLUs:
 
-        .. code-block:: console
+    .. code-block:: none
 
-              ┌──────────────────────────────────────────────────┐
-              │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼
-            ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True
-                 └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘    
+          ┌──────────────────────────────────────────────────┐
+          │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼
+        ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True
+             └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘    
 
-              ┌──────────────────────────────────────────┐
-              │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐  
-            ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False
-                 └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘    
+          ┌──────────────────────────────────────────┐
+          │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐  
+        ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False
+             └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘    
 
-        The additive residual connection either bridges all layers (highway), or 
-        connects just before the last ReLU.
+    The additive residual connection either bridges all layers (highway), or 
+    connects just before the last ReLU.
 
-        :param units: Positive integer, number of hidden units.
-        :param highway: Boolean, whether to use highway connection or not.
-        """
+    :param units: Positive integer, number of hidden units.
+    :param highway: Boolean, whether to use highway connection or not.
+    """
     def __init__(self, units, highway=False, **kwargs):
         self.units=units
         self.highway=highway
