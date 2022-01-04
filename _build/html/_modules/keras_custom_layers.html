@@ -48,6 +48,17 @@
 <span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
 <span class="kn">import</span> <span class="nn">math</span>
 
+<span class="c1">#   ┌──────────────────────────────────────────────────┐</span>
+<span class="c1">#   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼</span>
+<span class="c1"># ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True</span>
+<span class="c1">#      └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘</span>
+<span class="c1">#</span>
+<span class="c1">#   ┌──────────────────────────────────────────┐</span>
+<span class="c1">#   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐</span>
+<span class="c1"># ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False</span>
+<span class="c1">#      └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘</span>
+
+
 <div class="viewcode-block" id="ResidualBlock"><a class="viewcode-back" href="../index.html#keras_custom_layers.ResidualBlock">[docs]</a><span class="k">class</span> <span class="nc">ResidualBlock</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Residual Block layer for Keras</span>
 
@@ -56,15 +67,7 @@
 
 <span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        #   ┌──────────────────────────────────────────────────┐</span>
-<span class="sd">        #   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼</span>
-<span class="sd">        # ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True</span>
-<span class="sd">        #      └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘</span>
-<span class="sd">        #</span>
-<span class="sd">        #   ┌──────────────────────────────────────────┐</span>
-<span class="sd">        #   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐</span>
-<span class="sd">        # ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False</span>
-<span class="sd">        #      └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘</span>
+<span class="sd">        print(&quot;Stupid&quot;)</span>
 
 <span class="sd">    The additive residual connection either bridges all layers (highway), or </span>
 <span class="sd">    connects just before the last ReLU.</span>

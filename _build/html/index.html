@@ -697,15 +697,7 @@ the twelve supported ops:
 <p>Residual Block layer for Keras</p>
 <p>The residual block consists of two fully connected layers with units neurons 
 followed by two BatchNorms and ReLUs:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#   ┌──────────────────────────────────────────────────┐</span>
-<span class="c1">#   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼</span>
-<span class="c1"># ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True</span>
-<span class="c1">#      └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘</span>
-<span class="c1">#</span>
-<span class="c1">#   ┌──────────────────────────────────────────┐</span>
-<span class="c1">#   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐</span>
-<span class="c1"># ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False</span>
-<span class="c1">#      └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stupid&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The additive residual connection either bridges all layers (highway), or 
