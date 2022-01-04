@@ -150,6 +150,39 @@ class ResidualDenseStack(layers.Layer):
         return x
 
 class ParallelResidualDenseStacks(layers.Layer):
+    """ Parallel Residual Dense Stacks layer for Keras
+
+    The parallel residual dense layer stacks consist of `stacks` count parallel
+    :class:`ResidualDenseStacks`, each of which consists of  `layer_count` :class:`ResidualDense` 
+    layers. The output of all parallel stacks is concatenated and scaled down to `units` units.
+
+    .. code-block:: none
+
+        #        ┌─────────── n ─────────────┐   n = layer_count repetitions
+        #         ┌─────────────────────────┐                               
+        #         │  ┌─────┐  ┌──┐  ┌────┐  ▼    ┌──────┐                   
+        #   ┌─────┴─►│Dense│─►│BN│─►│ReLU│─ + ─► │      │                   
+        #   │        └─────┘  └──┘  └────┘       │      │                   
+        #   │                                    │      │
+        #   │    ┌─────────── n ─────────────┐   │      │
+        #   │     ┌─────────────────────────┐    │      │                   
+        #   │     │  ┌─────┐  ┌──┐  ┌────┐  ▼    │concat│   ┌─────┐  ┌────┐                   
+        #   ├─────┴─►│Dense│─►│BN│─►│ReLU│─ + ─► │      │ ─►│Dense│─►│ReLU│─►                 
+        # ──┤        └─────┘  └──┘  └────┘       │      │   └─────┘  └────┘                   
+        #   │                .                   │      │    scale down to
+        #   │                . `stacks` reps     │      │    `units`.
+        #   │                .                   │      │
+        #   │    ┌─────────── n ─────────────┐   │      │
+        #   │     ┌─────────────────────────┐    │      │                   
+        #   │     │  ┌─────┐  ┌──┐  ┌────┐  ▼    │      │                   
+        #   └─────┴─►│Dense│─►│BN│─►│ReLU│─ + ─► │      │                   
+        #            └─────┘  └──┘  └────┘       └──────┘                   
+
+    :param units: Positive integer, number of hidden units.
+    :param layer_count: Positive integer, number of layer-blocks, each a `ResidualDense` block.
+    :param stacks: Positive integer, number of parallel stacks.
+    :param regularizer: Positive float, regularization strength for the Dense layer.
+    """
     def __init__(self, units, layer_count, stacks, dispatch, regularizer=0, **kwargs):
         super(ParallelResidualDenseStacks, self).__init__(**kwargs)
         self.units=units
