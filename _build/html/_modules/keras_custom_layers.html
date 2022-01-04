@@ -285,8 +285,8 @@
 <span class="sd">    that provide context-information for the input.</span>
 <span class="sd">    Input is mutiplied with all three matrices, then :math:`W_k` and :math:`W_q` are multiplied,</span>
 <span class="sd">    scaled down by :math:`\\sqrt{\\dim{input[::-1]}}` and normalized, either by LayerNorm,</span>
-<span class="sd">    BatchNorm or Softmax. The result is then multiplied with `Wv`, and, if hidden</span>
-<span class="sd">    dimension of the :math:`W_x_i` is different from input units, rescaled by a final Dense</span>
+<span class="sd">    BatchNorm or Softmax. The result is then multiplied with :math:`W_v`, and, if hidden</span>
+<span class="sd">    dimension of the :math:`W_{x_i}` matrices is different from input units, rescaled by a final Dense</span>
 <span class="sd">    matrix multiply.</span>
 
 <span class="sd">    .. code-block:: none</span>

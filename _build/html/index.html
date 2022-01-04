@@ -829,8 +829,8 @@ layers. The output of all parallel stacks is concatenated and scaled down to <ci
 that provide context-information for the input.
 Input is mutiplied with all three matrices, then <span class="math notranslate nohighlight">\(W_k\)</span> and <span class="math notranslate nohighlight">\(W_q\)</span> are multiplied,
 scaled down by <span class="math notranslate nohighlight">\(\sqrt{\dim{input[::-1]}}\)</span> and normalized, either by LayerNorm,
-BatchNorm or Softmax. The result is then multiplied with <cite>Wv</cite>, and, if hidden
-dimension of the <span class="math notranslate nohighlight">\(W_x_i\)</span> is different from input units, rescaled by a final Dense
+BatchNorm or Softmax. The result is then multiplied with <span class="math notranslate nohighlight">\(W_v\)</span>, and, if hidden
+dimension of the <span class="math notranslate nohighlight">\(W_{x_i}\)</span> matrices is different from input units, rescaled by a final Dense
 matrix multiply.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#                   
 #     ┌──┐   
