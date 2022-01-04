@@ -64,9 +64,9 @@ ALU_Dataset object
 
 .. currentmodule:: keras_custom_layers
 
-==================
-layer objects
-==================
+====================
+ResidualBlock object
+====================
 
 .. automodule:: ALU_Dataset
 
@@ -75,25 +75,45 @@ layer objects
    :undoc-members:
    :show-inheritance:
 
+====================
+ResidualDense object
+====================
+
 .. autoclass:: ResidualDense
    :members:
    :undoc-members:
    :show-inheritance:
+
+=========================
+ResidualDenseStack object
+=========================
 
 .. autoclass:: ResidualDenseStack
    :members:
    :undoc-members:
    :show-inheritance:
 
+=================================
+ParallelResidualDenseStack object
+=================================
+
 .. autoclass:: ParallelResidualDenseStack
    :members:
    :undoc-members:
    :show-inheritance:
 
+====================
+SelfAttention object
+====================
+
 .. autoclass:: SelfAttention
    :members:
    :undoc-members:
    :show-inheritance:
+
+=============================
+MultiHeadSelfAttention object
+=============================
 
 .. autoclass:: MultiHeadSelfAttention
    :members:
