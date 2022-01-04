@@ -35,6 +35,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx.ext.mathjax',
     'm2r2',   # pip install m2r2  # needed for markdown to rst conversion
 ]
 
