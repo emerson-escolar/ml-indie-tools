@@ -4,9 +4,12 @@ from tensorflow.keras import layers
 import math
 
 
+# sphinx-doc hickup: a member named `call` seems to cause all kinds of sphinx-hickup
+# error starting with non-existing line-12 docstrings, if automatic :member: doc
+# is activated in index.rst.
+
 class ResidualBlock(layers.Layer):
-    """
-    Residual Block layer for Keras
+    """ Residual Block layer for Keras
 
     The residual block consists of two fully connected layers with units neurons 
     followed by two BatchNorms and ReLUs:
@@ -48,7 +51,7 @@ class ResidualBlock(layers.Layer):
         })
         return config
 
-    def call(self, inputs):   # This member name kills sphinx's autodoc! Beware!
+    def call(self, inputs):   # This member name kills sphinx's autodoc for members! Beware!
         x=self.dense1(inputs)
         x=self.bn1(x)
         x=self.relu(x)
@@ -63,6 +66,20 @@ class ResidualBlock(layers.Layer):
         return x
 
 class ResidualDense(layers.Layer):
+    """ Residual Dense layer for Keras
+
+    The residual dense layer consists of a fully connected layer followed by BatchNorm and ReLU:
+
+    .. code-block:: none
+
+        #   ┌─────────────────────────┐
+        #   │  ┌─────┐  ┌──┐  ┌────┐  ▼
+        # ──┴─►│Dense│─►│BN│─►│ReLU│─ + ─►
+        #      └─────┘  └──┘  └────┘
+
+    :param units: Positive integer, number of hidden units.
+    :param regularizer: Positive float, regularization strength for the Dense layer.
+    """
     def __init__(self, units, regularizer=0, **kwargs):
         self.units=units
         self.regularizer=regularizer
@@ -91,6 +108,22 @@ class ResidualDense(layers.Layer):
         return x
 
 class ResidualDenseStack(layers.Layer):
+    """ Residual Dense layer for Keras
+
+    The residual dense layer stack consists of `layer_count` :class:`ResidualDense` layers.
+
+    .. code-block:: none
+
+        #  ┌─────────── n ─────────────┐   n = layer_count repetitions
+        #   ┌─────────────────────────┐
+        #   │  ┌─────┐  ┌──┐  ┌────┐  ▼
+        # ──┴─►│Dense│─►│BN│─►│ReLU│─ + ─►
+        #      └─────┘  └──┘  └────┘
+
+    :param units: Positive integer, number of hidden units.
+    :param layer_count: Positive integer, number of layer-blocks, each a `ResidualDense` block.
+    :param regularizer: Positive float, regularization strength for the Dense layer.
+    """
     def __init__(self, units, layer_count, regularizer=0, **kwargs):
         self.units=units
         self.layer_count=layer_count
