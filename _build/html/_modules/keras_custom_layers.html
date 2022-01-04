@@ -51,27 +51,27 @@
 <div class="viewcode-block" id="ResidualBlock"><a class="viewcode-back" href="../index.html#keras_custom_layers.ResidualBlock">[docs]</a><span class="k">class</span> <span class="nc">ResidualBlock</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Residual Block layer for Keras</span>
 <span class="sd">        </span>
-<span class="sd">        The residual block consists of two fully connected layers with units neurons </span>
-<span class="sd">        followed by two BatchNorms and ReLUs:</span>
+<span class="sd">    The residual block consists of two fully connected layers with units neurons </span>
+<span class="sd">    followed by two BatchNorms and ReLUs:</span>
 
-<span class="sd">        .. code-block:: console</span>
+<span class="sd">    .. code-block:: none</span>
 
-<span class="sd">              ┌──────────────────────────────────────────────────┐</span>
-<span class="sd">              │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼</span>
-<span class="sd">            ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True</span>
-<span class="sd">                 └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘    </span>
+<span class="sd">          ┌──────────────────────────────────────────────────┐</span>
+<span class="sd">          │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼</span>
+<span class="sd">        ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True</span>
+<span class="sd">             └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘    </span>
 
-<span class="sd">              ┌──────────────────────────────────────────┐</span>
-<span class="sd">              │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐  </span>
-<span class="sd">            ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False</span>
-<span class="sd">                 └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘    </span>
+<span class="sd">          ┌──────────────────────────────────────────┐</span>
+<span class="sd">          │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐  </span>
+<span class="sd">        ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False</span>
+<span class="sd">             └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘    </span>
 
-<span class="sd">        The additive residual connection either bridges all layers (highway), or </span>
-<span class="sd">        connects just before the last ReLU.</span>
+<span class="sd">    The additive residual connection either bridges all layers (highway), or </span>
+<span class="sd">    connects just before the last ReLU.</span>
 
-<span class="sd">        :param units: Positive integer, number of hidden units.</span>
-<span class="sd">        :param highway: Boolean, whether to use highway connection or not.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    :param units: Positive integer, number of hidden units.</span>
+<span class="sd">    :param highway: Boolean, whether to use highway connection or not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">highway</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="o">=</span><span class="n">units</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">highway</span><span class="o">=</span><span class="n">highway</span>
