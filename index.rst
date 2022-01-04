@@ -93,11 +93,11 @@ ResidualDenseStack object
    :undoc-members:
    :show-inheritance:
 
-=================================
-ParallelResidualDenseStack object
-=================================
+==================================
+ParallelResidualDenseStacks object
+==================================
 
-.. autoclass:: ParallelResidualDenseStack
+.. autoclass:: ParallelResidualDenseStacks
    :members:
    :undoc-members:
    :show-inheritance:

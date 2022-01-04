@@ -54,7 +54,7 @@
 <span class="sd">    The residual block consists of two fully connected layers with units neurons </span>
 <span class="sd">    followed by two BatchNorms and ReLUs:</span>
 
-<span class="sd">    .. code-block:: none</span>
+<span class="sd">        .. code-block:: console:</span>
 
 <span class="sd">        #   ┌──────────────────────────────────────────────────┐</span>
 <span class="sd">        #   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼</span>
@@ -159,7 +159,7 @@
             <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rd</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">x</span></div></div>
 
-<span class="k">class</span> <span class="nc">ParallelResidualDenseStacks</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
+<div class="viewcode-block" id="ParallelResidualDenseStacks"><a class="viewcode-back" href="../index.html#keras_custom_layers.ParallelResidualDenseStacks">[docs]</a><span class="k">class</span> <span class="nc">ParallelResidualDenseStacks</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">layer_count</span><span class="p">,</span> <span class="n">stacks</span><span class="p">,</span> <span class="n">dispatch</span><span class="p">,</span> <span class="n">regularizer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ParallelResidualDenseStacks</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="o">=</span><span class="n">units</span>
@@ -185,7 +185,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rescale</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ParallelResidualDenseStacks.get_config"><a class="viewcode-back" href="../index.html#keras_custom_layers.ParallelResidualDenseStacks.get_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">config</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
         <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
             <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
@@ -194,9 +194,9 @@
             <span class="s1">&#39;dispatch&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispatch</span><span class="p">,</span>
             <span class="s1">&#39;regularizer&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">regularizer</span>
         <span class="p">})</span>
-        <span class="k">return</span> <span class="n">config</span>
+        <span class="k">return</span> <span class="n">config</span></div>
 
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+<div class="viewcode-block" id="ParallelResidualDenseStacks.call"><a class="viewcode-back" href="../index.html#keras_custom_layers.ParallelResidualDenseStacks.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
         <span class="n">xa</span><span class="o">=</span><span class="p">[]</span>
         <span class="c1"># Scale up</span>
         <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
@@ -208,7 +208,7 @@
         <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">xa</span><span class="p">)</span>
         <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rescale</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rescale_relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">x</span>
+        <span class="k">return</span> <span class="n">x</span></div></div>
 
 <div class="viewcode-block" id="SelfAttention"><a class="viewcode-back" href="../index.html#keras_custom_layers.SelfAttention">[docs]</a><span class="k">class</span> <span class="nc">SelfAttention</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

@@ -697,7 +697,11 @@ the twelve supported ops:
 <p>Residual Block layer for Keras</p>
 <p>The residual block consists of two fully connected layers with units neurons 
 followed by two BatchNorms and ReLUs:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#   ┌──────────────────────────────────────────────────┐
+<blockquote>
+<div><div class="highlight-console: notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>#   ┌──────────────────────────────────────────────────┐
 #   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼
 # ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True
 #      └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘    
@@ -705,9 +709,8 @@ followed by two BatchNorms and ReLUs:</p>
 #   ┌──────────────────────────────────────────┐
 #   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐  
 # ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False
-#      └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘    
-</pre></div>
-</div>
+#      └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘</p>
+</div></blockquote>
 <p>The additive residual connection either bridges all layers (highway), or 
 connects just before the last ReLU.</p>
 <dl class="field-list simple">
@@ -961,8 +964,88 @@ if they want to modify it.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="parallelresidualdensestack-object">
-<h2>ParallelResidualDenseStack object<a class="headerlink" href="#parallelresidualdensestack-object" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="parallelresidualdensestacks-object">
+<h2>ParallelResidualDenseStacks object<a class="headerlink" href="#parallelresidualdensestacks-object" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="keras_custom_layers.ParallelResidualDenseStacks">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">ParallelResidualDenseStacks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ParallelResidualDenseStacks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ParallelResidualDenseStacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.ParallelResidualDenseStacks.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ParallelResidualDenseStacks.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ParallelResidualDenseStacks.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is where the layer’s logic lives.</p>
+<p>Note here that <cite>call()</cite> method in <cite>tf.keras</cite> is little bit different
+from <cite>keras</cite> API. In <cite>keras</cite> API, you can pass support masking for
+layers as additional arguments. Whereas <cite>tf.keras</cite> has <cite>compute_mask()</cite>
+method to support masking.</p>
+<dl>
+<dt>Args:</dt><dd><dl>
+<dt>inputs: Input tensor, or dict/list/tuple of input tensors.</dt><dd><p>The first positional <cite>inputs</cite> argument is subject to special rules:
+- <cite>inputs</cite> must be explicitly passed. A layer cannot have zero</p>
+<blockquote>
+<div><p>arguments, and <cite>inputs</cite> cannot be provided via the default value
+of a keyword argument.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>NumPy array or Python scalar values in <cite>inputs</cite> get cast as tensors.</p></li>
+<li><p>Keras mask metadata is only collected from <cite>inputs</cite>.</p></li>
+<li><p>Layers are built (<cite>build(input_shape)</cite> method)
+using shape info from <cite>inputs</cite> only.</p></li>
+<li><p><cite>input_spec</cite> compatibility is only checked against <cite>inputs</cite>.</p></li>
+<li><p>Mixed precision input casting is only applied to <cite>inputs</cite>.
+If a layer has tensor arguments in <cite>*args</cite> or <cite>**kwargs</cite>, their
+casting behavior in mixed precision should be handled manually.</p></li>
+<li><p>The SavedModel input specification is generated using <cite>inputs</cite> only.</p></li>
+<li><p>Integration with various ecosystem packages like TFMOT, TFLite,
+TF.js, etc is only supported for <cite>inputs</cite> and not for tensors in
+positional and keyword arguments.</p></li>
+</ul>
+</dd>
+<dt><a href="#id13"><span class="problematic" id="id14">*</span></a>args: Additional positional arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.</p>
+</dd>
+<dt><a href="#id15"><span class="problematic" id="id16">**</span></a>kwargs: Additional keyword arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.
+The following optional keyword arguments are reserved:
+- <cite>training</cite>: Boolean scalar tensor of Python boolean indicating</p>
+<blockquote>
+<div><p>whether the <cite>call</cite> is meant for training or inference.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><cite>mask</cite>: Boolean input mask. If the layer’s <cite>call()</cite> method takes a
+<cite>mask</cite> argument, its default value will be set to the mask generated
+for <cite>inputs</cite> by the previous layer (if <cite>input</cite> did come from a layer
+that generated a corresponding mask, i.e. if it came from a Keras
+layer with masking support).</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>A tensor or list/tuple of tensors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="keras_custom_layers.ParallelResidualDenseStacks.get_config">
+<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#ParallelResidualDenseStacks.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.ParallelResidualDenseStacks.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the config of the layer.</p>
+<p>A layer config is a Python dictionary (serializable)
+containing the configuration of a layer.
+The same layer can be reinstantiated later
+(without its trained weights) from this configuration.</p>
+<p>The config of a layer does not include connectivity
+information, nor the layer class name. These are handled
+by <cite>Network</cite> (one layer of abstraction above).</p>
+<p>Note that <cite>get_config()</cite> does not guarantee to return a fresh copy of dict
+every time it is called. The callers should make a copy of the returned dict
+if they want to modify it.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Python dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="selfattention-object">
 <h2>SelfAttention object<a class="headerlink" href="#selfattention-object" title="Permalink to this headline">¶</a></h2>
@@ -1019,9 +1102,9 @@ TF.js, etc is only supported for <cite>inputs</cite> and not for tensors in
 positional and keyword arguments.</p></li>
 </ul>
 </dd>
-<dt><a href="#id13"><span class="problematic" id="id14">*</span></a>args: Additional positional arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.</p>
+<dt><a href="#id17"><span class="problematic" id="id18">*</span></a>args: Additional positional arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.</p>
 </dd>
-<dt><a href="#id15"><span class="problematic" id="id16">**</span></a>kwargs: Additional keyword arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.
+<dt><a href="#id19"><span class="problematic" id="id20">**</span></a>kwargs: Additional keyword arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.
 The following optional keyword arguments are reserved:
 - <cite>training</cite>: Boolean scalar tensor of Python boolean indicating</p>
 <blockquote>
@@ -1120,9 +1203,9 @@ TF.js, etc is only supported for <cite>inputs</cite> and not for tensors in
 positional and keyword arguments.</p></li>
 </ul>
 </dd>
-<dt><a href="#id17"><span class="problematic" id="id18">*</span></a>args: Additional positional arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.</p>
+<dt><a href="#id21"><span class="problematic" id="id22">*</span></a>args: Additional positional arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.</p>
 </dd>
-<dt><a href="#id19"><span class="problematic" id="id20">**</span></a>kwargs: Additional keyword arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.
+<dt><a href="#id23"><span class="problematic" id="id24">**</span></a>kwargs: Additional keyword arguments. May contain tensors, although</dt><dd><p>this is not recommended, for the reasons above.
 The following optional keyword arguments are reserved:
 - <cite>training</cite>: Boolean scalar tensor of Python boolean indicating</p>
 <blockquote>
@@ -1364,7 +1447,7 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
 <li><a class="reference internal" href="#module-keras_custom_layers">ResidualBlock object</a></li>
 <li><a class="reference internal" href="#residualdense-object">ResidualDense object</a></li>
 <li><a class="reference internal" href="#residualdensestack-object">ResidualDenseStack object</a></li>
-<li><a class="reference internal" href="#parallelresidualdensestack-object">ParallelResidualDenseStack object</a></li>
+<li><a class="reference internal" href="#parallelresidualdensestacks-object">ParallelResidualDenseStacks object</a></li>
 <li><a class="reference internal" href="#selfattention-object">SelfAttention object</a></li>
 <li><a class="reference internal" href="#multiheadselfattention-object">MultiHeadSelfAttention object</a></li>
 <li><a class="reference internal" href="#readme-file">Readme File</a></li>
