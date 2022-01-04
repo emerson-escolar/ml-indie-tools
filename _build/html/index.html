@@ -697,6 +697,17 @@ the twelve supported ops:
 <p>Residual Block layer for Keras</p>
 <p>The residual block consists of two fully connected layers with units neurons 
 followed by two BatchNorms and ReLUs:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">  ┌──────────────────────────────────────────────────┐</span>
+<span class="go">  │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼</span>
+<span class="go">──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True</span>
+<span class="go">     └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘    </span>
+
+<span class="go">  ┌──────────────────────────────────────────┐</span>
+<span class="go">  │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐  </span>
+<span class="go">──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False</span>
+<span class="go">     └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘    </span>
+</pre></div>
+</div>
 <p>The additive residual connection either bridges all layers (highway), or 
 connects just before the last ReLU.</p>
 <dl class="field-list simple">
