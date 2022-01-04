@@ -781,7 +781,7 @@ connects just before the last ReLU.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
 <p>Parallel Residual Dense Stacks layer for Keras</p>
 <p>The parallel residual dense layer stacks consist of <cite>stacks</cite> count parallel
-<code class="xref py py-class docutils literal notranslate"><span class="pre">ResidualDenseStacks</span></code>, each of which consists of  <cite>layer_count</cite> <a class="reference internal" href="#keras_custom_layers.ResidualDense" title="keras_custom_layers.ResidualDense"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResidualDense</span></code></a> 
+<a class="reference internal" href="#keras_custom_layers.ResidualDenseStack" title="keras_custom_layers.ResidualDenseStack"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResidualDenseStack</span></code></a>, each of which consists of  <cite>layer_count</cite> <a class="reference internal" href="#keras_custom_layers.ResidualDense" title="keras_custom_layers.ResidualDense"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResidualDense</span></code></a> 
 layers. The output of all parallel stacks is concatenated and scaled down to <cite>units</cite> units.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#        ┌─────────── n ─────────────┐   n = layer_count repetitions
 #         ┌─────────────────────────┐                               
@@ -823,6 +823,35 @@ layers. The output of all parallel stacks is concatenated and scaled down to <ci
 <dt class="sig sig-object py" id="keras_custom_layers.SelfAttention">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">keras_custom_layers.</span></span><span class="sig-name descname"><span class="pre">SelfAttention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/keras_custom_layers.html#SelfAttention"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#keras_custom_layers.SelfAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
+<p>Self-attention layer for Keras</p>
+<p>The self-attention layer learns three matrices (key Wk, query Wq, value Wv)
+that provide context-information for the input.
+Input is mutiplied with all three matrices, then Wk and Wq are multiplied,
+scaled down by sqrt(input_dim or last index) and normalized, either by
+BatchNorm or Softmax. The result is then multiplied with Wv, and, if hidden
+dimension of Wx is different from input units, rescaled by a final Dense
+matrix multiply.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#                   
+#     ┌──┐   
+#  ┌► │Wk│───┐   ┌─────┐
+#  │  └──┘   │   │Scale│
+#  │  ┌──┐   ⨷ ─►│Norm │─┐   (opt.)
+# ─┼─►│Wq│───┘   └─────┘ │   ┌─────┐
+#  │  └──┘               │   │Scale│──►
+#  │  ┌──┐               ⨷ ─►│Dense│
+#  └► │Wv│───────────────┘   └─────┘
+#     └──┘
+#
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>units</strong> – Positive integer, number of hidden units.</p></li>
+<li><p><strong>norm</strong> – either ‘batchnorm’, ‘layernorm, or ‘softmax’</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
