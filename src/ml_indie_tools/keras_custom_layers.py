@@ -324,21 +324,23 @@ class MultiHeadSelfAttention(layers.Layer):
     ReLU and Dense layer again with residual connection.
     Finally, optional normalization and a final optional ReLU is applied.
 
-    #    ┌──────────────┐
-    #    │  ┌────────┐  ▼   ┌──────┐  ┌────┐
-    #  ┌─┴─►│SelfAtt.│─ + ─►│      │  │    │
-    #  │    └────────┘      │      │  │    │
-    #  │ ┌──────────────┐   │      │  │    │          ┌───────────────────┐   ┌────┐  ┌────┐
-    # ─┤ │  ┌────────┐  ▼   │      │  │Opt.│  ┌─────┐ │  ┌────┐  ┌─────┐  ▼   │Opt │  │Opt │
-    #  ├─┴─►│SelfAtt.│─ + ─►│      │─►│Norm│─►│Scale│─┴─►│ReLU│─►│Dense│─ + ─►│Norm│─►│ReLU│─►
-    #  │    └────────┘      │concat│  │    │  └─────┘    └────┘  └─────┘      └────┘  └────┘
-    #  │        .           │      │  │    │
-    #  │        . head      │      │  │    │
-    #  │        . reps      │      │  │    │
-    #  │ ┌──────────────┐   │      │  │    │
-    #  │ │  ┌────────┐  ▼   │      │  │    │
-    #  └─┴─►│SelfAtt.│─ + ─►│      │  │    │
-    #       └────────┘      └──────┘  └────┘
+    .. code-block:: none
+
+        #    ┌──────────────┐
+        #    │  ┌────────┐  ▼   ┌──────┐  ┌────┐
+        #  ┌─┴─►│SelfAtt.│─ + ─►│      │  │    │
+        #  │    └────────┘      │      │  │    │
+        #  │ ┌──────────────┐   │      │  │    │          ┌───────────────────┐   ┌────┐  ┌────┐
+        # ─┤ │  ┌────────┐  ▼   │      │  │Opt.│  ┌─────┐ │  ┌────┐  ┌─────┐  ▼   │Opt │  │Opt │
+        #  ├─┴─►│SelfAtt.│─ + ─►│      │─►│Norm│─►│Scale│─┴─►│ReLU│─►│Dense│─ + ─►│Norm│─►│ReLU│─►
+        #  │    └────────┘      │concat│  │    │  └─────┘    └────┘  └─────┘      └────┘  └────┘
+        #  │        .           │      │  │    │
+        #  │        . head      │      │  │    │
+        #  │        . reps      │      │  │    │
+        #  │ ┌──────────────┐   │      │  │    │
+        #  │ │  ┌────────┐  ▼   │      │  │    │
+        #  └─┴─►│SelfAtt.│─ + ─►│      │  │    │
+        #       └────────┘      └──────┘  └────┘
      
     :param units: Positive integer, number of hidden units.
     :param heads: Positive integer, number of self-attention heads.
