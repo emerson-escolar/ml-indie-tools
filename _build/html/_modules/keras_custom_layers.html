@@ -59,12 +59,12 @@
 <span class="sd">        #   ┌──────────────────────────────────────────────────┐</span>
 <span class="sd">        #   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼</span>
 <span class="sd">        # ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True</span>
-<span class="sd">        #      └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘    </span>
+<span class="sd">        #      └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘</span>
 <span class="sd">        #</span>
 <span class="sd">        #   ┌──────────────────────────────────────────┐</span>
-<span class="sd">        #   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐  </span>
+<span class="sd">        #   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐</span>
 <span class="sd">        # ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False</span>
-<span class="sd">        #      └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘    </span>
+<span class="sd">        #      └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘</span>
 
 <span class="sd">    The additive residual connection either bridges all layers (highway), or </span>
 <span class="sd">    connects just before the last ReLU.</span>

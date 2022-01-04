@@ -700,12 +700,12 @@ followed by two BatchNorms and ReLUs:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#   ┌──────────────────────────────────────────────────┐</span>
 <span class="c1">#   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼</span>
 <span class="c1"># ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True</span>
-<span class="c1">#      └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘    </span>
+<span class="c1">#      └─────┘  └──┘  └────┘    └─────┘  └──┘  └────┘</span>
 <span class="c1">#</span>
 <span class="c1">#   ┌──────────────────────────────────────────┐</span>
-<span class="c1">#   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐  </span>
+<span class="c1">#   │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ▼   ┌────┐</span>
 <span class="c1"># ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─ + ─►│ReLU│─►    highway=False</span>
-<span class="c1">#      └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘    </span>
+<span class="c1">#      └─────┘  └──┘  └────┘    └─────┘  └──┘      └────┘</span>
 </pre></div>
 </div>
 <p>The additive residual connection either bridges all layers (highway), or 
