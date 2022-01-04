@@ -9,7 +9,7 @@ class ResidualBlock(layers.Layer):
         The residual block consists of two fully connected layers with units neurons 
         followed by two BatchNorms and ReLUs:
 
-        .. codeblock:: console
+        .. code-block:: console
               ┌──────────────────────────────────────────────────┐
               │  ┌─────┐  ┌──┐  ┌────┐    ┌─────┐  ┌──┐  ┌────┐  ▼
             ──┴─►│Dense│─►│BN│─►│ReLU│───►│Dense│─►│BN│─►│ReLU│─ + ─►    highway=True
