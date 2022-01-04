@@ -71,7 +71,6 @@ ResidualBlock object
 .. automodule:: keras_custom_layers
 
 .. autoclass:: ResidualBlock
-   :members:
    :undoc-members:
    :show-inheritance:
 
@@ -80,7 +79,6 @@ ResidualDense object
 ====================
 
 .. autoclass:: ResidualDense
-   :members:
    :undoc-members:
    :show-inheritance:
 
@@ -89,7 +87,6 @@ ResidualDenseStack object
 =========================
 
 .. autoclass:: ResidualDenseStack
-   :members:
    :undoc-members:
    :show-inheritance:
 
@@ -98,7 +95,6 @@ ParallelResidualDenseStacks object
 ==================================
 
 .. autoclass:: ParallelResidualDenseStacks
-   :members:
    :undoc-members:
    :show-inheritance:
 
@@ -107,7 +103,6 @@ SelfAttention object
 ====================
 
 .. autoclass:: SelfAttention
-   :members:
    :undoc-members:
    :show-inheritance:
 
@@ -116,7 +111,6 @@ MultiHeadSelfAttention object
 =============================
 
 .. autoclass:: MultiHeadSelfAttention
-   :members:
    :undoc-members:
    :show-inheritance:
 
