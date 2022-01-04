@@ -236,12 +236,12 @@ class ParallelResidualDenseStacks(layers.Layer):
 class SelfAttention(layers.Layer):
     """ Self-attention layer for Keras
 
-    The self-attention layer learns three matrices (key `Wk`, query `Wq`, value `Wv`)
+    The self-attention layer learns three matrices (key :math:`W_k`, query :math:`W_q`, value :math:`W_v`)
     that provide context-information for the input.
-    Input is mutiplied with all three matrices, then Wk and Wq are multiplied,
-    scaled down by `sqrt(input_dim of last index)` and normalized, either by LayerNorm,
+    Input is mutiplied with all three matrices, then :math:`W_k` and :math:`W_q` are multiplied,
+    scaled down by :math:`\\sqrt{\\dim{input[::-1]}}` and normalized, either by LayerNorm,
     BatchNorm or Softmax. The result is then multiplied with `Wv`, and, if hidden
-    dimension of the `Wx` is different from input units, rescaled by a final Dense
+    dimension of the :math:`W_x_i` is different from input units, rescaled by a final Dense
     matrix multiply.
 
     .. code-block:: none
