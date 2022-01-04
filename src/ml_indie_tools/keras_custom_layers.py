@@ -315,6 +315,36 @@ class SelfAttention(layers.Layer):
         return out
 
 class MultiHeadSelfAttention(layers.Layer):
+    """ Multi-head self-attention layer for Keras
+
+    The multi-head self-attention layer concatenates the output of `heads` :class:`SelfAttention`
+    layers. Each of the self-attention layers has an additive residual connection.
+    If `mh_normalize` is True, the concatenated output is normalized.
+    After scaling down to the number of units, the output is then passed through a
+    ReLU and Dense layer again with residual connection.
+    Finally, optional normalization and a final optional ReLU is applied.
+
+    #    ┌──────────────┐
+    #    │  ┌────────┐  ▼   ┌──────┐  ┌────┐
+    #  ┌─┴─►│SelfAtt.│─ + ─►│      │  │    │
+    #  │    └────────┘      │      │  │    │
+    #  │ ┌──────────────┐   │      │  │    │          ┌───────────────────┐   ┌────┐  ┌────┐
+    # ─┤ │  ┌────────┐  ▼   │      │  │Opt.│  ┌─────┐ │  ┌────┐  ┌─────┐  ▼   │Opt │  │Opt │
+    #  ├─┴─►│SelfAtt.│─ + ─►│      │─►│Norm│─►│Scale│─┴─►│ReLU│─►│Dense│─ + ─►│Norm│─►│ReLU│─►
+    #  │    └────────┘      │concat│  │    │  └─────┘    └────┘  └─────┘      └────┘  └────┘
+    #  │        .           │      │  │    │
+    #  │        . head      │      │  │    │
+    #  │        . reps      │      │  │    │
+    #  │ ┌──────────────┐   │      │  │    │
+    #  │ │  ┌────────┐  ▼   │      │  │    │
+    #  └─┴─►│SelfAtt.│─ + ─►│      │  │    │
+    #       └────────┘      └──────┘  └────┘
+     
+    :param units: Positive integer, number of hidden units.
+    :param heads: Positive integer, number of self-attention heads.
+    :param mh_normalize: Boolean, whether to normalize the output of the multi-head self-attention.
+    :param norm: either 'batchnorm', 'layernorm, or 'softmax', the normalization used within each self-attention head.
+    """
     def __init__(self, heads, units=None, norm=None, mh_normalize=True,
             final_relu=False, **kwargs):
         super(MultiHeadSelfAttention, self).__init__(**kwargs)
