@@ -826,12 +826,12 @@ layers. The output of all parallel stacks is concatenated and scaled down to <ci
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
 <p>Self-attention layer for Keras</p>
 <p>The self-attention layer learns three matrices (key <span class="math notranslate nohighlight">\(W_k\)</span>, query <span class="math notranslate nohighlight">\(W_q\)</span>, value <span class="math notranslate nohighlight">\(W_v\)</span>)
-that provide context-information for the input.
+that provide context-information for the <span class="math notranslate nohighlight">\(input\)</span>.
 Input is mutiplied with all three matrices, then <span class="math notranslate nohighlight">\(W_k\)</span> and <span class="math notranslate nohighlight">\(W_q\)</span> are multiplied,
-scaled down by <span class="math notranslate nohighlight">\(\sqrt{\dim{input[::-1]}}\)</span> and normalized, either by LayerNorm,
+scaled down by <span class="math notranslate nohighlight">\(\sqrt{\dim{input}[-1]}}\)</span> and normalized, either by LayerNorm,
 BatchNorm or Softmax. The result is then multiplied with <span class="math notranslate nohighlight">\(W_v\)</span>, and, if hidden
-dimension of the <span class="math notranslate nohighlight">\(W_{x_i}\)</span> matrices is different from input units, rescaled by a final Dense
-matrix multiply.</p>
+dimension of the <span class="math notranslate nohighlight">\(W_{x_i}\)</span> matrices is different from input units last dimension, 
+rescaled by a final dense matrix multiply. Output has same shape as input.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#                   
 #     ┌──┐   
 #  ┌► │Wk│───┐   ┌─────┐
@@ -848,7 +848,7 @@ matrix multiply.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>units</strong> – Positive integer, number of hidden units.</p></li>
+<li><p><strong>units</strong> – Positive integer, number of hidden units. The matrices <span class="math notranslate nohighlight">\(W_{x_i} are of shape :math:\)</span>.</p></li>
 <li><p><strong>norm</strong> – either ‘batchnorm’, ‘layernorm, or ‘softmax’</p></li>
 </ul>
 </dd>
@@ -868,7 +868,7 @@ layers. Each of the self-attention layers has an additive residual connection.
 If <cite>mh_normalize</cite> is True, the concatenated output is normalized.
 After scaling down to the number of units, the output is then passed through a
 ReLU and Dense layer again with residual connection.
-Finally, optional normalization and a final optional ReLU is applied.</p>
+Finally, optional normalization and a final optional ReLU is applied. Output has same shape as input.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#    ┌──────────────┐
 #    │  ┌────────┐  ▼   ┌──────┐  ┌────┐
 #  ┌─┴─►│SelfAtt.│─ + ─►│      │  │    │
@@ -889,7 +889,7 @@ Finally, optional normalization and a final optional ReLU is applied.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>units</strong> – Positive integer, number of hidden units.</p></li>
+<li><p><strong>units</strong> – Positive integer <cite>hs</cite>, number of hidden units.</p></li>
 <li><p><strong>heads</strong> – Positive integer, number of self-attention heads.</p></li>
 <li><p><strong>mh_normalize</strong> – Boolean, whether to normalize the output of the multi-head self-attention.</p></li>
 <li><p><strong>norm</strong> – either ‘batchnorm’, ‘layernorm, or ‘softmax’, the normalization used within each self-attention head.</p></li>

@@ -282,12 +282,12 @@
     <span class="sd">&quot;&quot;&quot; Self-attention layer for Keras</span>
 
 <span class="sd">    The self-attention layer learns three matrices (key :math:`W_k`, query :math:`W_q`, value :math:`W_v`)</span>
-<span class="sd">    that provide context-information for the input.</span>
+<span class="sd">    that provide context-information for the :math:`input`.</span>
 <span class="sd">    Input is mutiplied with all three matrices, then :math:`W_k` and :math:`W_q` are multiplied,</span>
-<span class="sd">    scaled down by :math:`\\sqrt{\\dim{input[::-1]}}` and normalized, either by LayerNorm,</span>
+<span class="sd">    scaled down by :math:`\\sqrt{\\dim{input}[-1]}}` and normalized, either by LayerNorm,</span>
 <span class="sd">    BatchNorm or Softmax. The result is then multiplied with :math:`W_v`, and, if hidden</span>
-<span class="sd">    dimension of the :math:`W_{x_i}` matrices is different from input units, rescaled by a final Dense</span>
-<span class="sd">    matrix multiply.</span>
+<span class="sd">    dimension of the :math:`W_{x_i}` matrices is different from input units last dimension, </span>
+<span class="sd">    rescaled by a final dense matrix multiply. Output has same shape as input.</span>
 
 <span class="sd">    .. code-block:: none</span>
 
@@ -303,7 +303,7 @@
 <span class="sd">        #     └──┘</span>
 <span class="sd">        #</span>
 
-<span class="sd">    :param units: Positive integer, number of hidden units.</span>
+<span class="sd">    :param units: Positive integer, number of hidden units. The matrices :math:`W_{x_i} are of shape :math:`hs \\times hs`.</span>
 <span class="sd">    :param norm: either &#39;batchnorm&#39;, &#39;layernorm, or &#39;softmax&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -367,7 +367,7 @@
 <span class="sd">    If `mh_normalize` is True, the concatenated output is normalized.</span>
 <span class="sd">    After scaling down to the number of units, the output is then passed through a</span>
 <span class="sd">    ReLU and Dense layer again with residual connection.</span>
-<span class="sd">    Finally, optional normalization and a final optional ReLU is applied.</span>
+<span class="sd">    Finally, optional normalization and a final optional ReLU is applied. Output has same shape as input.</span>
 
 <span class="sd">    .. code-block:: none</span>
 
@@ -387,7 +387,7 @@
 <span class="sd">        #  └─┴─►│SelfAtt.│─ + ─►│      │  │    │</span>
 <span class="sd">        #       └────────┘      └──────┘  └────┘</span>
 <span class="sd">     </span>
-<span class="sd">    :param units: Positive integer, number of hidden units.</span>
+<span class="sd">    :param units: Positive integer `hs`, number of hidden units.</span>
 <span class="sd">    :param heads: Positive integer, number of self-attention heads.</span>
 <span class="sd">    :param mh_normalize: Boolean, whether to normalize the output of the multi-head self-attention.</span>
 <span class="sd">    :param norm: either &#39;batchnorm&#39;, &#39;layernorm, or &#39;softmax&#39;, the normalization used within each self-attention head.</span>
