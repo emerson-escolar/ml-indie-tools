@@ -239,7 +239,7 @@ class SelfAttention(layers.Layer):
     The self-attention layer learns three matrices (key :math:`W_k`, query :math:`W_q`, value :math:`W_v`)
     that provide context-information for the :math:`input`.
     Input is mutiplied with all three matrices, then :math:`W_k` and :math:`W_q` are multiplied,
-    scaled down by :math:`\\sqrt{\\dim{input}[-1]}}` and normalized, either by LayerNorm,
+    scaled down by :math:`\\sqrt{\\dim{input}[-1]}` and normalized, either by LayerNorm,
     BatchNorm or Softmax. The result is then multiplied with :math:`W_v`, and, if hidden
     dimension of the :math:`W_{x_i}` matrices is different from input units last dimension, 
     rescaled by a final dense matrix multiply. Output has same shape as input.
@@ -258,7 +258,7 @@ class SelfAttention(layers.Layer):
         #     └──┘
         #
 
-    :param units: Positive integer, number of hidden units. The matrices :math:`W_{x_i} are of shape :math:`hs \\times hs`.
+    :param units: Positive integer, number of hidden units. The matrices :math:`W_{x_i}` are of shape :math:`hs \\times hs`.
     :param norm: either 'batchnorm', 'layernorm, or 'softmax'
     """
     def __init__(self, units=None, norm=None, **kwargs):
