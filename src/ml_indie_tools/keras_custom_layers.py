@@ -237,12 +237,12 @@ class SelfAttention(layers.Layer):
     """ Self-attention layer for Keras
 
     The self-attention layer learns three matrices (key :math:`W_k`, query :math:`W_q`, value :math:`W_v`)
-    that provide context-information for the input.
+    that provide context-information for the :math:`input`.
     Input is mutiplied with all three matrices, then :math:`W_k` and :math:`W_q` are multiplied,
-    scaled down by :math:`\\sqrt{\\dim{input[::-1]}}` and normalized, either by LayerNorm,
+    scaled down by :math:`\\sqrt{\\dim{input}[-1]}}` and normalized, either by LayerNorm,
     BatchNorm or Softmax. The result is then multiplied with :math:`W_v`, and, if hidden
-    dimension of the :math:`W_{x_i}` matrices is different from input units, rescaled by a final Dense
-    matrix multiply.
+    dimension of the :math:`W_{x_i}` matrices is different from input units last dimension, 
+    rescaled by a final dense matrix multiply. Output has same shape as input.
 
     .. code-block:: none
 
@@ -258,7 +258,7 @@ class SelfAttention(layers.Layer):
         #     └──┘
         #
 
-    :param units: Positive integer, number of hidden units.
+    :param units: Positive integer, number of hidden units. The matrices :math:`W_{x_i} are of shape :math:`hs \\times hs`.
     :param norm: either 'batchnorm', 'layernorm, or 'softmax'
     """
     def __init__(self, units=None, norm=None, **kwargs):
@@ -322,7 +322,7 @@ class MultiHeadSelfAttention(layers.Layer):
     If `mh_normalize` is True, the concatenated output is normalized.
     After scaling down to the number of units, the output is then passed through a
     ReLU and Dense layer again with residual connection.
-    Finally, optional normalization and a final optional ReLU is applied.
+    Finally, optional normalization and a final optional ReLU is applied. Output has same shape as input.
 
     .. code-block:: none
 
@@ -342,7 +342,7 @@ class MultiHeadSelfAttention(layers.Layer):
         #  └─┴─►│SelfAtt.│─ + ─►│      │  │    │
         #       └────────┘      └──────┘  └────┘
      
-    :param units: Positive integer, number of hidden units.
+    :param units: Positive integer `hs`, number of hidden units.
     :param heads: Positive integer, number of self-attention heads.
     :param mh_normalize: Boolean, whether to normalize the output of the multi-head self-attention.
     :param norm: either 'batchnorm', 'layernorm, or 'softmax', the normalization used within each self-attention head.
