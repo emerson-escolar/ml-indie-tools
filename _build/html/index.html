@@ -828,7 +828,7 @@ layers. The output of all parallel stacks is concatenated and scaled down to <ci
 <p>The self-attention layer learns three matrices (key <span class="math notranslate nohighlight">\(W_k\)</span>, query <span class="math notranslate nohighlight">\(W_q\)</span>, value <span class="math notranslate nohighlight">\(W_v\)</span>)
 that provide context-information for the <span class="math notranslate nohighlight">\(input\)</span>.
 Input is mutiplied with all three matrices, then <span class="math notranslate nohighlight">\(W_k\)</span> and <span class="math notranslate nohighlight">\(W_q\)</span> are multiplied,
-scaled down by <span class="math notranslate nohighlight">\(\sqrt{\dim{input}[-1]}}\)</span> and normalized, either by LayerNorm,
+scaled down by <span class="math notranslate nohighlight">\(\sqrt{\dim{input}[-1]}\)</span> and normalized, either by LayerNorm,
 BatchNorm or Softmax. The result is then multiplied with <span class="math notranslate nohighlight">\(W_v\)</span>, and, if hidden
 dimension of the <span class="math notranslate nohighlight">\(W_{x_i}\)</span> matrices is different from input units last dimension, 
 rescaled by a final dense matrix multiply. Output has same shape as input.</p>
@@ -848,7 +848,7 @@ rescaled by a final dense matrix multiply. Output has same shape as input.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>units</strong> – Positive integer, number of hidden units. The matrices <span class="math notranslate nohighlight">\(W_{x_i} are of shape :math:\)</span>.</p></li>
+<li><p><strong>units</strong> – Positive integer, number of hidden units. The matrices <span class="math notranslate nohighlight">\(W_{x_i}\)</span> are of shape <span class="math notranslate nohighlight">\(hs \times hs\)</span>.</p></li>
 <li><p><strong>norm</strong> – either ‘batchnorm’, ‘layernorm, or ‘softmax’</p></li>
 </ul>
 </dd>
