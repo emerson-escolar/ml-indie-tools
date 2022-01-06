@@ -49,6 +49,7 @@ class MLEnv():
         self.gpu_memory = None  #: GPU memory for NVidia cards as provided by `nvidia-smi`
         self.is_notebook = False  #: `True` if running in a notebook
         self.is_colab = False  #: `True` if running in a colab notebook
+        self.tpu_strategy = None
         if platform == 'tf':
             try:
                 import tensorflow as tf
