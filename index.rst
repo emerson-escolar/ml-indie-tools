@@ -23,6 +23,19 @@ MLEnv object
    :undoc-members:
    :show-inheritance:
 
+.. currentmodule:: tuner
+
+==============
+MLTuner object
+==============
+
+.. automodule:: tuner
+
+.. autoclass:: MLTuner
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 .. currentmodule:: Gutenberg_Dataset
 
 ========================
