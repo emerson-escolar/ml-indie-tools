@@ -352,8 +352,8 @@ class ALU_Dataset():
         return dpx, dpy
 
     if 'tensorflow' in sys.modules:
-        import tensorflow as tf
         def create_dataset(self, samples=10000, batch_size=2000, vector=False, positional_encoding=True, is_training=True, valid_ops=None, name=None, cache_path=None, use_cache=True, regenerate_cached_data=False, for_tpu=False):
+            import tensorflow as tf
             is_loaded=False
             if use_cache is True and cache_path is None:
                 print("can't use cache if no cache_path is given, disabling cache!")
@@ -421,6 +421,7 @@ class ALU_Dataset():
             return dataset
 
         def create_dataset_from_generator(self, valid_ops=None):
+            import tensorflow as tf
             dataset=tf.data.Dataset.from_generator(
                 self._generator,
                 output_signature=(

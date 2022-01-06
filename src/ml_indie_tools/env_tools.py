@@ -49,6 +49,7 @@ class MLEnv():
         self.gpu_memory = None  #: GPU memory for NVidia cards as provided by `nvidia-smi`
         self.is_notebook = False  #: `True` if running in a notebook
         self.is_colab = False  #: `True` if running in a colab notebook
+        self.tpu_strategy = None
         if platform == 'tf':
             try:
                 import tensorflow as tf
@@ -88,6 +89,8 @@ class MLEnv():
                             self.log.info("You got old TPU v2 which is limited to 8GB Ram.")
                     self.tpu_type = tpu_type
                     self.log.debug("TPU strategy available")
+                    tf.compat.v1.disable_eager_execution()
+                    self.log.debug("TPU: eager execution disabled!")
             if self.is_tpu is False:
                 if accelerator == 'gpu' or accelerator == 'fastest':
                     try:
