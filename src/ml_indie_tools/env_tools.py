@@ -89,6 +89,8 @@ class MLEnv():
                             self.log.info("You got old TPU v2 which is limited to 8GB Ram.")
                     self.tpu_type = tpu_type
                     self.log.debug("TPU strategy available")
+                    tf.compat.v1.disable_eager_execution()
+                    self.log.debug("TPU: eager execution disabled!")
             if self.is_tpu is False:
                 if accelerator == 'gpu' or accelerator == 'fastest':
                     try:
