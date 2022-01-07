@@ -1,16 +1,29 @@
 import copy
-import os
-import json
+import logging
 
 class MLTuner():
-    def __init__(self, search_space=None, load_progress=False):
-#        self.search_space_file = os.path.join(ml_env.project_path, f"params_search_space_{model_variant}.json")
-#        is_new = True
-#        if os.path.exists(self.search_space_file) is True and load_progress is True:
-#            with open(self.search_space_file,'r') as f:
-#                self.search_space = json.load(f)
-#                print(f"Initialized search_space from {self.search_space_file}")
-#                is_new = False
+    """ Simple hyper parameter tuner
+
+    Sample `search_space`:
+
+    .. code-block:: python
+
+         param_space_minimal_prm = {
+            "dense_layers": [4, 8, 12],
+            "dense_neurons":[256, 512, 768], 
+            "learning_rate": [0.001, 0.002],
+            "regu1": [1e-8, 1e-7]
+        }
+
+    :param search_space: Dictionary defining the search space.
+    :param progress_callback: Callback function that is called after each iteration with updated search space as parameter.
+    """
+    def __init__(self, search_space=None, progress_callback=None):
+
+        # XXX Get rid of search_space?!
+
+        self.log = logging.getLogger("MLTuner")
+        self.progress_callback = progress_callback
         if search_space is None:
             self.search_space = {}
             self.search_space["best_ev"] = 0
@@ -21,6 +34,33 @@ class MLTuner():
             self.search_space["is_first"] = False
 
     def tune(self, param_space, eval_func):
+        """ Tune hyper parameters
+
+        Example parameter space:
+
+        .. code-block:: python
+
+            param_space = {
+                "dense_layers": [4, 8, 12],
+                "dense_neurons":[256, 512, 768], 
+                "learning_rate": [0.001, 0.002],
+                "regu1": [1e-8, 1e-7]
+            }
+
+        `eval_func` is called with a dictionary of hyper parameters with exactly one value for each key, e.g.:
+
+        .. code-block:: python
+
+             params={
+                "dense_layers": 8,
+                "dense_neurons": 256, 
+                "learning_rate": 0.001,
+                "regu1": 1e-8
+            }
+
+        :param param_space: Dictionary defining the search space.
+        :param eval_func: Function that is called to evaluate the hyper parameters.
+        """
         if "best_params" not in self.search_space:
             self.search_space["best_params"]={}
         for key in param_space:
@@ -38,23 +78,21 @@ class MLTuner():
                     self.search_space["is_first"] = False
                 if p_cnt < self.search_space["progress"]:
                     p_cnt += 1
-                    print(f"Fast forwarding: {key} {val}")
+                    self.log.debug(f"Fast forwarding: {key} {val}")
                     continue
                 else:
                     p_cnt += 1
                 self.search_space["progress"] += 1
                 params[key]=val
-                print(f"#### Testing: {key}={val} with {params}:")
+                self.log.debug(f"Testing: {key}={val} with {params}")
                 ev = eval_func(params)
-                print(f"] Eval: {ev}")
+                self.log.debug(f"Eval: {ev}")
                 if ev > self.search_space["best_ev"]:
                     self.search_space["best_ev"] = ev
                     self.search_space["best_params"] = copy.deepcopy(params)
-                    print("*********************************************************")
-                    print(f"Best parameter set with ev={ev}: {params} -> {self.search_space_file}")
-                    print("*********************************************************")
-                    with open(self.search_space_file, "w") as f:
-                        json.dump(self.search_space, f, indent=4)
-        print(f"Best parameter set with {self.search_space['best_ev']} eval: {self.search_space['best_params']}")
+                    self.log.info(f"Best parameter set with ev={ev}: {params}")
+                if self.progress_callback is not None:
+                    self.progress_callback(self.search_space)
+        self.log.info(f"Best parameter set with {self.search_space['best_ev']} eval: {self.search_space['best_params']}")
         return self.search_space["best_params"]
         
