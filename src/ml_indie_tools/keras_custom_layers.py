@@ -1,6 +1,7 @@
 import tensorflow as tf
 import tensorflow.keras as keras
 from tensorflow.keras import layers
+import numpy as np
 import math
 
 
@@ -346,15 +347,18 @@ class MultiHeadSelfAttention(layers.Layer):
     :param heads: Positive integer, number of self-attention heads.
     :param mh_normalize: Boolean, whether to normalize the output of the multi-head self-attention.
     :param norm: either 'batchnorm', 'layernorm, or 'softmax', the normalization used within each self-attention head.
+    :param final_relu: Boolean, whether to apply a ReLU to the output of the final Dense layer.
+    :param positional_encoding: Boolean, whether to use a sinusoidal positional encoding on input.
     """
     def __init__(self, heads, units=None, norm=None, mh_normalize=True,
-            final_relu=False, **kwargs):
+            final_relu=False, positional_encoding=False, **kwargs):
         super(MultiHeadSelfAttention, self).__init__(**kwargs)
         self.heads=heads
         self.units = units
         self.norm = norm
         self.mh_normalize = mh_normalize
         self.final_relu = final_relu
+        self.positional_encoding = positional_encoding
         self.mhsa=[]
         for _ in range(0,self.heads):
             self.mhsa.append(SelfAttention(units=self.units, norm=self.norm))
@@ -368,12 +372,33 @@ class MultiHeadSelfAttention(layers.Layer):
             self.relu2 = layers.ReLU()
         self.relu2 = layers.ReLU()
 
+    # positional encoding taken from: https://www.tensorflow.org/text/tutorials/transformer
+    @classmethod
+    def _get_angles(pos, i, d_model):
+        angle_rates = 1 / np.power(10000, (2 * (i//2)) / np.float32(d_model))
+        return pos * angle_rates
+
+    @classmethod
+    def _positional_encoding(position, d_model):
+        angle_rads = self._get_angles(np.arange(position)[:, np.newaxis],
+                                      np.arange(d_model)[np.newaxis, :],
+                                      d_model)
+        # apply sin to even indices in the array; 2i
+        angle_rads[:, 0::2] = np.sin(angle_rads[:, 0::2])
+        # apply cos to odd indices in the array; 2i+1
+        angle_rads[:, 1::2] = np.cos(angle_rads[:, 1::2])
+        pos_encoding = angle_rads[np.newaxis, ...]
+        return tf.cast(pos_encoding, dtype=tf.float32)
+
     def build(self, input_shape):
         # super(SelfAttention, self).build(input_shape)
         self.w_heads = self.add_weight(shape=(self.heads * input_shape[-1], input_shape[-1]),
                                       initializer="random_normal", name='w5', trainable=True)
         self.lin = self.add_weight(shape=(input_shape[-1], input_shape[-1]),
                                       initializer="random_normal", name='w6', trainable=True)
+        if self.positional_encoding is True:
+            self.pe = self._positional_encoding(input_shape[1], input_shape[2])
+            
     def get_config(self):
         config = super().get_config()
         config.update({
@@ -381,12 +406,15 @@ class MultiHeadSelfAttention(layers.Layer):
             'units': self.units,
             'norm': self.norm,
             'mh_normalize': self.mh_normalize,
-            'final_relu': self.final_relu
+            'final_relu': self.final_relu,
+            'positional_encoding': self.positional_encoding
         })
         return config
 
     def call(self, inputs):
         xa=[]
+        if self.positional_encoding is True:
+            inputs = tf.add(inputs, self.pe)
         for i in range(0, self.heads):
             xa.append(self.pm(self.mhsa[i](inputs)+inputs))
         x=self.pm(self.cc(xa))
