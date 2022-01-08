@@ -509,7 +509,7 @@ class Gutenberg_Dataset():
         else:
             self.log.debug("No end token found!")
         if pend<len(new_book)/2:
-            self.log.warning("End-text is taking more than half of the book!")
+            self.log.debug("End-text is taking more than half of the book!")
         new_book=new_book[:pend]
         return new_book
         
@@ -549,7 +549,7 @@ class Gutenberg_Dataset():
         
         :returns: list of records """
         if not hasattr(self, 'records') or self.records is None:
-            self.log.warning("Index not loaded, trying to load...")
+            self.log.debug("Index not loaded, trying to load...")
             self.load_index()
         frecs=[]
         for rec in self.records:

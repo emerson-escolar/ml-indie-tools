@@ -65,7 +65,7 @@ class MLEnv():
                 self.tf_prof = False
             self.log.debug(f"Tensorflow version: {tf.__version__}")
             if accelerator == 'tpu' or accelerator == 'fastest':
-                try:
+                try:  # XXX This fails in non-eager mode! Switch back?
                     tpu = tf.distribute.cluster_resolver.TPUClusterResolver()  # TPU detection
                     tpc=tpu.cluster_spec().as_dict()['worker']
                     self.log.debug(f'Running on TPU {tpc}')
