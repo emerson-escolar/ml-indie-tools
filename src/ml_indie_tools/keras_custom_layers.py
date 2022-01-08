@@ -373,12 +373,12 @@ class MultiHeadSelfAttention(layers.Layer):
         self.relu2 = layers.ReLU()
 
     # positional encoding taken from: https://www.tensorflow.org/text/tutorials/transformer
-    @classmethod
+    @staticmethod
     def _get_angles(pos, i, d_model):
         angle_rates = 1 / np.power(10000, (2 * (i//2)) / np.float32(d_model))
         return pos * angle_rates
 
-    @classmethod
+    @staticmethod
     def _positional_encoding(position, d_model):
         angle_rads = self._get_angles(np.arange(position)[:, np.newaxis],
                                       np.arange(d_model)[np.newaxis, :],
