@@ -554,7 +554,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No end token found!&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">pend</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">(</span><span class="n">new_book</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;End-text is taking more than half of the book!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;End-text is taking more than half of the book!&quot;</span><span class="p">)</span>
         <span class="n">new_book</span><span class="o">=</span><span class="n">new_book</span><span class="p">[:</span><span class="n">pend</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">new_book</span></div>
         
@@ -594,7 +594,7 @@
 <span class="sd">        </span>
 <span class="sd">        :returns: list of records &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;records&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Index not loaded, trying to load...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Index not loaded, trying to load...&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_index</span><span class="p">()</span>
         <span class="n">frecs</span><span class="o">=</span><span class="p">[]</span>
         <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">:</span>
