@@ -265,10 +265,10 @@ class Text_Dataset:
             print(td[0])
             # Output: 12 and ('some', 'ome ')
 
-        :param sample_type: 'chargen': generate a pair of text or length sample_length, shifted by one letter, or 'chargen_encoded', same but encoded.
+        :param sample_type: 'chargen': generate a pair of text or length sample_length, shifted by one letter, or 'chargen_encoded', same but encoded. 'chargen_single_encoded' just returns a single encoded string X.
         :param sample_length: length of a sample
         :param content_stepping: number of characters to skip between each sample
-        :return: on 'chargen[_encoded]': X, y [encoded] strings of sample_length, y shifted by one letter.
+        :return: on 'chargen[_encoded]': X, y [encoded] strings of sample_length, y shifted by one letter; for 'chargin_single_encoded' just encoded X.
         """
 
         self.getitem_sample_type = sample_type
@@ -276,7 +276,7 @@ class Text_Dataset:
         self.getitem_content_stepping = content_stepping
         leng=0
         rec=0
-        if sample_type=='chargen' or sample_type=='chargen_encoded':
+        if sample_type=='chargen' or sample_type=='chargen_encoded' or sample_type=='chargen_single_encoded':
             for ind in range(0, len(self.text_list)):
                 len_text = len(self.text_list[ind]['text'])
                 rec_text = (len_text-content_stepping+1)//content_stepping + 1
@@ -317,12 +317,22 @@ class Text_Dataset:
             if cur_rec+rec > index:
                 rel_rec = index - cur_rec
                 pos = rel_rec*self.getitem_content_stepping
-                sample = text['text'][pos:pos+self.getitem_sample_length+1]
-                while len(sample) < self.getitem_sample_length+1:
-                    sample += ' '
-                X_text = sample[:-1]
-                y_text = sample[1:]
-                return X_text, y_text
+                if self.getitem_sample_type=='chargen_encoded' or self.getitem_sample_type=='chargen':
+                    sample = text['text'][pos:pos+self.getitem_sample_length+1]
+                    while len(sample) < self.getitem_sample_length+1:
+                        sample += ' '
+                    X_text = sample[:-1]
+                    y_text = sample[1:]
+                    return X_text, y_text
+                elif self.getitem_sample_type=='chargen_single_encoded':
+                    sample = text['text'][pos:pos+self.getitem_sample_length]
+                    while len(sample) < self.getitem_sample_length:
+                        sample += ' '
+                    X_text = sample
+                    return X_text
+                else:
+                    print(f"_getitem_chargen: unknown sample_type {self.getitem_sample_type}")
+                    return None
             cur_rec += rec
         print("Internal error in __getitem__")
         raise ValueError("Internal error in __getitem__")
