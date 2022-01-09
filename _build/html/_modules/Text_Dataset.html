@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Text_Dataset &#8212; ml-indie-tools 0.0.33 documentation</title>
+    <title>Text_Dataset &#8212; ml-indie-tools 0.0.36 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.33 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.36 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Text_Dataset</a></li> 
       </ul>
@@ -310,10 +310,10 @@
 <span class="sd">            print(td[0])</span>
 <span class="sd">            # Output: 12 and (&#39;some&#39;, &#39;ome &#39;)</span>
 
-<span class="sd">        :param sample_type: &#39;chargen&#39;: generate a pair of text or length sample_length, shifted by one letter, or &#39;chargen_encoded&#39;, same but encoded.</span>
+<span class="sd">        :param sample_type: &#39;chargen&#39;: generate a pair of text or length sample_length, shifted by one letter, or &#39;chargen_encoded&#39;, same but encoded. &#39;chargen_single_encoded&#39; just returns a single encoded string X.</span>
 <span class="sd">        :param sample_length: length of a sample</span>
 <span class="sd">        :param content_stepping: number of characters to skip between each sample</span>
-<span class="sd">        :return: on &#39;chargen[_encoded]&#39;: X, y [encoded] strings of sample_length, y shifted by one letter.</span>
+<span class="sd">        :return: on &#39;chargen[_encoded]&#39;: X, y [encoded] strings of sample_length, y shifted by one letter; for &#39;chargin_single_encoded&#39; just encoded X.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_type</span> <span class="o">=</span> <span class="n">sample_type</span>
@@ -321,7 +321,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">getitem_content_stepping</span> <span class="o">=</span> <span class="n">content_stepping</span>
         <span class="n">leng</span><span class="o">=</span><span class="mi">0</span>
         <span class="n">rec</span><span class="o">=</span><span class="mi">0</span>
-        <span class="k">if</span> <span class="n">sample_type</span><span class="o">==</span><span class="s1">&#39;chargen&#39;</span> <span class="ow">or</span> <span class="n">sample_type</span><span class="o">==</span><span class="s1">&#39;chargen_encoded&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sample_type</span><span class="o">==</span><span class="s1">&#39;chargen&#39;</span> <span class="ow">or</span> <span class="n">sample_type</span><span class="o">==</span><span class="s1">&#39;chargen_encoded&#39;</span> <span class="ow">or</span> <span class="n">sample_type</span><span class="o">==</span><span class="s1">&#39;chargen_single_encoded&#39;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_list</span><span class="p">)):</span>
                 <span class="n">len_text</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_list</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="s1">&#39;text&#39;</span><span class="p">])</span>
                 <span class="n">rec_text</span> <span class="o">=</span> <span class="p">(</span><span class="n">len_text</span><span class="o">-</span><span class="n">content_stepping</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="n">content_stepping</span> <span class="o">+</span> <span class="mi">1</span>
@@ -362,12 +362,22 @@
             <span class="k">if</span> <span class="n">cur_rec</span><span class="o">+</span><span class="n">rec</span> <span class="o">&gt;</span> <span class="n">index</span><span class="p">:</span>
                 <span class="n">rel_rec</span> <span class="o">=</span> <span class="n">index</span> <span class="o">-</span> <span class="n">cur_rec</span>
                 <span class="n">pos</span> <span class="o">=</span> <span class="n">rel_rec</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">getitem_content_stepping</span>
-                <span class="n">sample</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">][</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_length</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_length</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
-                    <span class="n">sample</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span>
-                <span class="n">X_text</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">y_text</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-                <span class="k">return</span> <span class="n">X_text</span><span class="p">,</span> <span class="n">y_text</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_type</span><span class="o">==</span><span class="s1">&#39;chargen_encoded&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_type</span><span class="o">==</span><span class="s1">&#39;chargen&#39;</span><span class="p">:</span>
+                    <span class="n">sample</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">][</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_length</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_length</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+                        <span class="n">sample</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span>
+                    <span class="n">X_text</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">y_text</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="k">return</span> <span class="n">X_text</span><span class="p">,</span> <span class="n">y_text</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_type</span><span class="o">==</span><span class="s1">&#39;chargen_single_encoded&#39;</span><span class="p">:</span>
+                    <span class="n">sample</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">][</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_length</span><span class="p">]</span>
+                    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_length</span><span class="p">:</span>
+                        <span class="n">sample</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span>
+                    <span class="n">X_text</span> <span class="o">=</span> <span class="n">sample</span>
+                    <span class="k">return</span> <span class="n">X_text</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;_getitem_chargen: unknown sample_type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">None</span>
             <span class="n">cur_rec</span> <span class="o">+=</span> <span class="n">rec</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Internal error in __getitem__&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Internal error in __getitem__&quot;</span><span class="p">)</span>
@@ -505,7 +515,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.33 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.36 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Text_Dataset</a></li> 
       </ul>
