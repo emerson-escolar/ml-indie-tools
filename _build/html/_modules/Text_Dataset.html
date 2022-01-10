@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Text_Dataset &#8212; ml-indie-tools 0.0.38 documentation</title>
+    <title>Text_Dataset &#8212; ml-indie-tools 0.0.39 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.38 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.39 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Text_Dataset</a></li> 
       </ul>
@@ -78,6 +78,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">word_tokenizer_init</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char_tokenizer_init</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">getitem_init</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span> <span class="o">=</span> <span class="kc">None</span>
         
         <span class="n">req_attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;language&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">text_list</span><span class="p">)):</span>
@@ -188,6 +189,7 @@
 <span class="sd">        :param tokenizer: &#39;word&#39; or &#39;char&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s1">&#39;word&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span> <span class="o">=</span> <span class="s1">&#39;word&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">w2i</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">i2w</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">w2i</span><span class="p">[</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -206,6 +208,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">i2w</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w2i</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">token</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">word_tokenizer_init</span><span class="o">=</span><span class="kc">True</span>
         <span class="k">elif</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s1">&#39;char&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span> <span class="o">=</span> <span class="s1">&#39;char&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">i2c</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">c2i</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">c2i</span><span class="p">[</span><span class="s1">&#39;␚&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Unicode SUBSTITUTE for &#39;unknown&#39;</span>
@@ -229,54 +232,54 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="n">tokenizer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="n">tokenizer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Text_Dataset.tokenize"><a class="viewcode-back" href="../index.html#Text_Dataset.Text_Dataset.tokenize">[docs]</a>    <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="s1">&#39;word&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Text_Dataset.tokenize"><a class="viewcode-back" href="../index.html#Text_Dataset.Text_Dataset.tokenize">[docs]</a>    <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Tokenize a text.</span>
 <span class="sd">        </span>
 <span class="sd">        :param text: text to tokenize</span>
 <span class="sd">        :return: list of tokens &quot;&quot;&quot;</span>
         <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s1">&#39;word&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span> <span class="o">==</span> <span class="s1">&#39;word&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_tokenizer_init</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">init_tokenizer</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">)</span>
             <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_word_splitter</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s1">&#39;char&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span> <span class="o">==</span> <span class="s1">&#39;char&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">char_tokenizer_init</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">init_tokenizer</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">)</span>
             <span class="n">tokens</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="n">tokenizer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="n">tokenizer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tokens</span></div>
 
-<div class="viewcode-block" id="Text_Dataset.encode"><a class="viewcode-back" href="../index.html#Text_Dataset.Text_Dataset.encode">[docs]</a>    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="s1">&#39;word&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Text_Dataset.encode"><a class="viewcode-back" href="../index.html#Text_Dataset.Text_Dataset.encode">[docs]</a>    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Encode a text.</span>
 <span class="sd">        </span>
 <span class="sd">        :param text: text to encode</span>
 <span class="sd">        :return: list of encoded tokens &quot;&quot;&quot;</span>
-        <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s1">&#39;word&#39;</span><span class="p">:</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span> <span class="o">==</span> <span class="s1">&#39;word&#39;</span><span class="p">:</span>
             <span class="n">encoded</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">w2i</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">w2i</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">w2i</span><span class="p">[</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s1">&#39;char&#39;</span><span class="p">:</span>
-            <span class="n">encoded</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">c2i</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c2i</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">c2i</span><span class="p">[</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span> <span class="o">==</span> <span class="s1">&#39;char&#39;</span><span class="p">:</span>
+            <span class="n">encoded</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">c2i</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c2i</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">c2i</span><span class="p">[</span><span class="s1">&#39;␚&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="n">tokenizer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="n">tokenizer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">encoded</span></div>
 
-<div class="viewcode-block" id="Text_Dataset.decode"><a class="viewcode-back" href="../index.html#Text_Dataset.Text_Dataset.decode">[docs]</a>    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoded</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="s1">&#39;word&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Text_Dataset.decode"><a class="viewcode-back" href="../index.html#Text_Dataset.Text_Dataset.decode">[docs]</a>    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoded</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Decode a list of encoded tokens.</span>
 <span class="sd">        </span>
 <span class="sd">        :param encoded: list of encoded tokens</span>
 <span class="sd">        :return: text &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s1">&#39;word&#39;</span><span class="p">:</span>
-            <span class="n">decoded</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i2w</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">i2w</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">i2w</span><span class="p">[</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">encoded</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span> <span class="o">==</span> <span class="s1">&#39;word&#39;</span><span class="p">:</span>
+            <span class="n">decoded</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i2w</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">i2w</span> <span class="k">else</span> <span class="s1">&#39;&lt;unk&gt;&#39;</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">encoded</span><span class="p">]</span>
             <span class="n">decoded_text</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">decoded</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s1">&#39;char&#39;</span><span class="p">:</span>
-            <span class="n">decoded</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i2c</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">i2c</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">i2c</span><span class="p">[</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">encoded</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span> <span class="o">==</span> <span class="s1">&#39;char&#39;</span><span class="p">:</span>
+            <span class="n">decoded</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i2c</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">i2c</span> <span class="k">else</span> <span class="s1">&#39;␚&#39;</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">encoded</span><span class="p">]</span>
             <span class="n">decoded_text</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">decoded</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="n">tokenizer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="n">tokenizer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tokenizer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">decoded_text</span></div>
 
 <div class="viewcode-block" id="Text_Dataset.get_random_char_tokenized_sample_pair"><a class="viewcode-back" href="../index.html#Text_Dataset.Text_Dataset.get_random_char_tokenized_sample_pair">[docs]</a>    <span class="k">def</span> <span class="nf">get_random_char_tokenized_sample_pair</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
@@ -286,7 +289,7 @@
 <span class="sd">        :return: tuple (X, y) encoded sample</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_random_sample</span><span class="p">(</span><span class="n">length</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">e_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="s1">&#39;char&#39;</span><span class="p">)</span>
+        <span class="n">e_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
         <span class="n">X</span> <span class="o">=</span> <span class="n">e_sample</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">e_sample</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
         <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span></div>
@@ -379,6 +382,7 @@
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;_getitem_chargen: unknown sample_type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">return</span> <span class="kc">None</span>
             <span class="n">cur_rec</span> <span class="o">+=</span> <span class="n">rec</span>
+            
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Internal error in __getitem__&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Internal error in __getitem__&quot;</span><span class="p">)</span>
 
@@ -397,12 +401,12 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem_chargen</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_type</span> <span class="o">==</span> <span class="s1">&#39;chargen_encoded&#39;</span><span class="p">:</span>
             <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem_chargen</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-            <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="s1">&#39;char&#39;</span><span class="p">)</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="s1">&#39;char&#39;</span><span class="p">)</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_type</span> <span class="o">==</span> <span class="s1">&#39;chargen_single_encoded&#39;</span><span class="p">:</span>
             <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem_chargen</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-            <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="s1">&#39;char&#39;</span><span class="p">)</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">X</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown getitem sample_type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">getitem_sample_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -519,7 +523,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.38 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ml-indie-tools 0.0.39 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Text_Dataset</a></li> 
       </ul>
