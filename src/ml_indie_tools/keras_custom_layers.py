@@ -241,7 +241,7 @@ class SelfAttention(layers.Layer):
     that provide context-information for the :math:`input`.
     Input is mutiplied with all three matrices, then :math:`W_k` and :math:`W_q` are multiplied,
     scaled down by :math:`\\sqrt{\\dim{input}[-1]}` and normalized, either by LayerNorm,
-    BatchNorm or Softmax. The result is then multiplied with :math:`W_v`, and, if hidden
+    BatchNorm or Softmax or not at all. The result is then multiplied with :math:`W_v`, and, if hidden
     dimension of the :math:`W_{x_i}` matrices is different from input units last dimension, 
     rescaled by a final dense matrix multiply. Output has same shape as input.
 
@@ -260,7 +260,7 @@ class SelfAttention(layers.Layer):
         #
 
     :param units: Positive integer, number of hidden units. The matrices :math:`W_{x_i}` are of shape :math:`hs \\times hs`.
-    :param norm: either 'batchnorm', 'layernorm, or 'softmax'
+    :param norm: either 'batchnorm', 'layernorm', 'softmax', or None
     """
     def __init__(self, units=None, norm=None, **kwargs):
         super(SelfAttention, self).__init__(**kwargs)
@@ -273,8 +273,10 @@ class SelfAttention(layers.Layer):
             self.norm = layers.BatchNormalization()
         elif self.norm=="softmax":
             self.norm = layers.Softmax()
+        elif self.norm==None or self.norm == "none":
+            self.norm = None
         else:
-            raise ValueError("Unknown normalization method: {}".format(self.norm))
+            raise ValueError("Unknown norm: {}".format(self.norm))
 
     def build(self, input_shape):
         # super(SelfAttention, self).build(input_shape)
@@ -301,15 +303,17 @@ class SelfAttention(layers.Layer):
         return config 
 
     def call(self, inputs):
-        # ip = self.pm(inputs)
         vk = tf.matmul(inputs, self.w_keys)
         vq = tf.matmul(inputs, self.w_queries)
         vv = tf.matmul(inputs, self.w_values)
         kq = tf.matmul(vk, vq, transpose_b=True)
         kqs = kq/self.fact
-        sn = self.norm(kqs)
-        # print(f"sm={sm.shape}, vv={vv.shape}")
+        if self.norm is not None:
+            sn = self.norm(kqs)
+        else:
+            sn = kqs
         out = tf.matmul(sn, self.pm(vv), transpose_b=True)
+
         if self.units is not None:
             out = tf.matmul(out, self.scale)
         # out = self.pm(out)
