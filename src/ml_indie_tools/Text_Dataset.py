@@ -355,6 +355,13 @@ class Text_Dataset:
             X = self.encode(X, tokenizer='char')
             y = self.encode(y, tokenizer='char')
             return X, y
+        elif self.getitem_sample_type == 'chargen_single_encoded':
+            X = self._getitem_chargen(index)
+            X = self.encode(X, tokenizer='char')
+            return X
+        else:
+            print(f"__getitem__: unknown sample_type {self.getitem_sample_type}")
+            return None
         else:
             self.log.error(f"Unknown getitem sample_type {self.getitem_sample_type}")
             raise ValueError(f"Unknown getitem sample_type {self.getitem_sample_type}")
