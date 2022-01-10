@@ -68,7 +68,7 @@ class Gutenberg_Dataset():
                 self.cache_dir=None
                 self.log.error(f"Failed to create cache directory {cache_dir}, {e}")
 
-    def _parse_record(self,record):
+    def _parse_record(self, record, verbose=True):
         """ internal function to recreate some consistent record information from near-freestyle text """
         rl=record.split('\n')
         white=str(chr(160))+str(chr(9))+" " # non-breaking space, TAB, and space
@@ -86,7 +86,8 @@ class Gutenberg_Dataset():
             fa=re.findall(ebook_no,"\A[0-9]+[A-C]\Z")
         except Exception as e:
             fa=None
-            self.log.warning(f"Failed to apply regex on >{ebook_no}<")
+            if verbose is True:
+                self.log.warning(f"Failed to apply regex on >{ebook_no}<: {e}")
             
         if len(rl[0])<5 or fa==None or len(ebook_no)>7:
             self.log.warning("-------------------------------------")
