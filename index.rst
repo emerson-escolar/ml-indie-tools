@@ -127,6 +127,14 @@ MultiHeadSelfAttention object
    :undoc-members:
    :show-inheritance:
 
+=========================
+PositionalEncoding object
+=========================
+
+.. autoclass:: PositionalEncoding
+   :undoc-members:
+   :show-inheritance:
+
 .. currentmodule:: README
 
 ===========
