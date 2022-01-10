@@ -446,7 +446,7 @@ class PositionalEncoding(layers.Layer):
 
     @staticmethod
     def _positional_encoding(position, d_model):
-        angle_rads = MultiHeadSelfAttention._get_angles(np.arange(position)[:, np.newaxis],
+        angle_rads = PositionalEncoding._get_angles(np.arange(position)[:, np.newaxis],
                                                         np.arange(d_model)[np.newaxis, :],
                                                         d_model)
         # apply sin to even indices in the array; 2i
