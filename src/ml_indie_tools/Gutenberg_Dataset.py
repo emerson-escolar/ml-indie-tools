@@ -86,8 +86,7 @@ class Gutenberg_Dataset():
             fa=re.findall(ebook_no,"\A[0-9]+[A-C]\Z")
         except Exception as e:
             fa=None
-            if verbose is True:
-                self.log.warning(f"Failed to apply regex on >{ebook_no}<")
+            self.log.warning(f"Failed to apply regex on >{ebook_no}<")
             
         if len(rl[0])<5 or fa==None or len(ebook_no)>7:
             self.log.warning("-------------------------------------")
