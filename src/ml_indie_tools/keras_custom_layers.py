@@ -429,3 +429,37 @@ class MultiHeadSelfAttention(layers.Layer):
         if self.final_relu is True:
             x = self.relu2(x)
         return x
+
+class PositionalEncoding(layers.Layer):
+    """ Positional encoding layer.
+
+    adds sinusoid of different frequencies to the input.
+    """
+    def __init__(self, **kwargs):
+        super(PositionalEncoding, self).__init__(**kwargs)
+
+    # positional encoding taken from: https://www.tensorflow.org/text/tutorials/transformer
+    @staticmethod
+    def _get_angles(pos, i, d_model):
+        angle_rates = 1 / np.power(10000, (2 * (i//2)) / np.float32(d_model))
+        return pos * angle_rates
+
+    @staticmethod
+    def _positional_encoding(position, d_model):
+        angle_rads = MultiHeadSelfAttention._get_angles(np.arange(position)[:, np.newaxis],
+                                                        np.arange(d_model)[np.newaxis, :],
+                                                        d_model)
+        # apply sin to even indices in the array; 2i
+        angle_rads[:, 0::2] = np.sin(angle_rads[:, 0::2])
+        # apply cos to odd indices in the array; 2i+1
+        angle_rads[:, 1::2] = np.cos(angle_rads[:, 1::2])
+        pos_encoding = angle_rads[np.newaxis, ...]
+        return tf.cast(pos_encoding, dtype=tf.float32)
+
+
+    def build(self, input_shape):
+        self.pe = self._positional_encoding(input_shape[1], input_shape[2])
+
+    def call(self, inputs):
+        return tf.add(inputs, self.pe)
+
