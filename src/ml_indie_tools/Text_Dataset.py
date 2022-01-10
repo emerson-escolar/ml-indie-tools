@@ -33,6 +33,7 @@ class Text_Dataset:
         self.word_tokenizer_init = False
         self.char_tokenizer_init = False
         self.getitem_init = False
+        self.tokenizer_type = None
         
         req_attrs=['title', 'author', 'language', 'text']
         for ind in range(0,len(text_list)):
@@ -143,6 +144,7 @@ class Text_Dataset:
         :param tokenizer: 'word' or 'char'
         """
         if tokenizer == 'word':
+            self.tokenizer_type = 'word'
             self.w2i = {}
             self.i2w = {}
             self.w2i['<unk>'] = 0
@@ -161,6 +163,7 @@ class Text_Dataset:
                         self.i2w[len(self.w2i)-1] = token
             self.word_tokenizer_init=True
         elif tokenizer == 'char':
+            self.tokenizer_type = 'char'
             self.i2c = {}
             self.c2i = {}
             self.c2i['␚'] = 0  # Unicode SUBSTITUTE for 'unknown'
@@ -184,54 +187,54 @@ class Text_Dataset:
             self.log.error(f"Unknown tokenizer {tokenizer}")
             raise ValueError(f"Unknown tokenizer {tokenizer}")
 
-    def tokenize(self, text, tokenizer='word'):
+    def tokenize(self, text):
         """ Tokenize a text.
         
         :param text: text to tokenize
         :return: list of tokens """
         tokens = []
-        if tokenizer == 'word':
+        if self.tokenizer_type == 'word':
             if self.word_tokenizer_init is False:
                 self.init_tokenizer(tokenizer)
             tokens = self._word_splitter(text)
-        elif tokenizer == 'char':
+        elif self.tokenizer_type == 'char':
             if self.char_tokenizer_init is False:
                 self.init_tokenizer(tokenizer)
             tokens = list(text)
         else:
-            self.log.error(f"Unknown tokenizer {tokenizer}")
-            raise ValueError(f"Unknown tokenizer {tokenizer}")
+            self.log.error(f"Unknown tokenizer {self.tokenizer_type}")
+            raise ValueError(f"Unknown tokenizer {self.tokenizer_type}")
         return tokens
 
-    def encode(self, text, tokenizer='word'):
+    def encode(self, text):
         """ Encode a text.
         
         :param text: text to encode
         :return: list of encoded tokens """
-        tokens = self.tokenize(text, tokenizer=tokenizer)
-        if tokenizer == 'word':
+        tokens = self.tokenize(text)
+        if self.tokenizer_type == 'word':
             encoded = [self.w2i[token] if token in self.w2i else self.w2i['<unk>'] for token in tokens]
-        elif tokenizer == 'char':
-            encoded = [self.c2i[token] if token in self.c2i else self.c2i['<unk>'] for token in tokens]
+        elif self.tokenizer_type == 'char':
+            encoded = [self.c2i[token] if token in self.c2i else self.c2i['␚'] for token in tokens]
         else:
-            self.log.error(f"Unknown tokenizer {tokenizer}")
-            raise ValueError(f"Unknown tokenizer {tokenizer}")
+            self.log.error(f"Unknown tokenizer {self.tokenizer_type}")
+            raise ValueError(f"Unknown tokenizer {self.tokenizer_type}")
         return encoded
 
-    def decode(self, encoded, tokenizer='word'):
+    def decode(self, encoded):
         """ Decode a list of encoded tokens.
         
         :param encoded: list of encoded tokens
         :return: text """
-        if tokenizer == 'word':
-            decoded = [self.i2w[token]+'' if token in self.i2w else self.i2w['<unk>'] for token in encoded]
+        if self.tokenizer_type == 'word':
+            decoded = [self.i2w[token]+'' if token in self.i2w else '<unk>' for token in encoded]
             decoded_text = ' '.join(decoded)
-        elif tokenizer == 'char':
-            decoded = [self.i2c[token] if token in self.i2c else self.i2c['<unk>'] for token in encoded]
+        elif self.tokenizer_type == 'char':
+            decoded = [self.i2c[token] if token in self.i2c else '␚' for token in encoded]
             decoded_text = ''.join(decoded)
         else:
-            self.log.error(f"Unknown tokenizer {tokenizer}")
-            raise ValueError(f"Unknown tokenizer {tokenizer}")
+            self.log.error(f"Unknown tokenizer {self.tokenizer_type}")
+            raise ValueError(f"Unknown tokenizer {self.tokenizer_type}")
         return decoded_text
 
     def get_random_char_tokenized_sample_pair(self, length):
@@ -241,7 +244,7 @@ class Text_Dataset:
         :return: tuple (X, y) encoded sample
         """
         _, sample = self.get_random_sample(length+1)
-        e_sample = self.encode(sample, tokenizer='char')
+        e_sample = self.encode(sample)
         X = e_sample[:-1]
         y = e_sample[1:]
         return X, y
@@ -334,6 +337,7 @@ class Text_Dataset:
                     print(f"_getitem_chargen: unknown sample_type {self.getitem_sample_type}")
                     return None
             cur_rec += rec
+            
         print("Internal error in __getitem__")
         raise ValueError("Internal error in __getitem__")
 
@@ -352,12 +356,12 @@ class Text_Dataset:
             return self._getitem_chargen(index)
         elif self.getitem_sample_type == 'chargen_encoded':
             X, y = self._getitem_chargen(index)
-            X = self.encode(X, tokenizer='char')
-            y = self.encode(y, tokenizer='char')
+            X = self.encode(X)
+            y = self.encode(y)
             return X, y
         elif self.getitem_sample_type == 'chargen_single_encoded':
             X = self._getitem_chargen(index)
-            X = self.encode(X, tokenizer='char')
+            X = self.encode(X)
             return X
         else:
             self.log.error(f"Unknown getitem sample_type {self.getitem_sample_type}")
