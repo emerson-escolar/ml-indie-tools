@@ -163,14 +163,14 @@ class Text_Dataset:
         elif tokenizer == 'char':
             self.i2c = {}
             self.c2i = {}
-            self.c2i['<unk>'] = 0
-            self.i2c[0] = '<unk>'
-            self.c2i['<pad>'] = 1
-            self.i2c[1] = '<pad>'
-            self.c2i['<eos>'] = 2
-            self.i2c[2] = '<eos>'
-            self.c2i['<sos>'] = 3
-            self.i2c[3] = '<sos>'
+            self.c2i['␚'] = 0  # Unicode SUBSTITUTE for 'unknown'
+            self.i2c[0] = '␚'
+            self.c2i['␠'] = 1  # Unicode SPACE for 'pad'
+            self.i2c[1] = '␠'
+            self.c2i['␃'] = 2  # Unicode END OF TEXT for 'eos'
+            self.i2c[2] = '␃'
+            self.c2i['␂'] = 3  # Unicode START OF TEXT for 'sos'
+            self.i2c[3] = '␂'
             for text in self.text_list:
                 tokens = list(text['text'])
                 unique_chars = set(tokens)
