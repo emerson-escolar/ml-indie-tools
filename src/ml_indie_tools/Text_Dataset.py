@@ -360,9 +360,6 @@ class Text_Dataset:
             X = self.encode(X, tokenizer='char')
             return X
         else:
-            print(f"__getitem__: unknown sample_type {self.getitem_sample_type}")
-            return None
-        else:
             self.log.error(f"Unknown getitem sample_type {self.getitem_sample_type}")
             raise ValueError(f"Unknown getitem sample_type {self.getitem_sample_type}")
 
