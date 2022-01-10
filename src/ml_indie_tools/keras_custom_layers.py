@@ -264,7 +264,6 @@ class SelfAttention(layers.Layer):
     """
     def __init__(self, units=None, norm=None, **kwargs):
         super(SelfAttention, self).__init__(**kwargs)
-        self.pm = layers.Permute((2,1))
         self.units = units
         self.norm = norm
         if self.norm=="layernorm":
@@ -279,7 +278,6 @@ class SelfAttention(layers.Layer):
             raise ValueError("Unknown norm: {}".format(self.norm))
 
     def build(self, input_shape):
-        # super(SelfAttention, self).build(input_shape)
         self.fact = math.sqrt(input_shape[-1])
         if self.units is None:
             dim2 = input_shape[-1]
@@ -316,7 +314,6 @@ class SelfAttention(layers.Layer):
 
         if self.units is not None:
             out = tf.matmul(out, self.scale)
-        # out = self.pm(out)
         return out
 
 class MultiHeadSelfAttention(layers.Layer):
