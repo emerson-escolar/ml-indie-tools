@@ -352,7 +352,7 @@ class MultiHeadSelfAttention(layers.Layer):
     :param final_relu: Boolean, whether to apply a ReLU to the output of the final Dense layer.
     """
     def __init__(self, heads, units=None, norm=None, mh_normalize=True,
-            final_relu=False, positional_encoding=False, **kwargs):
+            final_relu=False, **kwargs):
         super(MultiHeadSelfAttention, self).__init__(**kwargs)
         self.heads=heads
         self.units = units
@@ -426,8 +426,7 @@ class PositionalEncoding(layers.Layer):
         angle_rates = 1 / np.power(10000, (2 * (i//2)) / np.float32(d_model))
         return pos * angle_rates
 
-    @staticmethod
-    def _positional_encoding(position, d_model):
+    def _positional_encoding(self, position, d_model):
         angle_rads = PositionalEncoding._get_angles(np.arange(position)[:, np.newaxis],
                                                         np.arange(d_model)[np.newaxis, :],
                                                         d_model)
