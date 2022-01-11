@@ -310,7 +310,7 @@ class SelfAttention(layers.Layer):
             sn = self.norm(kqs)
         else:
             sn = kqs
-        out = tf.matmul(sn, self.pm(vv), transpose_b=True)
+        out = tf.matmul(sn, vv, transpose_b=True)
 
         if self.units is not None:
             out = tf.matmul(out, self.scale)
@@ -363,7 +363,6 @@ class MultiHeadSelfAttention(layers.Layer):
         for _ in range(0,self.heads):
             self.mhsa.append(SelfAttention(units=self.units, norm=self.norm))
         self.cc = layers.Concatenate(axis=1)
-        self.pm = layers.Permute((2,1))
         if self.mh_normalize is True:
             self.ln1 = layers.LayerNormalization()
             self.ln2 = layers.LayerNormalization()
