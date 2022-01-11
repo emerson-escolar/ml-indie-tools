@@ -311,7 +311,7 @@ class SelfAttention(layers.Layer):
             sn = self.norm(kqs)
         else:
             sn = kqs
-        out = tf.matmul(sn, pm(vv), transpose_b=True)
+        out = tf.matmul(sn, self.pm(vv), transpose_b=True)
 
         if self.units is not None:
             out = tf.matmul(out, self.scale)
