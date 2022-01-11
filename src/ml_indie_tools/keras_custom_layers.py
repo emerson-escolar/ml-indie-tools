@@ -392,8 +392,10 @@ class MultiHeadSelfAttention(layers.Layer):
     def call(self, inputs):
         xa=[]
         for i in range(0, self.heads):
-            xa.append(self.pm(self.mhsa[i](inputs)+inputs))
-        x=self.pm(self.cc(xa))
+            xa.append(self.mhsa[i](inputs)+inputs)
+            # xa.append(self.pm(self.mhsa[i](inputs)+inputs))
+        # x=self.pm(self.cc(xa))
+        x=self.cc(xa)
         if self.mh_normalize is True:
             x = self.ln1(x)
         xt = tf.matmul(x, self.w_heads)
