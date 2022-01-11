@@ -324,7 +324,8 @@ class MultiHeadSelfAttention(layers.Layer):
     If `mh_normalize` is True, the concatenated output is normalized.
     After scaling down to the number of units, the output is then passed through a
     ReLU and Dense layer again with residual connection.
-    Finally, optional normalization and a final optional ReLU is applied. Output has same shape as input.
+    Finally, optional normalization and a final optional ReLU is applied. 
+    Output has same shape as input.
 
     .. code-block:: none
 
@@ -349,7 +350,6 @@ class MultiHeadSelfAttention(layers.Layer):
     :param mh_normalize: Boolean, whether to normalize the output of the multi-head self-attention.
     :param norm: either 'batchnorm', 'layernorm, or 'softmax', the normalization used within each self-attention head.
     :param final_relu: Boolean, whether to apply a ReLU to the output of the final Dense layer.
-    :param positional_encoding: Boolean, whether to use a sinusoidal positional encoding on input.
     """
     def __init__(self, heads, units=None, norm=None, mh_normalize=True,
             final_relu=False, positional_encoding=False, **kwargs):
@@ -359,7 +359,6 @@ class MultiHeadSelfAttention(layers.Layer):
         self.norm = norm
         self.mh_normalize = mh_normalize
         self.final_relu = final_relu
-        self.positional_encoding = positional_encoding
         self.mhsa=[]
         for _ in range(0,self.heads):
             self.mhsa.append(SelfAttention(units=self.units, norm=self.norm))
@@ -379,8 +378,6 @@ class MultiHeadSelfAttention(layers.Layer):
                                       initializer="random_normal", name='w5', trainable=True)
         self.lin = self.add_weight(shape=(input_shape[-1], input_shape[-1]),
                                       initializer="random_normal", name='w6', trainable=True)
-        if self.positional_encoding is True:
-            self.pe = PositionalEncoding._positional_encoding(input_shape[1], input_shape[2])
             
     def get_config(self):
         config = super().get_config()
@@ -390,14 +387,11 @@ class MultiHeadSelfAttention(layers.Layer):
             'norm': self.norm,
             'mh_normalize': self.mh_normalize,
             'final_relu': self.final_relu,
-            'positional_encoding': self.positional_encoding
         })
         return config
 
     def call(self, inputs):
         xa=[]
-        if self.positional_encoding is True:
-            inputs = tf.add(inputs, self.pe)
         for i in range(0, self.heads):
             xa.append(self.pm(self.mhsa[i](inputs)+inputs))
         x=self.pm(self.cc(xa))
@@ -417,9 +411,14 @@ class PositionalEncoding(layers.Layer):
 
     adds sinusoid of different frequencies to the input. Can be used to add sequence-information to input
     data for transformers or attention layers.
+
+    :param amplitude: float, amplitude of the encoding, default=1.0.
+    :param trainable: boolean, whether the weights of the layer are trainable, default=False.
     """
-    def __init__(self, **kwargs):
+    def __init__(self, amplitude=1.0, trainable=False, **kwargs):
         super(PositionalEncoding, self).__init__(**kwargs)
+        self.amplitude = amplitude
+        self.trainable = trainable
 
     # positional encoding taken from: https://www.tensorflow.org/text/tutorials/transformer
     @staticmethod
@@ -436,9 +435,16 @@ class PositionalEncoding(layers.Layer):
         angle_rads[:, 0::2] = np.sin(angle_rads[:, 0::2])
         # apply cos to odd indices in the array; 2i+1
         angle_rads[:, 1::2] = np.cos(angle_rads[:, 1::2])
-        pos_encoding = angle_rads[np.newaxis, ...]
+        pos_encoding = angle_rads[np.newaxis, ...] * self.amplitude
         return tf.cast(pos_encoding, dtype=tf.float32)
 
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            'amplitude': self.amplitude,
+            'trainable': self.trainable,
+        })
+        return config
 
     def build(self, input_shape):
         self.pe = self._positional_encoding(input_shape[1], input_shape[2])
