@@ -241,7 +241,7 @@ class SelfAttention(layers.Layer):
     that provide context-information for the :math:`input`.
     Input is mutiplied with all three matrices, then :math:`W_k` and :math:`W_q` are multiplied,
     scaled down by :math:`\\sqrt{\\dim{input}[-1]}` and normalized, either by LayerNorm,
-    BatchNorm or Softmax. The result is then multiplied with :math:`W_v`, and, if hidden
+    BatchNorm or Softmax or not at all. The result is then multiplied with :math:`W_v`, and, if hidden
     dimension of the :math:`W_{x_i}` matrices is different from input units last dimension, 
     rescaled by a final dense matrix multiply. Output has same shape as input.
 
@@ -260,11 +260,10 @@ class SelfAttention(layers.Layer):
         #
 
     :param units: Positive integer, number of hidden units. The matrices :math:`W_{x_i}` are of shape :math:`hs \\times hs`.
-    :param norm: either 'batchnorm', 'layernorm, or 'softmax'
+    :param norm: either 'batchnorm', 'layernorm', 'softmax', or None
     """
     def __init__(self, units=None, norm=None, **kwargs):
         super(SelfAttention, self).__init__(**kwargs)
-        self.pm = layers.Permute((2,1))
         self.units = units
         self.norm = norm
         if self.norm=="layernorm":
@@ -273,11 +272,12 @@ class SelfAttention(layers.Layer):
             self.norm = layers.BatchNormalization()
         elif self.norm=="softmax":
             self.norm = layers.Softmax()
+        elif self.norm==None or self.norm == "none":
+            self.norm = None
         else:
-            raise ValueError("Unknown normalization method: {}".format(self.norm))
+            raise ValueError("Unknown norm: {}".format(self.norm))
 
     def build(self, input_shape):
-        # super(SelfAttention, self).build(input_shape)
         self.fact = math.sqrt(input_shape[-1])
         if self.units is None:
             dim2 = input_shape[-1]
@@ -301,18 +301,19 @@ class SelfAttention(layers.Layer):
         return config 
 
     def call(self, inputs):
-        # ip = self.pm(inputs)
         vk = tf.matmul(inputs, self.w_keys)
         vq = tf.matmul(inputs, self.w_queries)
         vv = tf.matmul(inputs, self.w_values)
         kq = tf.matmul(vk, vq, transpose_b=True)
         kqs = kq/self.fact
-        sn = self.norm(kqs)
-        # print(f"sm={sm.shape}, vv={vv.shape}")
+        if self.norm is not None:
+            sn = self.norm(kqs)
+        else:
+            sn = kqs
         out = tf.matmul(sn, self.pm(vv), transpose_b=True)
+
         if self.units is not None:
             out = tf.matmul(out, self.scale)
-        # out = self.pm(out)
         return out
 
 class MultiHeadSelfAttention(layers.Layer):
@@ -323,7 +324,8 @@ class MultiHeadSelfAttention(layers.Layer):
     If `mh_normalize` is True, the concatenated output is normalized.
     After scaling down to the number of units, the output is then passed through a
     ReLU and Dense layer again with residual connection.
-    Finally, optional normalization and a final optional ReLU is applied. Output has same shape as input.
+    Finally, optional normalization and a final optional ReLU is applied. 
+    Output has same shape as input.
 
     .. code-block:: none
 
@@ -348,7 +350,6 @@ class MultiHeadSelfAttention(layers.Layer):
     :param mh_normalize: Boolean, whether to normalize the output of the multi-head self-attention.
     :param norm: either 'batchnorm', 'layernorm, or 'softmax', the normalization used within each self-attention head.
     :param final_relu: Boolean, whether to apply a ReLU to the output of the final Dense layer.
-    :param positional_encoding: Boolean, whether to use a sinusoidal positional encoding on input.
     """
     def __init__(self, heads, units=None, norm=None, mh_normalize=True,
             final_relu=False, positional_encoding=False, **kwargs):
@@ -358,7 +359,6 @@ class MultiHeadSelfAttention(layers.Layer):
         self.norm = norm
         self.mh_normalize = mh_normalize
         self.final_relu = final_relu
-        self.positional_encoding = positional_encoding
         self.mhsa=[]
         for _ in range(0,self.heads):
             self.mhsa.append(SelfAttention(units=self.units, norm=self.norm))
@@ -372,32 +372,12 @@ class MultiHeadSelfAttention(layers.Layer):
             self.relu2 = layers.ReLU()
         self.relu2 = layers.ReLU()
 
-    # positional encoding taken from: https://www.tensorflow.org/text/tutorials/transformer
-    @staticmethod
-    def _get_angles(pos, i, d_model):
-        angle_rates = 1 / np.power(10000, (2 * (i//2)) / np.float32(d_model))
-        return pos * angle_rates
-
-    @staticmethod
-    def _positional_encoding(position, d_model):
-        angle_rads = MultiHeadSelfAttention._get_angles(np.arange(position)[:, np.newaxis],
-                                                        np.arange(d_model)[np.newaxis, :],
-                                                        d_model)
-        # apply sin to even indices in the array; 2i
-        angle_rads[:, 0::2] = np.sin(angle_rads[:, 0::2])
-        # apply cos to odd indices in the array; 2i+1
-        angle_rads[:, 1::2] = np.cos(angle_rads[:, 1::2])
-        pos_encoding = angle_rads[np.newaxis, ...]
-        return tf.cast(pos_encoding, dtype=tf.float32)
-
     def build(self, input_shape):
         # super(SelfAttention, self).build(input_shape)
         self.w_heads = self.add_weight(shape=(self.heads * input_shape[-1], input_shape[-1]),
                                       initializer="random_normal", name='w5', trainable=True)
         self.lin = self.add_weight(shape=(input_shape[-1], input_shape[-1]),
                                       initializer="random_normal", name='w6', trainable=True)
-        if self.positional_encoding is True:
-            self.pe = self._positional_encoding(input_shape[1], input_shape[2])
             
     def get_config(self):
         config = super().get_config()
@@ -407,14 +387,11 @@ class MultiHeadSelfAttention(layers.Layer):
             'norm': self.norm,
             'mh_normalize': self.mh_normalize,
             'final_relu': self.final_relu,
-            'positional_encoding': self.positional_encoding
         })
         return config
 
     def call(self, inputs):
         xa=[]
-        if self.positional_encoding is True:
-            inputs = tf.add(inputs, self.pe)
         for i in range(0, self.heads):
             xa.append(self.pm(self.mhsa[i](inputs)+inputs))
         x=self.pm(self.cc(xa))
@@ -428,3 +405,50 @@ class MultiHeadSelfAttention(layers.Layer):
         if self.final_relu is True:
             x = self.relu2(x)
         return x
+
+class PositionalEncoding(layers.Layer):
+    """ Positional encoding layer.
+
+    adds sinusoid of different frequencies to the input. Can be used to add sequence-information to input
+    data for transformers or attention layers.
+
+    :param amplitude: float, amplitude of the encoding, default=1.0.
+    :param trainable: boolean, whether the weights of the layer are trainable, default=False.
+    """
+    def __init__(self, amplitude=1.0, trainable=False, **kwargs):
+        super(PositionalEncoding, self).__init__(**kwargs)
+        self.amplitude = amplitude
+        self.trainable = trainable
+
+    # positional encoding taken from: https://www.tensorflow.org/text/tutorials/transformer
+    @staticmethod
+    def _get_angles(pos, i, d_model):
+        angle_rates = 1 / np.power(10000, (2 * (i//2)) / np.float32(d_model))
+        return pos * angle_rates
+
+    @staticmethod
+    def _positional_encoding(position, d_model):
+        angle_rads = PositionalEncoding._get_angles(np.arange(position)[:, np.newaxis],
+                                                        np.arange(d_model)[np.newaxis, :],
+                                                        d_model)
+        # apply sin to even indices in the array; 2i
+        angle_rads[:, 0::2] = np.sin(angle_rads[:, 0::2])
+        # apply cos to odd indices in the array; 2i+1
+        angle_rads[:, 1::2] = np.cos(angle_rads[:, 1::2])
+        pos_encoding = angle_rads[np.newaxis, ...] * self.amplitude
+        return tf.cast(pos_encoding, dtype=tf.float32)
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            'amplitude': self.amplitude,
+            'trainable': self.trainable,
+        })
+        return config
+
+    def build(self, input_shape):
+        self.pe = self._positional_encoding(input_shape[1], input_shape[2])
+
+    def call(self, inputs):
+        return tf.add(inputs, self.pe)
+
