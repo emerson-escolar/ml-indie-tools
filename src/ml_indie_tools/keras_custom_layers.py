@@ -276,6 +276,7 @@ class SelfAttention(layers.Layer):
             self.norm = None
         else:
             raise ValueError("Unknown norm: {}".format(self.norm))
+        self.pm = layers.Permute((2,1))
 
     def build(self, input_shape):
         self.fact = math.sqrt(input_shape[-1])
@@ -310,7 +311,7 @@ class SelfAttention(layers.Layer):
             sn = self.norm(kqs)
         else:
             sn = kqs
-        out = tf.matmul(sn, vv, transpose_b=True)
+        out = tf.matmul(sn, pm(vv), transpose_b=True)
 
         if self.units is not None:
             out = tf.matmul(out, self.scale)
