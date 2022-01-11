@@ -23,7 +23,7 @@ author = 'dsc'
 
 # The full version, including alpha/beta/rc tags
 # sync with setup.py
-release = '0.0.40'
+release = '0.0.42'
 
 
 # -- General configuration ---------------------------------------------------
