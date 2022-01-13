@@ -338,8 +338,8 @@ class MultiHeadSelfAttention(layers.Layer):
         # ─┤ │  ┌────────┐  ▼   │      │  │Opt.│  ┌─────┐ │  ┌────┐  ┌─────┐  ▼   │Opt │  │Opt │
         #  ├─┴─►│SelfAtt.│─ + ─►│      │─►│Norm│─►│Scale│─┴─►│ReLU│─►│Dense│─ + ─►│Norm│─►│ReLU│─►
         #  │    └────────┘      │concat│  │    │  └─────┘    └────┘  └─────┘      └────┘  └────┘
-        #  │        .           │      │  │    │
-        #  │        . head      │      │  │    │
+        #  │        .           │ or   │  │    │
+        #  │        . head      │ add  │  │    │
         #  │        . reps      │      │  │    │
         #  │ ┌──────────────┐   │      │  │    │
         #  │ │  ┌────────┐  ▼   │      │  │    │
@@ -408,6 +408,7 @@ class MultiHeadSelfAttention(layers.Layer):
                     x=xa[i]
                 else:
                     x=x+xa[i]
+            x=self.pm(x)
         else:
             x=self.pm(self.cc(xa))
         if self.mh_normalize is True:
