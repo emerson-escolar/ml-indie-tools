@@ -351,9 +351,10 @@ class MultiHeadSelfAttention(layers.Layer):
     :param mh_normalize: Boolean, whether to normalize the output of the multi-head self-attention.
     :param norm: either 'batchnorm', 'layernorm, or 'softmax', the normalization used within each self-attention head.
     :param final_relu: Boolean, whether to apply a ReLU to the output of the final Dense layer.
+    :param join_heads_by_add: on true heads are simply added instead of concatenated, saving memory.
     """
     def __init__(self, heads, units=None, norm=None, mh_normalize=True,
-            final_relu=False, **kwargs):
+            final_relu=False, join_heads_by_add=False, **kwargs):
         super(MultiHeadSelfAttention, self).__init__(**kwargs)
         self.heads=heads
         self.units = units
@@ -363,7 +364,9 @@ class MultiHeadSelfAttention(layers.Layer):
         self.mhsa=[]
         for _ in range(0,self.heads):
             self.mhsa.append(SelfAttention(units=self.units, norm=self.norm))
-        self.cc = layers.Concatenate(axis=1)
+        self.join_heads_by_add = join_heads_by_add
+        if self.join_heads_by_add is False:
+            self.cc = layers.Concatenate(axis=1)
         if self.mh_normalize is True:
             self.ln1 = layers.LayerNormalization()
             self.ln2 = layers.LayerNormalization()
@@ -374,9 +377,12 @@ class MultiHeadSelfAttention(layers.Layer):
         self.pm = layers.Permute((2,1))
 
     def build(self, input_shape):
-        # super(SelfAttention, self).build(input_shape)
-        self.w_heads = self.add_weight(shape=(self.heads * input_shape[-1], input_shape[-1]),
-                                      initializer="random_normal", name='w5', trainable=True)
+        if self.join_heads_by_add is False:
+            self.w_heads = self.add_weight(shape=(self.heads * input_shape[-1], input_shape[-1]),
+                                          initializer="random_normal", name='w5', trainable=True)
+        else:
+            self.w_heads = self.add_weight(shape=(input_shape[-1], input_shape[-1]),
+                                          initializer="random_normal", name='w5', trainable=True)
         self.lin = self.add_weight(shape=(input_shape[-1], input_shape[-1]),
                                       initializer="random_normal", name='w6', trainable=True)
             
@@ -388,6 +394,7 @@ class MultiHeadSelfAttention(layers.Layer):
             'norm': self.norm,
             'mh_normalize': self.mh_normalize,
             'final_relu': self.final_relu,
+            'join_heads_by_add': self.join_heads_by_add
         })
         return config
 
@@ -395,7 +402,14 @@ class MultiHeadSelfAttention(layers.Layer):
         xa=[]
         for i in range(0, self.heads):
             xa.append(self.pm(self.mhsa[i](inputs)+inputs))
-        x=self.pm(self.cc(xa))
+        if self.join_heads_by_add is True:
+            for i in range(len(xa)):
+                if i==0:
+                    x=xa[i]
+                else:
+                    x=x+xa[i]
+        else:
+            x=self.pm(self.cc(xa))
         if self.mh_normalize is True:
             x = self.ln1(x)
         xt = tf.matmul(x, self.w_heads)

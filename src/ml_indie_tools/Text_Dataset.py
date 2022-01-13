@@ -51,7 +51,11 @@ class Text_Dataset:
             text['text']=self.filter_text(text['text'], sanitize_white_space=sanitize_white_space, separate_punctuation=separate_punctuation, preserve_case=preserve_case)
             self.index += 1
             self.text_list.append(text)
-        self.log.info(f"Loaded {len(self.text_list)} texts")
+        lt=len(self.text_list)
+        if lt==1:
+            self.log.info("Loaded {lt} text")
+        else:
+            self.log.info(f"Loaded {lt} texts")
         self._calc_probability_weights()
 
     def _calc_probability_weights(self):
