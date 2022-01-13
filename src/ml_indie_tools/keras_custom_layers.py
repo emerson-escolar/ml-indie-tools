@@ -334,13 +334,13 @@ class MultiHeadSelfAttention(layers.Layer):
         #    │  ┌────────┐  ▼   ┌──────┐  ┌────┐
         #  ┌─┴─►│SelfAtt.│─ + ─►│      │  │    │
         #  │    └────────┘      │      │  │    │
-        #  │ ┌──────────────┐   │      │  │    │          ┌───────────────────┐   ┌────┐  ┌────┐
-        # ─┤ │  ┌────────┐  ▼   │      │  │Opt.│  ┌─────┐ │  ┌────┐  ┌─────┐  ▼   │Opt │  │Opt │
-        #  ├─┴─►│SelfAtt.│─ + ─►│      │─►│Norm│─►│Scale│─┴─►│ReLU│─►│Dense│─ + ─►│Norm│─►│ReLU│─►
-        #  │    └────────┘      │concat│  │    │  └─────┘    └────┘  └─────┘      └────┘  └────┘
+        #  │ ┌──────────────┐   │      │  │    │          ┌───────────────────┐   ┌────┐  
+        # ─┤ │  ┌────────┐  ▼   │      │  │Opt.│  ┌─────┐ │  ┌────┐  ┌─────┐  ▼   │Opt │  
+        #  ├─┴─►│SelfAtt.│─ + ─►│      │─►│Norm│─►│Scale│─┴─►│ReLU│─►│Dense│─ + ─►│Norm│─►
+        #  │    └────────┘      │concat│  │    │  └─────┘    └────┘  └─────┘      └────┘  
         #  │        .           │ or   │  │    │
-        #  │        . head      │ add  │  │    │
-        #  │        . reps      │      │  │    │
+        #  │        . head      │ relu │  │    │
+        #  │        . reps      │ +add │  │    │
         #  │ ┌──────────────┐   │      │  │    │
         #  │ │  ┌────────┐  ▼   │      │  │    │
         #  └─┴─►│SelfAtt.│─ + ─►│      │  │    │
@@ -350,8 +350,7 @@ class MultiHeadSelfAttention(layers.Layer):
     :param heads: Positive integer, number of self-attention heads.
     :param mh_normalize: Boolean, whether to normalize the output of the multi-head self-attention.
     :param norm: either 'batchnorm', 'layernorm, or 'softmax', the normalization used within each self-attention head.
-    :param final_relu: Boolean, whether to apply a ReLU to the output of the final Dense layer.
-    :param join_heads_by_add: on true heads are simply added instead of concatenated (original all-you-need), saving resources.
+    :param join_heads_by_add: on true heads are added after additional relu-nonlin, instead of concatenated (original all-you-need).
     """
     def __init__(self, heads, units=None, norm=None, mh_normalize=True,
             final_relu=False, join_heads_by_add=False, **kwargs):
@@ -371,18 +370,16 @@ class MultiHeadSelfAttention(layers.Layer):
             self.ln1 = layers.LayerNormalization()
             self.ln2 = layers.LayerNormalization()
         self.relu1 = layers.ReLU()
-        if final_relu is True:
-            self.relu2 = layers.ReLU()
         self.relu2 = layers.ReLU()
         self.pm = layers.Permute((2,1))
 
     def build(self, input_shape):
         if self.join_heads_by_add is False:
             self.w_heads = self.add_weight(shape=(self.heads * input_shape[-1], input_shape[-1]),
-                                          initializer="random_normal", name='w5', trainable=True)
+                                          initializer="random_normal", name='w5concat', trainable=True)
         else:
-            self.w_heads = self.add_weight(shape=(self.units, input_shape[-1]),
-                                          initializer="random_normal", name='w5', trainable=True)
+            self.w_heads = self.add_weight(shape=(input_shape[-1], input_shape[-1]),
+                                          initializer="random_normal", name='w5add', trainable=True)
         self.lin = self.add_weight(shape=(input_shape[-1], input_shape[-1]),
                                       initializer="random_normal", name='w6', trainable=True)
             
@@ -405,9 +402,9 @@ class MultiHeadSelfAttention(layers.Layer):
         if self.join_heads_by_add is True:
             for i in range(len(xa)):
                 if i==0:
-                    x=xa[i]
+                    x=self.relu2(xa[i])
                 else:
-                    x=x+xa[i]
+                    x=x+self.relu2(xa[i])
             x=self.pm(x)
         else:
             x=self.pm(self.cc(xa))
@@ -418,8 +415,6 @@ class MultiHeadSelfAttention(layers.Layer):
         x = tf.matmul(x, self.lin) + xt
         if self.mh_normalize is True:
             x = self.ln2(x)
-        if self.final_relu is True:
-            x = self.relu2(x)
         return x
 
 class PositionalEncoding(layers.Layer):
