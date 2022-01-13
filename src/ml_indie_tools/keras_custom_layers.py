@@ -339,8 +339,8 @@ class MultiHeadSelfAttention(layers.Layer):
         #  ├─┴─►│SelfAtt.│─ + ─►│      │─►│Norm│─►│Scale│─┴─►│ReLU│─►│Dense│─ + ─►│Norm│─►
         #  │    └────────┘      │concat│  │    │  └─────┘    └────┘  └─────┘      └────┘  
         #  │        .           │ or   │  │    │
-        #  │        . head      │ add  │  │    │
-        #  │        . reps      │      │  │    │
+        #  │        . head      │ relu │  │    │
+        #  │        . reps      │ +add │  │    │
         #  │ ┌──────────────┐   │      │  │    │
         #  │ │  ┌────────┐  ▼   │      │  │    │
         #  └─┴─►│SelfAtt.│─ + ─►│      │  │    │
@@ -350,7 +350,7 @@ class MultiHeadSelfAttention(layers.Layer):
     :param heads: Positive integer, number of self-attention heads.
     :param mh_normalize: Boolean, whether to normalize the output of the multi-head self-attention.
     :param norm: either 'batchnorm', 'layernorm, or 'softmax', the normalization used within each self-attention head.
-    :param join_heads_by_add: on true heads are simply added instead of concatenated (original all-you-need), saving resources.
+    :param join_heads_by_add: on true heads are added after additional relu-nonlin, instead of concatenated (original all-you-need).
     """
     def __init__(self, heads, units=None, norm=None, mh_normalize=True,
             final_relu=False, join_heads_by_add=False, **kwargs):
