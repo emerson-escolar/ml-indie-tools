@@ -36,6 +36,6 @@ $(window).resize(function(){
         $("li.nav-item-0 a").text("Top");
     }
     else {
-        $("li.nav-item-0 a").text("ml-indie-tools 0.0.52 documentation");
+        $("li.nav-item-0 a").text("ml-indie-tools 0.0.56 documentation");
     }
 });

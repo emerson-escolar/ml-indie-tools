@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.52 documentation</title>
+    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.0.56 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="README.html" title="A collection of machine learning tools for low-resource research and experiments"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.52 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.56 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>  
@@ -933,13 +933,13 @@ Output has same shape as input.</p>
 #    │  ┌────────┐  ▼   ┌──────┐  ┌────┐
 #  ┌─┴─►│SelfAtt.│─ + ─►│      │  │    │
 #  │    └────────┘      │      │  │    │
-#  │ ┌──────────────┐   │      │  │    │          ┌───────────────────┐   ┌────┐  ┌────┐
-# ─┤ │  ┌────────┐  ▼   │      │  │Opt.│  ┌─────┐ │  ┌────┐  ┌─────┐  ▼   │Opt │  │Opt │
-#  ├─┴─►│SelfAtt.│─ + ─►│      │─►│Norm│─►│Scale│─┴─►│ReLU│─►│Dense│─ + ─►│Norm│─►│ReLU│─►
-#  │    └────────┘      │concat│  │    │  └─────┘    └────┘  └─────┘      └────┘  └────┘
+#  │ ┌──────────────┐   │      │  │    │          ┌───────────────────┐   ┌────┐  
+# ─┤ │  ┌────────┐  ▼   │      │  │Opt.│  ┌─────┐ │  ┌────┐  ┌─────┐  ▼   │Opt │  
+#  ├─┴─►│SelfAtt.│─ + ─►│      │─►│Norm│─►│Scale│─┴─►│ReLU│─►│Dense│─ + ─►│Norm│─►
+#  │    └────────┘      │concat│  │    │  └─────┘    └────┘  └─────┘      └────┘  
 #  │        .           │ or   │  │    │
-#  │        . head      │ add  │  │    │
-#  │        . reps      │      │  │    │
+#  │        . head      │ relu │  │    │
+#  │        . reps      │ +add │  │    │
 #  │ ┌──────────────┐   │      │  │    │
 #  │ │  ┌────────┐  ▼   │      │  │    │
 #  └─┴─►│SelfAtt.│─ + ─►│      │  │    │
@@ -953,8 +953,7 @@ Output has same shape as input.</p>
 <li><p><strong>heads</strong> – Positive integer, number of self-attention heads.</p></li>
 <li><p><strong>mh_normalize</strong> – Boolean, whether to normalize the output of the multi-head self-attention.</p></li>
 <li><p><strong>norm</strong> – either ‘batchnorm’, ‘layernorm, or ‘softmax’, the normalization used within each self-attention head.</p></li>
-<li><p><strong>final_relu</strong> – Boolean, whether to apply a ReLU to the output of the final Dense layer.</p></li>
-<li><p><strong>join_heads_by_add</strong> – on true heads are simply added instead of concatenated (original all-you-need), saving resources.</p></li>
+<li><p><strong>join_heads_by_add</strong> – on true heads are added after additional relu-nonlin, instead of concatenated (original all-you-need).</p></li>
 </ul>
 </dd>
 </dl>
@@ -1229,7 +1228,7 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
         <li class="right" >
           <a href="README.html" title="A collection of machine learning tools for low-resource research and experiments"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.52 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.0.56 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>
