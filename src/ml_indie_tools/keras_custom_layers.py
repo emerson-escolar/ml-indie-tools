@@ -379,10 +379,10 @@ class MultiHeadSelfAttention(layers.Layer):
     def build(self, input_shape):
         if self.join_heads_by_add is False:
             self.w_heads = self.add_weight(shape=(self.heads * input_shape[-1], input_shape[-1]),
-                                          initializer="random_normal", name='w5', trainable=True)
+                                          initializer="random_normal", name='w5concat', trainable=True)
         else:
-            self.w_heads = self.add_weight(shape=(self.units, input_shape[-1]),
-                                          initializer="random_normal", name='w5', trainable=True)
+            self.w_heads = self.add_weight(shape=(input_shape[-1], self.units),
+                                          initializer="random_normal", name='w5add', trainable=True)
         self.lin = self.add_weight(shape=(input_shape[-1], input_shape[-1]),
                                       initializer="random_normal", name='w6', trainable=True)
             
