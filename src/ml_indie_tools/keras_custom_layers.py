@@ -351,7 +351,7 @@ class MultiHeadSelfAttention(layers.Layer):
     :param mh_normalize: Boolean, whether to normalize the output of the multi-head self-attention.
     :param norm: either 'batchnorm', 'layernorm, or 'softmax', the normalization used within each self-attention head.
     :param final_relu: Boolean, whether to apply a ReLU to the output of the final Dense layer.
-    :param join_heads_by_add: on true heads are simply added instead of concatenated, saving memory.
+    :param join_heads_by_add: on true heads are simply added instead of concatenated (original all-you-need), saving resources.
     """
     def __init__(self, heads, units=None, norm=None, mh_normalize=True,
             final_relu=False, join_heads_by_add=False, **kwargs):
