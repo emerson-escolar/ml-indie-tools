@@ -377,7 +377,7 @@ class MultiHeadSelfAttention(layers.Layer):
         self.pm = layers.Permute((2,1))
 
     def build(self, input_shape):
-        if join_heads_by_add is False:
+        if self.join_heads_by_add is False:
             self.w_heads = self.add_weight(shape=(self.heads * input_shape[-1], input_shape[-1]),
                                           initializer="random_normal", name='w5', trainable=True)
         else:
