@@ -270,14 +270,14 @@ class Gutenberg_Dataset():
                         read_from_cache = True
                         self.log.debug("Cache timestamp read.")
                     else:
-                        self.log.info("Cache for Gutenberg-index is expired, reloading from web.")
+                        self.log.debug("Cache for Gutenberg-index is expired, reloading from web.")
                 except:
                     self.log.warning("Failed to read cache timestamp, reloading from web.")
             if expired is False and os.path.isfile(cache_file):
                 try:
                     with open(cache_file,'r') as f:
                         raw_index=f.read()
-                        self.log.info(f"Gutenberg index read from local cache: {cache_file}")
+                        self.log.debug(f"Gutenberg index read from local cache: {cache_file}")
                 except:
                     expired=True
                     self.log.warning("Failed to read cached index, reloading from web.")
@@ -288,7 +288,7 @@ class Gutenberg_Dataset():
                     if raw_index[0]=='\ufeff':  # Ignore BOM
                         raw_index=raw_index[1:]
                     raw_index=raw_index.replace('\r','')
-                    self.log.info(f"Gutenberg index read from {index_url}")
+                    self.log.debug(f"Gutenberg index read from {index_url}")
                 except Exception as e:
                     self.log.error(f"Failed to download Gutenberg index from {index_url}, {e}")
                     return False
@@ -313,7 +313,7 @@ class Gutenberg_Dataset():
                     if raw_index[0]=='\ufeff':  # Ignore BOM
                         raw_index=raw_index[1:]
                     raw_index=raw_index.replace('\r','')
-                    self.log.info(f"Gutenberg index read from local mirror: {index_file}")
+                    self.log.debug(f"Gutenberg index read from local mirror: {index_file}")
             except Exception as e:
                 self.log.error(f"Failed to read Gutenberg index from local mirror: {index_file}, {e}")
                 return
@@ -345,7 +345,7 @@ class Gutenberg_Dataset():
                 try:
                     with open(cache_file,'r') as f:
                         data=f.read()
-                        self.log.info(f"Book read from cache at {cache_file}")
+                        self.log.debug(f"Book read from cache at {cache_file}")
                         downloaded = False
                         return data, None, downloaded
                 except Exception as e:
@@ -360,7 +360,7 @@ class Gutenberg_Dataset():
                         data = urlopen(file_url).read().decode(encoding)
                     else:
                         data = urlopen(file_url).read()
-                    self.log.info(f"Book read from {file_url}")
+                    self.log.debug(f"Book read from {file_url}")
                     downloaded = True
                     break
                 except Exception as e:
@@ -373,7 +373,7 @@ class Gutenberg_Dataset():
                     else:
                         with open(file_url,'rb') as f:
                             data = f.read()
-                    self.log.info(f"Book read from local mirror at {file_url}")
+                    self.log.debug(f"Book read from local mirror at {file_url}")
                     downloaded = False
                     break
                 except Exception as e:
