@@ -381,7 +381,7 @@ class MultiHeadSelfAttention(layers.Layer):
             self.w_heads = self.add_weight(shape=(self.heads * input_shape[-1], input_shape[-1]),
                                           initializer="random_normal", name='w5', trainable=True)
         else:
-            self.w_heads = self.add_weight(shape=(input_shape[-1], input_shape[-1]),
+            self.w_heads = self.add_weight(shape=(self.units, input_shape[-1]),
                                           initializer="random_normal", name='w5', trainable=True)
         self.lin = self.add_weight(shape=(input_shape[-1], input_shape[-1]),
                                       initializer="random_normal", name='w6', trainable=True)
