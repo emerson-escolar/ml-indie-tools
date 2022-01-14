@@ -74,7 +74,9 @@ class MLEnv():
                     tpu = None
                     if accelerator!= 'fastest':
                         self.log.debug("No TPU available")
-                if self.is_tpu is True:    
+                if self.is_tpu is True:
+                    # Connect_to_cluster requires eager mode, afterwards we will switch back to non-eager mode.
+                    tf.compat.v1.enable_eager_execution()
                     tf.config.experimental_connect_to_cluster(tpu)
                     tf.tpu.experimental.initialize_tpu_system(tpu)
                     self.tpu_strategy = tf.distribute.TPUStrategy(tpu)
