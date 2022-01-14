@@ -53,7 +53,7 @@ class Text_Dataset:
             self.text_list.append(text)
         lt=len(self.text_list)
         if lt==1:
-            self.log.info("Loaded {lt} text")
+            self.log.info(f"Loaded {lt} text")
         else:
             self.log.info(f"Loaded {lt} texts")
         self._calc_probability_weights()
