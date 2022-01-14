@@ -75,9 +75,10 @@ class MLEnv():
                     if accelerator!= 'fastest':
                         self.log.debug("No TPU available")
                 if self.is_tpu is True:
-                    # Connect_to_cluster requires eager mode, afterwards we will switch back to non-eager mode.
-                    tf.compat.v1.enable_eager_execution()
-                    tf.config.experimental_connect_to_cluster(tpu)
+                    # Connect_to_cluster requires eager mode, so we can't call it after having switched to non-eager mode
+                    if tf.executing_eagerly() is True:
+                        # Typically, this is the case when running for the first time, afterwards, we went to non-eager mode
+                        tf.config.experimental_connect_to_cluster(tpu)
                     tf.tpu.experimental.initialize_tpu_system(tpu)
                     self.tpu_strategy = tf.distribute.TPUStrategy(tpu)
                     self.tpu_num_nodes = len(self.tpu_strategy.extended.worker_devices)
