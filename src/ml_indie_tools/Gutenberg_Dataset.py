@@ -27,8 +27,9 @@ class Gutenberg_Dataset():
     :param root_url: url of Project Gutenberg or any mirror URL, or a local directory containing a Gutenberg mirror.
     :param cache_dir: path to a directory that will be used to cache the Gutenberg index and already downloaded texts. The cache directory is only used, if a remote Gutenberg URL and not a local mirror is used.
     """
-    def __init__(self, root_url="http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg", cache_dir="gutenberg"):
-        self.log = logging.getLogger('Datasets')
+    def __init__(self, root_url="https://www.gutenberg.org/dirs", cache_dir="gutenberg"):
+        # old root, vanished: http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg
+        self.log = logging.getLogger('GutenbergLib')
         self.root_url = root_url
         self.index=None
         self.NEAR=2048
