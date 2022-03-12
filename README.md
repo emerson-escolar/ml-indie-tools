@@ -4,8 +4,6 @@
 [![Docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://domschl.github.io/ml-indie-tools/index.html)
 [![PyPI version fury.io](https://badge.fury.io/py/ml-indie-tools.svg)](https://pypi.python.org/pypi/ml-indie-tools/)
 
-**Note:** THIS LIBRARY IS UNFINISHED WORK-IN-PROGRESS
-
 ## Description
 
 ```bash
@@ -178,7 +176,16 @@ A collection of Keras residual- and self-attention layers
 
 See the [keras_custom_layers API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-keras_custom_layers) for details.
 
+## External projects
+
+Checkout the following jupyter notebook based projects for example-usage:
+
+* [tensor-poet](https://github.com/domschl/tensor-poet)
+* [torch-poet](https://github.com/domschl/torch-poet)
+* [transformer-poet](https://github.com/domschl/transformer-poet)
+
 ## History
 
+* (2022-03-12, 0.1.0) First version for external use.
 * (2021-12-26, 0.0.x) First pre-alpha versions published for testing purposes, not ready for use.
 
