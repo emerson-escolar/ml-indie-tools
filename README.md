@@ -25,6 +25,8 @@ The usage scenarios are:
 | Workstation with Nvidia  | /              | x              | /           | x           | /       | x       |
 | Apple Silicon            | /              | x              | /           | /           | /       | /       |
 
+(`x`: supported, `/`: not supported)
+
 `Gutenberg_Dataset` and `Text_Dataset` are NLP libraries that provide text data and can be used in conjuction
 with Huggingface [Datasets](https://huggingface.co/docs/datasets/) or directly with ML libraries.
 
@@ -169,7 +171,8 @@ See the [Text_Dataset API documentation](https://domschl.github.io/ml-indie-tool
 ### ALU_Dataset
 
 See the [ALU_Dataset API documentation](https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-ALU_Dataset) for details.
-
+A sample project is at [ALU_Net](https://github.com/domschl/ALU_Net)
+  
 ### keras_custom_layers
 
 A collection of Keras residual- and self-attention layers
@@ -180,9 +183,13 @@ See the [keras_custom_layers API documentation](https://domschl.github.io/ml-ind
 
 Checkout the following jupyter notebook based projects for example-usage:
 
+### Text generation
 * [tensor-poet](https://github.com/domschl/tensor-poet)
 * [torch-poet](https://github.com/domschl/torch-poet)
 * [transformer-poet](https://github.com/domschl/transformer-poet)
+
+### Arithmetic and logic operations
+* [ALU_Net](https://github.com/domschl/ALU_Net)
 
 ## History
 
