@@ -15,7 +15,7 @@ who change between laptop, Colab-instances and local workstations with a graphic
 
 `env_tools` checks the current environment, and populates a number of flags that allow identification of run-time
 environment and available accelerator hardware. For Colab instances, it provides tools to mount Google Drive for
-persistant data- and model-storage.
+persistent data- and model-storage.
 
 The usage scenarios are:
 
