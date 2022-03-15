@@ -193,6 +193,7 @@ Checkout the following jupyter notebook based projects for example-usage:
 
 ## History
 
+* (2022-03-15, 0.1.2) `env_tools.init()` no longer uses `tf.compat.v1.disable_eager_executition()` since there are rumors about old code-paths being used. Use `tf.function()` instead, or call with `env_tools.init(..., old_disable_eager=True)` which continues to use the old v1 API.
 * (2022-03-12, 0.1.0) First version for external use.
 * (2021-12-26, 0.0.x) First pre-alpha versions published for testing purposes, not ready for use.
 
