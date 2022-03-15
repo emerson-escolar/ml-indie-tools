@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.1.0 documentation</title>
+    <title>Welcome to ml-indie-tools’s documentation! &#8212; ml-indie-tools 0.1.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="README.html" title="A collection of machine learning tools for low-resource research and experiments"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.1.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>  
@@ -56,7 +56,7 @@
 optional notebook/colab environment</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="env_tools.MLEnv">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">env_tools.</span></span><span class="sig-name descname"><span class="pre">MLEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fastest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">env_tools.</span></span><span class="sig-name descname"><span class="pre">MLEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fastest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_disable_eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/env_tools.html#MLEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#env_tools.MLEnv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Initialize platform and accelerator.</p>
 <p>This checks initialization and available accelerator hardware for different ml platforms.
@@ -71,6 +71,7 @@ environment is a TPU environment, and <cite>self.is_cpu</cite> that no accelerat
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>platform</strong> – Known platforms are: <cite>‘tf’</cite> (tensorflow), <cite>‘pt’</cite> (pytorch), and <cite>‘jax’</cite></p></li>
 <li><p><strong>accelerator</strong> – known accelerators are: <cite>‘fastest’</cite> (pick best available hardware), <cite>‘cpu’</cite>, <cite>‘gpu’</cite>, <cite>‘tpu’</cite>.</p></li>
+<li><p><strong>old_disable_eager</strong> – default ‘False’, on True, old v1 compatibility layer is used to disable eager mode. According to rumors that might in resulting old codepaths being used?</p></li>
 </ul>
 </dd>
 </dl>
@@ -996,7 +997,7 @@ data for transformers or attention layers.</p>
 who change between laptop, Colab-instances and local workstations with a graphics card.</p>
 <p><code class="docutils literal notranslate"><span class="pre">env_tools</span></code> checks the current environment, and populates a number of flags that allow identification of run-time
 environment and available accelerator hardware. For Colab instances, it provides tools to mount Google Drive for
-persistant data- and model-storage.</p>
+persistent data- and model-storage.</p>
 <p>The usage scenarios are:</p>
 <table class="docutils align-default">
 <colgroup>
@@ -1045,6 +1046,7 @@ persistant data- and model-storage.</p>
 </tr>
 </tbody>
 </table>
+<p>(<cite>x</cite>: supported, <cite>/</cite>: not supported)</p>
 <p><code class="docutils literal notranslate"><span class="pre">Gutenberg_Dataset</span></code> and <code class="docutils literal notranslate"><span class="pre">Text_Dataset</span></code> are NLP libraries that provide text data and can be used in conjuction
 with Huggingface <a class="reference external" href="https://huggingface.co/docs/datasets/">Datasets</a> or directly with ML libraries.</p>
 <p><code class="docutils literal notranslate"><span class="pre">ALU_Dataset</span></code> is a toy-dataset that allows training of integer arithmetic and logical (ALU) operations.</p>
@@ -1136,7 +1138,8 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
 </div>
 <p>See the <a class="reference external" href="https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-Gutenberg_Dataset">Gutenberg_Dataset API documentation</a> for details.</p>
 <p>See the <a class="reference external" href="https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-Text_Dataset">Text_Dataset API documentation</a> for details.</p>
-<p>See the <a class="reference external" href="https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-ALU_Dataset">ALU_Dataset API documentation</a> for details.</p>
+<p>See the <a class="reference external" href="https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-ALU_Dataset">ALU_Dataset API documentation</a> for details.
+A sample project is at <a class="reference external" href="https://github.com/domschl/ALU_Net">ALU_Net</a></p>
 <p>A collection of Keras residual- and self-attention layers</p>
 <p>See the <a class="reference external" href="https://domschl.github.io/ml-indie-tools/_build/html/index.html#module-keras_custom_layers">keras_custom_layers API documentation</a> for details.</p>
 <p>Checkout the following jupyter notebook based projects for example-usage:</p>
@@ -1144,6 +1147,9 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
 <li><p><a class="reference external" href="https://github.com/domschl/tensor-poet">tensor-poet</a></p></li>
 <li><p><a class="reference external" href="https://github.com/domschl/torch-poet">torch-poet</a></p></li>
 <li><p><a class="reference external" href="https://github.com/domschl/transformer-poet">transformer-poet</a></p></li>
+</ul>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/domschl/ALU_Net">ALU_Net</a></p></li>
 </ul>
 <ul class="simple">
 <li><p>(2022-03-12, 0.1.0) First version for external use.</p></li>
@@ -1239,7 +1245,7 @@ solution. Have a look at <a class="reference external" href="https://www.gutenbe
         <li class="right" >
           <a href="README.html" title="A collection of machine learning tools for low-resource research and experiments"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">ml-indie-tools 0.1.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Welcome to ml-indie-tools’s documentation!</a></li> 
       </ul>
     </div>
