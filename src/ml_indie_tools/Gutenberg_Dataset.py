@@ -330,7 +330,7 @@ class Gutenberg_Dataset():
         :param ebook_id: Gutenberg id (Note: string, since this sometimes contains a character!)
         :returns: book text as string, unfiltered. Can be filtered with :func:`~Gutenberg_Dataset.Gutenberg_Dataset.filter_text`
         """
-        txt, dl, val = self._load_book_ex(ebook_id)[0]
+        txt, dl, val = self._load_book_ex(ebook_id)
         if val is True:
             return txt, dl
         else:
@@ -633,7 +633,8 @@ class Gutenberg_Dataset():
         """
         for rec in self.records:
             if rec["ebook_id"]==ebook_id:
-                rec['text']=self.filter_text(self.load_book(ebook_id))
+                txt, _ = self.load_book(ebook_id)
+                rec['text']=self.filter_text(txt)
                 return rec
         return None
 
